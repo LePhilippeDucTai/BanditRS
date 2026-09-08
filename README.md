@@ -29,4 +29,15 @@ target/release/bandit --dump-walk examples/nosec.py   # trace de parcours AST (o
 `bandit-config-generator` et `bandit-baseline` (nécessite `git` dans le `PATH`) fonctionnent comme leurs
 homologues Python — voir `bandit-config-generator --help` / `bandit-baseline --help`.
 
+**Développement.** La suite de tests de bandit Python (273 tests) est la spécification d'acceptation : chaque
+test a un homonyme Rust dans `tests/` (un fichier miroir par fichier Python ; les tests pas encore portés sont
+des stubs `#[ignore]`, comptés par `scripts/wp_status.sh`). Le plan de développement parallèle — lots de
+travail pour sous-agents, jalons, benchmarks — est dans `docs/plan/README.md`.
+
+```bash
+scripts/wp_status.sh                 # progression du port de la suite de tests
+cargo bench --bench e2e              # benchmarks criterion
+scripts/bench_vs_python.sh           # comparaison Python vs Rust (référence : /home/user/.pyenv-bandit)
+```
+
 Licence Apache-2.0. Les fichiers de `examples/` et les spécifications de tests dérivent du projet bandit (PyCQA).

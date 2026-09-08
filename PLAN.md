@@ -1,7 +1,9 @@
 # BanditRS — plan de réécriture de bandit en Rust (document de passation)
 
 > Ce document permet de reprendre l'implémentation dans une nouvelle session. Lire dans l'ordre :
-> 1. cette page (état, décisions, jalons, prochaines étapes) ;
+> 0. **`docs/plan/README.md`** — le plan de développement parallèle (TDD : port des 273 tests Python,
+>    performance, 16 lots de travail pour sous-agents) qui remplace le §5 « prochaines étapes » ;
+> 1. cette page (état, décisions, jalons, architecture, pièges) ;
 > 2. `docs/spec/core.md` (sémantique exacte du cœur Python) ;
 > 3. `docs/spec/plugins.md` (les 42 plugins + blacklists, messages/regex/défauts verbatim) ;
 > 4. `docs/spec/cli_formatters_tests.md` (CLI, formatters, suite de tests = spécification d'acceptation) ;
@@ -37,10 +39,18 @@
 
 ## 3. État d'avancement (ce qui est FAIT et VALIDÉ)
 
-`cargo build --all-targets` propre (0 warning bloquant ; une dizaine d'avertissements clippy mineurs, cf. §6,
-nettoyage prévu en M10), `cargo test` : 39 tests unitaires + **78 tests fonctionnels** (`tests/functional.rs`,
-plus de `#[ignore]`) tous au vert — la table complète des exemples upstream (comptes de sévérité/confiance)
-correspond bit à bit à bandit Python.
+`cargo build --all-targets`, `cargo clippy --all-targets -- -D warnings` et `cargo fmt --check` propres.
+`cargo test --all-targets` : **67 tests unitaires** (`src/`) + **274 tests d'intégration** (`tests/`, un fichier
+miroir par fichier de test Python) dont **176 stubs `#[ignore]`** nommés comme les tests Python restant à porter
+(`scripts/wp_status.sh`) ; les 98 tests actifs (78 fonctionnels + 9 runtime + 11 formatters) sont au vert — la
+table complète des exemples upstream (comptes de sévérité/confiance) correspond bit à bit à bandit Python.
+
+| Jalon (plan parallèle) | Contenu | État |
+|---|---|---|
+| J0 | Restructuration : squelette miroir de la suite Python, `docs/plan/` (inventaire, 16 fiches de lots, playbook, benchmarks), agents `.claude/agents/banditrs-wp-*`, skill `banditrs-dispatch`, `benches/e2e.rs`, `scripts/{wp_status,bench_vs_python}.sh`, CI | **Fait** (2026-09-08) |
+| J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | à lancer (`banditrs-dispatch`, vague A) |
+| J2 | Corpus golden + différentiel en CI (WP-14, WP-16) | à lancer (vague B) |
+| J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | à lancer (vague B) |
 
 | Jalon | Module(s) | État |
 |---|---|---|
@@ -93,7 +103,11 @@ Invariants clés (tous validés par la trace de parcours) :
 - `PyErr` : là où Python lèverait (KeyError de config, IndexError, TypeError…), renvoyer `Err(PyErr)` → le tester
   journalise `Bandit internal error running: <test> on file <f> at line <n>: <err>` et n'émet rien.
 
-## 5. Prochaines étapes détaillées (dans l'ordre)
+## 5. Prochaines étapes
+
+**Les prochaines étapes sont désormais décrites, lot par lot, dans `docs/plan/README.md`** (jalons J1–J3,
+tableau de dispatch, propriété des fichiers, protocole de fusion) et `docs/plan/wp/WP-01…16`. Ce qui suit
+reste comme rappel des limitations connues qui motivent ces lots (chacune est reprise dans une fiche) :
 
 M0–M9 sont **faits** dans les grandes lignes (moteur de tests, 42 plugins, formatters, CLI complet — `bandit`,
 `bandit-baseline`, `bandit-config-generator`). Limitations connues restantes (aucune ne bloque la suite de base) :
@@ -107,10 +121,9 @@ M0–M9 sont **faits** dans les grandes lignes (moteur de tests, 42 plugins, for
   `blacklist_imports` avec inversion `bad_calls`/`bad_imports` — DEVIATIONS.md note l'inversion à garder telle
   quelle) : `todo!()` implicite (pas de config de test l'exerçant pour l'instant). Tests de référence :
   `tests/unit/core/test_config.py`.
-- `tests/baseline_functional.rs`, `tests/cli_tools.rs` : encore des placeholders `#[ignore]` — §C.3 (7 scénarios
-  baseline), §C.4 (`_get_options_from_ini`/`_log_option_source`/exit codes), §C.5 (`bandit-baseline` avec un vrai
-  dépôt git temporaire), §C.6 (`bandit-config-generator`) pas portés en tests automatisés, seulement vérifiés
-  manuellement (dépôt git jetable dans `/tmp`, cf. session de développement) et par différentiel contre Python.
+- Tests unitaires et fonctionnels restants : voir `docs/plan/test-inventory.md` (176 stubs `#[ignore]` dans
+  `tests/functional_baseline.rs`, `tests/unit_cli_*.rs`, `tests/unit_core_*.rs`, `tests/unit_formatters_*.rs`) —
+  §C.3 (WP-02), §C.4 (WP-03), §C.5 (WP-04), §C.6 (WP-05), §C.7 (WP-12/13), §C.8–C.16 (WP-06…11).
 
 ### Harnais différentiel — méthode et résultat (fait ad hoc, à refaire via `scripts/diff_against_python.sh`)
 
@@ -167,7 +180,9 @@ benchmark (`time bandit -r /usr/lib/python3.11` Python vs Rust `--release`, obje
 ## 7. Commandes utiles
 
 ```bash
-cargo build --release && cargo test --all-targets         # unités + 78 fonctionnels + 11 formatters + 9 runtime
+cargo build --release && cargo test --all-targets         # 67 unitaires + 274 d'intégration (176 stubs ignorés)
+scripts/wp_status.sh                                      # stubs restants par lot (docs/plan/README.md)
+cargo bench --bench e2e                                   # benchs criterion ; scripts/bench_vs_python.sh pour Python vs Rust
 BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit --dump-walk examples/nosec.py   # trace Rust
 /home/user/.pyenv-bandit/bin/python scripts/dump_walk.py examples/nosec.py           # trace Python
 scripts/diff_against_python.sh examples                   # harnais différentiel (script à finaliser, cf. §5)
