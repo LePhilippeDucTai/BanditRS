@@ -63,7 +63,7 @@ DEVIATIONS.md #5 `tarfile_extractall`, #9 `mark_safe_*`, #11 ancres YAML ; champ
 | M1 | `src/pycompat/encoding.rs` (PEP 263, BOM, latin-1, ascii, encoding_rs), `src/source/{file,parse}.rs` | **Fait + tests** |
 | M2 | `src/ast/{mod,vnode,children,joined_str,positions,linerange,qualname,literal,walker,trace}.rs`, `src/core/context.rs`, `bandit --dump-walk`, `scripts/dump_walk.py` | **Fait + validé** : trace de parcours identique à bandit Python sur **94/94 exemples et 120/120 fichiers de la stdlib** (avec `BANDITRS_PYTHON_COMPAT=3.11`) |
 | M3 | `src/core/blacklist.rs` (données + test B001), `src/core/registry.rs` (table des 42 plugins), `src/core/plugin_config.rs` (défauts + `from_config`), `src/core/nosec.rs`, `src/core/docs_utils.rs`, `src/core/test_set.rs` (`TestSet::new`), `src/core/tester.rs` (`Tester::run_tests`), `src/core/config.rs` (défauts + `get_option` ; **chargement fichier YAML/TOML et profils legacy restent stub**) | **Fait** (sauf chargement de fichier de config, voir M7) |
-| M4 | `src/plugins/*.rs` — **42/42 plugins implémentés** (voir docs/spec/plugins.md) ; `django_mark_safe` (B703) a une limitation connue sur `DeepAssignation` (DEVIATIONS.md #9), sans impact sur la suite de base | **Fait** |
+| M4 | `src/plugins/*.rs` — **42/42 plugins implémentés** (voir docs/spec/plugins.md) ; `django_mark_safe` (B703) : `DeepAssignation` porté intégralement par WP-01 (try/with/for/while/ExceptHandler, déballage de tuple) — deux divergences résiduelles où BanditRS est plus strict que Python, documentées DEVIATIONS.md #9 | **Fait** |
 | M5 | `src/core/discover.rs::discover_files`, `src/core/scan.rs::scan_file` (`catch_unwind`, nosec depuis les tokens), `src/core/manager.rs::run_tests` (parallèle via `rayon`) | **Fait** ; `tests/common/mod.rs::check_example`/`check_metrics` implémentés, **78 tests fonctionnels au vert** |
 | M6 | `src/formatters/*.rs` (csv/custom/html/json/sarif/screen/text/xml/yaml + `mod.rs::output_results`), `src/pycompat/{pyformat,csv,json,yaml_emit,html,xml,urlquote}.rs` | **Fait** ; **11 tests fonctionnels** (`tests/formatters.rs`, §C.7) au vert |
 | M7 | `src/cli/{argparse,main}.rs` (parseur maison + flux §A.11), `BanditConfig::new` (YAML via `pycompat::yaml_load` + TOML via `toml`), `BanditConfig::profile()` (conversion nom→id, pas la conversion legacy `blacklist_calls`/`blacklist_imports`), `src/pycompat/{yaml_load,configparser}.rs` | **Fait** ; **9 tests fonctionnels** (`tests/runtime.rs`) au vert |
@@ -117,10 +117,14 @@ reste comme rappel des limitations connues qui motivent ces lots (chacune est re
 M0–M9 sont **faits** dans les grandes lignes (moteur de tests, 42 plugins, formatters, CLI complet — `bandit`,
 `bandit-baseline`, `bandit-config-generator`). Limitations connues restantes (aucune ne bloque la suite de base) :
 
-- DEVIATIONS.md #9 : `django_mark_safe`/`DeepAssignation` (limitation connue, sans impact sur la suite de base).
-- `test_asserts`, `test_try_except_*`, `test_markupsafe_*`, `test_django_xss_*` (profil `exclude B308`) : hors de
-  la suite fonctionnelle de base (`tests/functional.rs`), nécessiteraient un `BanditTestSet` construit avec un
-  profil/config spécifique plutôt que `manager_for_default()` — pas encore portés en tests Rust.
+- DEVIATIONS.md #9 : `DeepAssignation` est complet depuis WP-01 ; ne subsistent que deux divergences volontaires (bugs Python non reproduits), sans impact sur la suite ni sur les fixtures.
+- ~~`test_asserts`, `test_try_except_*`, `test_markupsafe_*`, `test_django_xss_*`~~ : **portés par WP-01**
+  (helpers `manager_with`/`check_example_with` dans `tests/common/mod.rs`, qui construisent un `Manager` à
+  partir d'un config/profil explicites au lieu de `manager_for_default()`).
+- `apply_ini_options` (`src/cli/main.rs`) ne journalise « Using command line arg for selected targets » que si
+  la clé `targets` est présente dans le `.bandit`, alors que Python l'émet dès que `args.targets` est fourni en
+  ligne de commande, indépendamment de la clé ini. Écart pré-existant repéré lors de la revue de WP-03 (hors de
+  son périmètre) : à corriger, ou à assumer avec une entrée `DEVIATIONS.md`.
 - `BanditConfig::profile()` fait la conversion nom→id (`registry::get_test_id`) mais pas encore
   `convert_legacy_blacklist_data`/`convert_legacy_blacklist_tests` (l'ancien format `blacklist_calls`/
   `blacklist_imports` avec inversion `bad_calls`/`bad_imports` — DEVIATIONS.md note l'inversion à garder telle
