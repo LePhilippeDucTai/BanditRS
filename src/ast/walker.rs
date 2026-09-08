@@ -397,3 +397,44 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
         }
     }
 }
+
+/// Test support (`docs/plan/wp/WP-09-unit-core-context.md`): parse `source`
+/// (as file `filename`) and walk it exactly like `BanditNodeVisitor` would,
+/// calling `f` with the [`Context`] of every node of kind `kind`, in visit
+/// order. Not used by production code — tests build a real `Context` this
+/// way instead of `bandit.core.context.Context(context_object=Mock)`, which
+/// has no typed equivalent.
+pub fn with_contexts(
+    filename: &str,
+    source: &str,
+    kind: NodeKind,
+    f: impl FnMut(&Context<'_, '_>),
+) {
+    struct Collector<F> {
+        kind: NodeKind,
+        f: F,
+    }
+
+    impl<'a, F> TestRunner<'a> for Collector<F>
+    where
+        F: for<'c> FnMut(&Context<'a, 'c>),
+    {
+        fn wants(&self, kind: NodeKind) -> bool {
+            kind == self.kind
+        }
+
+        fn run_tests(&mut self, ctx: &Context<'a, '_>, _kind: NodeKind) -> Scores {
+            (self.f)(ctx);
+            Scores::default()
+        }
+    }
+
+    let file = SourceFile::new(filename, source);
+    let compat = PyCompat::Py312;
+    let parsed = crate::source::parse::parse_module(&file.text, compat)
+        .unwrap_or_else(|e| panic!("with_contexts: {filename}: {e}"));
+    let arena = ViewArena::new();
+    let mut runner = Collector { kind, f };
+    let mut walker = Walker::new(&file, &arena, compat, &mut runner);
+    walker.process(parsed.syntax());
+}

@@ -82,6 +82,22 @@ impl<'a, 'w> Context<'a, 'w> {
         &self.file.name
     }
 
+    /// `statement`: the nearest enclosing statement.
+    ///
+    /// Upstream `node_visitor.py` never writes a `"statement"` key into the
+    /// context dict, so `Context.statement` is always `None` in real bandit
+    /// (dead code — no plugin reads it either); the test only exercises the
+    /// dict getter with a mock value. Since the Rust `Context` has no
+    /// untyped dict to mock, this computes the actual nearest-`Stmt`
+    /// ancestor instead, so the property is testable (DEVIATIONS.md #13).
+    pub fn statement(&self) -> Option<VNode<'a>> {
+        self.ancestors
+            .iter()
+            .rev()
+            .find(|a| a.as_stmt().is_some())
+            .copied()
+    }
+
     /// `node._bandit_parent`.
     pub fn parent(&self) -> Option<VNode<'a>> {
         self.ancestors.last().copied()
