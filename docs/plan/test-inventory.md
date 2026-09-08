@@ -29,7 +29,7 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/core/test_issue.py` | `tests/unit_core_issue.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 7 | 6 | 0 | 0 | 1 | 0 |
 | `tests/unit/core/test_manager.py` | `tests/unit_core_manager.rs` | [WP-06](wp/WP-06-unit-core-manager.md) | 21 | 0 | 0 | 13 | 7 | 1 |
 | `tests/unit/core/test_meta_ast.py` | `—` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 0 | 0 | 0 | 0 | 2 |
-| `tests/unit/core/test_test_set.py` | `tests/unit_core_test_set.rs` | [WP-10](wp/WP-10-unit-core-test-set.md) | 13 | 0 | 0 | 0 | 13 | 0 |
+| `tests/unit/core/test_test_set.py` | `tests/unit_core_test_set.rs` | [WP-10](wp/WP-10-unit-core-test-set.md) | 13 | 13 | 0 | 0 | 0 | 0 |
 | `tests/unit/core/test_util.py` | `tests/unit_core_util.rs` | [WP-07](wp/WP-07-unit-core-util.md) | 30 | 26 | 0 | 0 | 0 | 4 |
 | `tests/unit/formatters/test_csv.py` | `tests/unit_formatters_csv.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_custom.py` | `tests/unit_formatters_custom.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
@@ -326,19 +326,19 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `BanditTestSetTests::test_has_defaults` | `test_has_defaults` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_blacklist_compat` | `test_profile_blacklist_compat` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_exclude_builtin_blacklist` | `test_profile_exclude_builtin_blacklist` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_exclude_builtin_blacklist_specific` | `test_profile_exclude_builtin_blacklist_specific` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_exclude_id` | `test_profile_exclude_id` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_exclude_none` | `test_profile_exclude_none` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_filter_blacklist_all` | `test_profile_filter_blacklist_all` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_filter_blacklist_include` | `test_profile_filter_blacklist_include` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_filter_blacklist_none` | `test_profile_filter_blacklist_none` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_filter_blacklist_one` | `test_profile_filter_blacklist_one` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_has_builtin_blacklist` | `test_profile_has_builtin_blacklist` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_include_id` | `test_profile_include_id` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
-| `BanditTestSetTests::test_profile_include_none` | `test_profile_include_none` | à porter (adapté) | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_has_defaults` | `test_has_defaults` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_blacklist_compat` | `test_profile_blacklist_compat` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_exclude_builtin_blacklist` | `test_profile_exclude_builtin_blacklist` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_exclude_builtin_blacklist_specific` | `test_profile_exclude_builtin_blacklist_specific` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_exclude_id` | `test_profile_exclude_id` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_exclude_none` | `test_profile_exclude_none` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_filter_blacklist_all` | `test_profile_filter_blacklist_all` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_filter_blacklist_include` | `test_profile_filter_blacklist_include` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles ; valeurs vérifiées empiriquement contre `/home/user/.pyenv-bandit` (registre réel non mocké) — `table_len(Call) == 1` (B401 appartient aussi à la table `Call`, voir WP-10 §Pièges) |
+| `BanditTestSetTests::test_profile_filter_blacklist_none` | `test_profile_filter_blacklist_none` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_filter_blacklist_one` | `test_profile_filter_blacklist_one` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles ; valeurs vérifiées empiriquement — `table_len(Call)` diminue aussi de 1 (voir WP-10 §Pièges) |
+| `BanditTestSetTests::test_profile_has_builtin_blacklist` | `test_profile_has_builtin_blacklist` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_include_id` | `test_profile_include_id` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
+| `BanditTestSetTests::test_profile_include_none` | `test_profile_include_none` | porté | registre factice (`B000` sur `Str`, blacklists `B401`/`B302`) → registre réel, mêmes assertions structurelles (cf. WP-10) |
 
 ## `tests/unit/core/test_util.py` → `tests/unit_core_util.rs` ([WP-07](wp/WP-07-unit-core-util.md))
 
