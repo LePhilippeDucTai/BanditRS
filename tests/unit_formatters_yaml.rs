@@ -10,14 +10,20 @@
 mod common;
 
 use banditrs::constants::Rank;
+use banditrs::core::config::ConfigValue;
 use banditrs::formatters::yaml;
-use common::formatters::{base_manager, make_issue, tmp_name};
+use banditrs::pycompat::yaml_load::safe_load;
+use common::formatters::{TEST_NAME, TEXT, base_manager, make_issue, tmp_name};
 
 /// Port of `tests/unit/formatters/test_yaml.py::YamlFormatterTests::test_report`.
 ///
-/// PARTIAL (WP-13): substring checks only; parse the YAML back and assert
-/// every field like `unit_formatters_json.rs::test_report` (baseline branch
-/// with candidates, `generated_at`, `line_range == [4]`, `more_info`).
+/// Parses the emitted document back with `safe_load` and asserts each field,
+/// like the Python test's `yaml.safe_load`. Adaptation: the Python test
+/// actually calls `bandit.formatters.json.report` (JSON is valid YAML) with a
+/// mocked `get_issue_list` returning candidates, hence its `candidates`
+/// assertion; the real `yaml` formatter under test here has no baseline
+/// branch (`json::build_results(..., false)`), so `candidates` is
+/// deliberately not asserted.
 #[test]
 fn test_report() {
     let mut mgr = base_manager();
@@ -27,9 +33,23 @@ fn test_report() {
     let mut buf = Vec::new();
     yaml::report(&mgr, &mut buf, Rank::Low, Rank::Low, -1).unwrap();
     let text = String::from_utf8(buf).unwrap();
-    assert!(text.contains("generated_at:"));
-    assert!(text.contains(&format!("filename: {fname}")) || text.contains("filename:"));
-    assert!(text.contains("issue_severity: MEDIUM"));
-    assert!(text.contains("issue_confidence: MEDIUM"));
-    assert!(text.contains("line_number: 4"));
+
+    let data = safe_load(&text).unwrap();
+    let map = data.as_map().unwrap();
+    assert!(map.contains_key("generated_at"));
+    let result = &map["results"].as_list().unwrap()[0];
+    let result = result.as_map().unwrap();
+    assert_eq!(result["filename"].as_str(), Some(fname.as_str()));
+    assert_eq!(result["issue_severity"].as_str(), Some("MEDIUM"));
+    assert_eq!(result["issue_confidence"].as_str(), Some("MEDIUM"));
+    assert_eq!(result["issue_text"].as_str(), Some(TEXT));
+    assert_eq!(result["line_number"], ConfigValue::Int(4));
+    assert_eq!(
+        result["line_range"],
+        ConfigValue::List(vec![ConfigValue::Int(4)])
+    );
+    assert_eq!(result["test_name"].as_str(), Some(TEST_NAME));
+    assert!(map["results"].as_list().is_some());
+    let more_info = &result["more_info"];
+    assert_ne!(*more_info, ConfigValue::Null);
 }
