@@ -37,6 +37,81 @@ fn py_list_repr(items: &[String]) -> String {
     format!("[{}]", parts.join(", "))
 }
 
+/// Parsed `bandit-config-generator` arguments (`config_generator.parse_args`).
+pub struct GenArgs {
+    pub show_defaults: bool,
+    pub output_file: Option<String>,
+    pub tests: Option<String>,
+    pub skips: Option<String>,
+}
+
+/// Port of `config_generator.init_logger`: INFO level, `[%(levelname)5s]:
+/// %(message)s` format, logging to stdout.
+pub fn init_logger() {
+    crate::log::set_level(crate::log::Level::Info);
+    crate::log::set_format("[%(levelname)5s]: %(message)s");
+    crate::log::set_stdout(true);
+}
+
+/// Port of `config_generator.parse_args`: `Err(code)` mirrors
+/// `parser.exit(code)` / `parser.error(...)` (argparse's `SystemExit`).
+/// Without `-o`/`--out` nor `--show-defaults`, Python prints the help and
+/// exits with 1.
+pub fn parse_args(argv: &[String]) -> Result<GenArgs, i32> {
+    let mut show_defaults = false;
+    let mut output_file: Option<String> = None;
+    let mut tests: Option<String> = None;
+    let mut skips: Option<String> = None;
+
+    let mut i = 0;
+    while i < argv.len() {
+        let arg = argv[i].as_str();
+        match arg {
+            "-h" | "--help" => {
+                print_help();
+                return Err(0);
+            }
+            "--show-defaults" => show_defaults = true,
+            "-o" | "--out" => {
+                i += 1;
+                output_file = argv.get(i).cloned();
+            }
+            "-t" | "--tests" => {
+                i += 1;
+                tests = argv.get(i).cloned();
+            }
+            "-s" | "--skip" => {
+                i += 1;
+                skips = argv.get(i).cloned();
+            }
+            _ => {
+                eprintln!("bandit-config-generator: error: unrecognized arguments: {arg}");
+                return Err(2);
+            }
+        }
+        i += 1;
+    }
+
+    if output_file.is_none() && !show_defaults {
+        print_help();
+        return Err(1);
+    }
+
+    Ok(GenArgs {
+        show_defaults,
+        output_file,
+        tests,
+        skips,
+    })
+}
+
+/// Port of `config_generator.get_config_settings`:
+/// `yaml.safe_dump(config, default_flow_style=False)` of `gen_config` for
+/// every plugin taking config (= `PluginConfigs::defaults_yaml()`).
+pub fn get_config_settings() -> String {
+    PluginConfigs::defaults_yaml()
+}
+
 /// Entry point; returns the exit code (always 0 unless argument errors).
 pub fn main(args: Vec<String>) -> i32 {
     crate::log::set_level(crate::log::Level::Info);
