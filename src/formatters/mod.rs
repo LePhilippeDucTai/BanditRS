@@ -57,18 +57,49 @@ pub const BASELINE_FORMATTERS: &[&str] = &["json", "txt", "html", "screen", "cus
 
 /// `manager.output_results(lines, sev_level, conf_level, output, format, template)`.
 /// Unknown formats fall back to `screen`/`txt` depending on the terminal.
-/// TODO(M6): dispatch; wrap errors as
-/// `RuntimeError("Unable to output report using '{format}' formatter: {e}")`.
+/// Errors are wrapped as `RuntimeError("Unable to output report using '{format}' formatter: {e}")`.
 pub fn output_results(
-    _manager: &Manager,
-    _lines: i64,
-    _sev_level: Rank,
-    _conf_level: Rank,
-    _output: &mut Output,
-    _format: &str,
-    _template: Option<&str>,
+    manager: &Manager,
+    lines: i64,
+    sev_level: Rank,
+    conf_level: Rank,
+    output: &mut Output,
+    format: &str,
+    template: Option<&str>,
 ) -> Result<(), String> {
-    todo!("M6: output_results")
+    let format = if FORMATTER_NAMES.contains(&format) { format } else { default_format() };
+    let name = output.name().to_string();
+    let is_stdout = output.is_stdout();
+
+    let result: io::Result<()> = match format {
+        "csv" => csv::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
+        "json" => json::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
+        "txt" => text::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
+        "xml" => xml::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
+        "html" => html::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
+        "sarif" => sarif::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
+        "yaml" => yaml::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
+        "custom" => custom::report(manager, output.writer().as_mut(), sev_level, conf_level, template),
+        "screen" => screen::report(manager, sev_level, conf_level, lines, if is_stdout { None } else { Some(&name) }),
+        _ => unreachable!("format validated against FORMATTER_NAMES/default_format above"),
+    };
+    result.map_err(|e| format!("Unable to output report using '{format}' formatter: {e}"))?;
+
+    if !is_stdout {
+        match format {
+            "csv" => crate::log_info!("csv", "CSV output written to file: {}", name),
+            "json" => crate::log_info!("json", "JSON output written to file: {}", name),
+            "txt" => crate::log_info!("text", "Text output written to file: {}", name),
+            "xml" => crate::log_info!("xml", "XML output written to file: {}", name),
+            "html" => crate::log_info!("html", "HTML output written to file: {}", name),
+            "sarif" => crate::log_info!("sarif", "SARIF output written to file: {}", name),
+            "yaml" => crate::log_info!("yaml", "YAML output written to file: {}", name),
+            "custom" => crate::log_info!("custom", "Result written to file: {}", name),
+            "screen" => {}
+            _ => unreachable!(),
+        }
+    }
+    Ok(())
 }
 
 /// `"screen"` when stdout is a tty, `NO_COLOR` is unset and `TERM != "dumb"`, else `"txt"`.

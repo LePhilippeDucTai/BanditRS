@@ -24,3 +24,8 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
    aussi `try`/`with`/`for`/`while` et les affectations par déballage de tuple. Les fixtures qui dépendent de ce
    comportement (`mark_safe_secure.py`, `mark_safe_insecure.py`) sont hors de la suite fonctionnelle de base
    (profil avec `exclude B308`, cf. PLAN.md M4) ; `mark_safe.py` (suite de base) n'exerce que le cas simple.
+10. Formatter YAML (`pycompat::yaml_emit`) : le pliage à 80 colonnes (`write_plain`/`write_single_quoted`) est
+    reproduit exactement (algorithme de `emitter.py` vérifié empiriquement contre PyYAML 6.0.1), mais les scalaires
+    en style double-quoted (texte avec caractères non-ASCII/de contrôle, rare dans les données de bandit) ne sont
+    **pas** repliés — une seule ligne physique, sans le découpage `\`-continué de PyYAML. Sans impact sur la suite
+    de tests (`tests/formatters.rs` §C.7, valeurs relues, pas de comparaison octet à octet).

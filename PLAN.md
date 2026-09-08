@@ -50,8 +50,8 @@ correspond bit à bit à bandit Python.
 | M3 | `src/core/blacklist.rs` (données + test B001), `src/core/registry.rs` (table des 42 plugins), `src/core/plugin_config.rs` (défauts + `from_config`), `src/core/nosec.rs`, `src/core/docs_utils.rs`, `src/core/test_set.rs` (`TestSet::new`), `src/core/tester.rs` (`Tester::run_tests`), `src/core/config.rs` (défauts + `get_option` ; **chargement fichier YAML/TOML et profils legacy restent stub**) | **Fait** (sauf chargement de fichier de config, voir M7) |
 | M4 | `src/plugins/*.rs` — **42/42 plugins implémentés** (voir docs/spec/plugins.md) ; `django_mark_safe` (B703) a une limitation connue sur `DeepAssignation` (DEVIATIONS.md #9), sans impact sur la suite de base | **Fait** |
 | M5 | `src/core/discover.rs::discover_files`, `src/core/scan.rs::scan_file` (`catch_unwind`, nosec depuis les tokens), `src/core/manager.rs::run_tests` (parallèle via `rayon`) | **Fait** ; `tests/common/mod.rs::check_example`/`check_metrics` implémentés, **78 tests fonctionnels au vert** |
-| M6 | `src/formatters/*.rs` (**stubs** documentés), `src/pycompat/{pyformat,csv,json,yaml_load,yaml_emit,configparser,html,xml,urlquote}.rs` (**stubs** documentés) | **À faire (prochaine étape)** |
-| M7 | `src/cli/{argparse,main}.rs` (**stubs**) ; chargement de `BanditConfig` depuis un fichier YAML/TOML (reste de M3) | À faire |
+| M6 | `src/formatters/*.rs` (csv/custom/html/json/sarif/screen/text/xml/yaml + `mod.rs::output_results`), `src/pycompat/{pyformat,csv,json,yaml_emit,html,xml,urlquote}.rs` | **Fait** (sauf `pycompat::yaml_load`/`configparser`, nécessaires pour M7) ; **11 tests fonctionnels** (`tests/formatters.rs`, §C.7) au vert |
+| M7 | `src/cli/{argparse,main}.rs` (**stubs**) ; chargement de `BanditConfig` depuis un fichier YAML/TOML (reste de M3) ; `src/pycompat/{yaml_load,configparser}.rs` (**stubs**) | À faire (prochaine étape) |
 | M8 | `src/cli/{baseline,config_generator}.rs` (**stubs**) | À faire |
 | M9 | `scripts/diff_against_python.sh` (écrit, à exécuter quand la CLI existe) | À faire |
 | M10 | perf, README, clippy, push | À faire |
