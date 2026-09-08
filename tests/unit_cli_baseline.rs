@@ -107,7 +107,9 @@ fn write_script(dir: &Path, name: &str, content: &str) -> PathBuf {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        let mut perms = std::fs::metadata(&path).expect("script metadata").permissions();
+        let mut perms = std::fs::metadata(&path)
+            .expect("script metadata")
+            .permissions();
         perms.set_mode(0o755);
         std::fs::set_permissions(&path, perms).expect("chmod script");
     }
@@ -152,11 +154,7 @@ fn test_bandit_baseline() {
     // upstream: tests/unit/cli/test_baseline.py `branches` (benign1 -> malicious -> benign2,
     // each branch created from the current HEAD, i.e. the previous branch's tip).
     let branches: [(&str, &[(&str, &str)], i32); 3] = [
-        (
-            "benign1",
-            &[("benign_one.py", benign_contents.as_str())],
-            0,
-        ),
+        ("benign1", &[("benign_one.py", benign_contents.as_str())], 0),
         (
             "malicious",
             &[
