@@ -56,7 +56,8 @@ fn capitalize(s: &str) -> String {
     }
 }
 
-fn output_issue_str(
+/// `_output_issue_str(issue, indent, show_lineno=True, show_code=True, lines=-1)`.
+pub fn output_issue_str(
     issue: &Issue,
     indent: &str,
     show_lineno: bool,
