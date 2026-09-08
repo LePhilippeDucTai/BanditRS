@@ -2,9 +2,7 @@
 //! example file and the issue counts by severity / confidence are compared to
 //! the known-good values (the acceptance specification of the rewrite).
 //!
-//! Counts are `[UNDEFINED, LOW, MEDIUM, HIGH]`. Every test is `#[ignore]`d
-//! until the engine is complete (PLAN.md M3–M5): run with
-//! `cargo test --test functional -- --ignored`.
+//! Counts are `[UNDEFINED, LOW, MEDIUM, HIGH]`.
 
 mod common;
 
@@ -13,7 +11,6 @@ use common::{check_example, check_metrics};
 macro_rules! example_test {
     ($name:ident, $file:literal, $sev:expr, $conf:expr) => {
         #[test]
-        #[ignore = "engine not complete yet (PLAN.md M3-M5)"]
         fn $name() {
             check_example($file, $sev, $conf, false);
         }
@@ -108,20 +105,17 @@ example_test!(test_huggingface_unsafe_download, "huggingface_unsafe_download.py"
 // test_markupsafe_markup_xss_allowed_calls: config markupsafe_xss {allowed_calls: ["bleach.clean"]} -> [0,0,1,0]/[0,0,0,1]
 
 #[test]
-#[ignore = "engine not complete yet (PLAN.md M3-M5)"]
 fn test_ignore_skip() {
     check_example("skip.py", [0, 7, 0, 0], [0, 0, 0, 7], true);
 }
 
 #[test]
-#[ignore = "engine not complete yet (PLAN.md M3-M5)"]
 fn test_metric_gathering() {
     check_metrics("skip.py", &[("nosec", 2), ("loc", 7), ("CONFIDENCE.HIGH", 5), ("SEVERITY.LOW", 5)]);
     check_metrics("imports.py", &[("nosec", 0), ("loc", 4), ("CONFIDENCE.HIGH", 2), ("SEVERITY.LOW", 2)]);
 }
 
 #[test]
-#[ignore = "engine not complete yet (PLAN.md M3-M5)"]
 fn test_multiline_sql_statements_metrics() {
     check_metrics("sql_multiline_statements.py", &[("nosec", 7), ("skipped_tests", 8)]);
 }

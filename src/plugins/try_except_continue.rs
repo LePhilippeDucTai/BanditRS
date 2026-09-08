@@ -1,10 +1,31 @@
 //! Port of `bandit/plugins/try_except_continue.py` — see docs/spec/plugins.md.
 
+use ruff_python_ast::{Expr, Stmt};
+
+use crate::ast::VNode;
+use crate::constants::Rank;
 use crate::core::context::Context;
+use crate::core::issue::{Cwe, IssueDraft};
 use crate::core::plugin_config::PluginConfigs;
 use crate::plugins::PluginResult;
 
-/// TODO(M3/M4): port `try_except_continue` (docs/spec/plugins.md).
-pub fn try_except_continue(_ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginResult {
-    todo!("port bandit.plugins.try_except_continue:try_except_continue")
+/// `try_except_continue` (B112).
+pub fn try_except_continue(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
+    let Some(VNode::ExceptHandler(node)) = ctx.node else { return Ok(None) };
+    if node.body.len() != 1 {
+        return Ok(None);
+    }
+    let check_typed_exception = cfg.try_except_continue.check_typed_exception.clone()?;
+    if !check_typed_exception {
+        if let Some(ty) = &node.type_ {
+            let is_exception = matches!(&**ty, Expr::Name(n) if n.id.as_str() == "Exception");
+            if !is_exception {
+                return Ok(None);
+            }
+        }
+    }
+    if matches!(node.body[0], Stmt::Continue(_)) {
+        return Ok(Some(IssueDraft::new(Rank::Low, Rank::High, Cwe::IMPROPER_CHECK_OF_EXCEPT_COND, "Try, Except, Continue detected.")));
+    }
+    Ok(None)
 }

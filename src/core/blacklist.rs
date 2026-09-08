@@ -2,8 +2,8 @@
 //! `bandit/blacklists/imports.py`) and the builtin `B001` test
 //! (`bandit/core/blacklisting.py`).
 //!
-//! Status: data tables complete (verbatim from upstream). `BlacklistTable`
-//! filtering and the `blacklist()` test are stubs — see PLAN.md (M3).
+//! Status: data tables complete (verbatim from upstream); `BlacklistTable`
+//! filtering and the `blacklist()` test (B001) are implemented.
 //!
 //! Matching rules (`blacklisting.py`):
 //! * `Call` nodes: `name = context.call_function_name_qual`, except
@@ -24,8 +24,11 @@
 
 use std::borrow::Cow;
 
+use ruff_python_ast::{Expr, Stmt};
 use rustc_hash::FxHashMap;
 
+use crate::ast::VNode;
+use crate::ast::literal::{PyErr, PyValue};
 use crate::constants::Rank;
 use crate::core::issue::{Cwe, IssueDraft};
 
@@ -471,6 +474,13 @@ impl BlacklistTable {
         t
     }
 
+    /// Build a table from explicit per-type entries (legacy `profile["blacklist"]`).
+    pub fn from_parts(call: Vec<BlacklistEntry>, import: Vec<BlacklistEntry>, import_from: Vec<BlacklistEntry>) -> BlacklistTable {
+        let mut t = BlacklistTable { call, import, import_from, call_index: FxHashMap::default() };
+        t.rebuild_index();
+        t
+    }
+
     /// Keep only the entries whose id is accepted by `keep`.
     pub fn filtered(&self, keep: impl Fn(&str) -> bool) -> BlacklistTable {
         let mut t = BlacklistTable {
@@ -502,15 +512,81 @@ impl BlacklistTable {
     }
 }
 
+/// `blacklisting.py::blacklist`'s `name` computation for `Call` nodes: `Ok(None)`
+/// mirrors the Python `None` value (never matches any qualname).
+fn call_blacklist_name(ctx: &crate::core::context::Context<'_, '_>) -> Result<Option<String>, PyErr> {
+    let call = ctx.call.expect("blacklist is only called for Call contexts with a call");
+    if let Expr::Name(n) = &*call.func {
+        if n.id.as_str() == "__import__" {
+            return Ok(Some(match call.arguments.args.first() {
+                None => String::new(),
+                Some(Expr::StringLiteral(s)) => s.value.to_str().to_string(),
+                Some(_) => "UNKNOWN".to_string(),
+            }));
+        }
+    }
+    let mut name = ctx.qualname.map(str::to_string);
+    if matches!(name.as_deref(), Some("importlib.import_module") | Some("importlib.__import__")) {
+        name = if ctx.call_args_count().unwrap_or(0) > 0 {
+            ctx.call_args()?.first().and_then(PyValue::as_str).map(str::to_string)
+        } else {
+            match ctx.call_keywords()?.and_then(|k| k.get("name").cloned()) {
+                Some(v) => v.as_str().map(str::to_string),
+                None => return Err(PyErr::key_error("name")),
+            }
+        };
+    }
+    Ok(name)
+}
+
 /// The `B001` test: see the module documentation for the matching rules.
-/// TODO(M3): implement over `Context` (needs `context.node`, `call_args`,
-/// `call_keywords`, alias names of import statements).
 pub fn blacklist(
-    _ctx: &crate::core::context::Context<'_, '_>,
-    _kind: crate::ast::NodeKind,
-    _table: &BlacklistTable,
-) -> Result<Option<IssueDraft>, crate::ast::literal::PyErr> {
-    todo!("M3: port bandit/core/blacklisting.py::blacklist")
+    ctx: &crate::core::context::Context<'_, '_>,
+    kind: crate::ast::NodeKind,
+    table: &BlacklistTable,
+) -> Result<Option<IssueDraft>, PyErr> {
+    use crate::ast::NodeKind;
+    match kind {
+        NodeKind::Call => {
+            let Some(name) = call_blacklist_name(ctx)? else {
+                return Ok(None);
+            };
+            for entry in &table.call {
+                for qn in &entry.qualnames {
+                    if name == qn.as_ref() {
+                        return Ok(Some(entry.report_issue(&name)));
+                    }
+                }
+            }
+            Ok(None)
+        }
+        NodeKind::Import | NodeKind::ImportFrom => {
+            let Some(stmt) = ctx.node.and_then(VNode::as_stmt) else {
+                return Ok(None);
+            };
+            let (names, prefix) = match stmt {
+                Stmt::Import(imp) => (&imp.names, String::new()),
+                Stmt::ImportFrom(imp) => {
+                    let prefix = imp.module.as_ref().map(|m| format!("{}.", m.as_str())).unwrap_or_default();
+                    (&imp.names, prefix)
+                }
+                _ => return Ok(None),
+            };
+            let entries = if kind == NodeKind::Import { &table.import } else { &table.import_from };
+            for entry in entries {
+                for alias in names.iter() {
+                    let full = format!("{prefix}{}", alias.name.as_str());
+                    for qn in &entry.qualnames {
+                        if full.starts_with(qn.as_ref()) {
+                            return Ok(Some(entry.report_issue(alias.name.as_str())));
+                        }
+                    }
+                }
+            }
+            Ok(None)
+        }
+        _ => Ok(None),
+    }
 }
 
 #[cfg(test)]

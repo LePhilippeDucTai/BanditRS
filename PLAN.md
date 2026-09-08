@@ -37,25 +37,28 @@
 
 ## 3. État d'avancement (ce qui est FAIT et VALIDÉ)
 
-`cargo build --all-targets` propre (0 warning), `cargo test` : 39 tests unitaires au vert ; les tests
-d'intégration sont des squelettes `#[ignore]` (78 cas fonctionnels prêts).
+`cargo build --all-targets` propre (0 warning bloquant ; une dizaine d'avertissements clippy mineurs, cf. §6,
+nettoyage prévu en M10), `cargo test` : 39 tests unitaires + **78 tests fonctionnels** (`tests/functional.rs`,
+plus de `#[ignore]`) tous au vert — la table complète des exemples upstream (comptes de sévérité/confiance)
+correspond bit à bit à bandit Python.
 
 | Jalon | Module(s) | État |
 |---|---|---|
 | M0 | `Cargo.toml`, `rust-toolchain.toml`, `src/lib.rs`, `src/log.rs`, `src/constants.rs`, `src/core/issue.rs`, `src/core/metrics.rs`, `src/pycompat/{datetime,fnmatch,splitlines,path,unicode_escape}.rs`, `src/core/utils.rs` | **Fait + tests** |
 | M1 | `src/pycompat/encoding.rs` (PEP 263, BOM, latin-1, ascii, encoding_rs), `src/source/{file,parse}.rs` | **Fait + tests** |
 | M2 | `src/ast/{mod,vnode,children,joined_str,positions,linerange,qualname,literal,walker,trace}.rs`, `src/core/context.rs`, `bandit --dump-walk`, `scripts/dump_walk.py` | **Fait + validé** : trace de parcours identique à bandit Python sur **94/94 exemples et 120/120 fichiers de la stdlib** (avec `BANDITRS_PYTHON_COMPAT=3.11`) |
-| M3 | `src/core/blacklist.rs` (données complètes, test B001 **stub**), `src/core/registry.rs` (table complète des 42 plugins), `src/core/plugin_config.rs` (défauts complets, parsing **stub**), `src/core/nosec.rs` (parsing des commentaires fait, tests), `src/core/docs_utils.rs` (fait + tests), `src/core/test_set.rs` (**stub**), `src/core/tester.rs` (**stub**), `src/plugins/*.rs` (42 **stubs** `todo!()`), `src/core/config.rs` (modèle + `get_option` faits, chargement/legacy **stub**) | En cours |
-| M4 | plugins | À faire |
-| M5 | `src/core/discover.rs` (helpers faits + tests, `discover_files` **stub**), `src/core/scan.rs` (**stub**), `src/core/manager.rs` (modèle + baseline faits, `run_tests` **stub**) | À faire |
-| M6 | `src/formatters/*.rs` (**stubs** documentés), `src/pycompat/{pyformat,csv,json,yaml_load,yaml_emit,configparser,html,xml,urlquote}.rs` (**stubs** documentés) | À faire |
-| M7 | `src/cli/{argparse,main}.rs` (**stubs**) | À faire |
+| M3 | `src/core/blacklist.rs` (données + test B001), `src/core/registry.rs` (table des 42 plugins), `src/core/plugin_config.rs` (défauts + `from_config`), `src/core/nosec.rs`, `src/core/docs_utils.rs`, `src/core/test_set.rs` (`TestSet::new`), `src/core/tester.rs` (`Tester::run_tests`), `src/core/config.rs` (défauts + `get_option` ; **chargement fichier YAML/TOML et profils legacy restent stub**) | **Fait** (sauf chargement de fichier de config, voir M7) |
+| M4 | `src/plugins/*.rs` — **42/42 plugins implémentés** (voir docs/spec/plugins.md) ; `django_mark_safe` (B703) a une limitation connue sur `DeepAssignation` (DEVIATIONS.md #9), sans impact sur la suite de base | **Fait** |
+| M5 | `src/core/discover.rs::discover_files`, `src/core/scan.rs::scan_file` (`catch_unwind`, nosec depuis les tokens), `src/core/manager.rs::run_tests` (parallèle via `rayon`) | **Fait** ; `tests/common/mod.rs::check_example`/`check_metrics` implémentés, **78 tests fonctionnels au vert** |
+| M6 | `src/formatters/*.rs` (**stubs** documentés), `src/pycompat/{pyformat,csv,json,yaml_load,yaml_emit,configparser,html,xml,urlquote}.rs` (**stubs** documentés) | **À faire (prochaine étape)** |
+| M7 | `src/cli/{argparse,main}.rs` (**stubs**) ; chargement de `BanditConfig` depuis un fichier YAML/TOML (reste de M3) | À faire |
 | M8 | `src/cli/{baseline,config_generator}.rs` (**stubs**) | À faire |
 | M9 | `scripts/diff_against_python.sh` (écrit, à exécuter quand la CLI existe) | À faire |
 | M10 | perf, README, clippy, push | À faire |
 
 Chaque stub porte un commentaire de module décrivant précisément ce qu'il doit faire et renvoie au paragraphe
-de spec correspondant. Chercher `todo!(` et `TODO(M` pour la liste exhaustive.
+de spec correspondant. Chercher `todo!(` et `TODO(M` pour la liste exhaustive (restant : formatters M6, CLI M7,
+baseline/config-generator M8, chargement de fichier de config M7).
 
 ## 4. Architecture (rappel) et invariants à respecter
 
@@ -93,39 +96,18 @@ Invariants clés (tous validés par la trace de parcours) :
 
 ## 5. Prochaines étapes détaillées (dans l'ordre)
 
-### M3 — moteur de tests (objectif : `imports.py`, `skip.py`, `nosec.py`, `multiline_statement.py` au vert)
-1. `core/config.rs` : `BanditConfig::new(Some(path))` — YAML via `pycompat::yaml_load` (à écrire : `saphyr-parser`
-   + résolveurs PyYAML 1.1) ou TOML (`toml` crate, `[tool.bandit]`) ; `validate()` ; `convert_legacy_config()`
-   (garder l'inversion `bad_calls`/`bad_imports`) ; `profile(name)`. Tests : `tests/unit/core/test_config.py`.
-2. `core/plugin_config.rs::from_config` : lire chaque section (`config.get_option(key)`) → structs typées
-   (`ListOpt::{Missing,Null,Items}`, bool/int `Result<_, PyErr>`).
-3. `core/test_set.rs::TestSet::new` : `_get_filter` (règles B001), plugins filtrés (ordre registre),
-   `BlacklistTable::builtin().filtered(...)` ou données legacy du profil, `tests[kind]` = plugins puis
-   `TestRef::Blacklist` pour Call/Import/ImportFrom. Tests : `tests/unit/core/test_test_set.py` (registre injectable).
-4. `core/blacklist.rs::blacklist` : règles d'appariement (doc de module). Pour `Import`/`ImportFrom`, itérer
-   `stmt.names` (`context.node.as_stmt()`), `prefix = module + "."` seulement pour `ImportFrom` avec module.
-5. `core/tester.rs::Tester::run_tests` : boucle sur `test_set.get_tests(kind)`, appel plugin/blacklist,
-   décoration de l'`Issue` (`IssueDraft` → `Issue` avec `fname = ctx.file.name`, `source = self.source.clone()`),
-   porte nosec (`nosec.get(draft.lineno)` ∪ `nosec.for_range(ctx.linerange)`), `metrics.nosec`/`skipped_tests`,
-   `Scores::note`. Le nom de test d'un plugin = `PluginDef::func_name` ; pour B001 = `"blacklist"`.
-6. `core/nosec.rs` : déjà fonctionnel ; brancher la construction depuis `parsed.tokens()` (`TokenKind::Comment`,
-   `&text[tok.range()]`, ligne = `file.line_index(tok.start().to_u32())`) dans `scan.rs`.
-7. Premiers plugins : B101, B102, B104, B108, B110, B112 (spec `docs/spec/plugins.md`), B404/B403 via B001.
+M3, M4 et M5 sont **faits** (moteur de tests, 42 plugins, discover/scan/manager) — voir §3 pour le détail et
+DEVIATIONS.md #9 pour la seule limitation connue (`django_mark_safe`/`DeepAssignation`). Restent explicitement
+hors de la suite de base (M4, config spécifique) : `test_asserts`, `test_try_except_*`, `test_markupsafe_*`,
+`test_django_xss_*` (profil `exclude B308`) — nécessitent le chargement de config personnalisée (M7) pour être
+exercés avec des valeurs non-défaut ; `mark_safe_secure.py`/`mark_safe_insecure.py` dépendent en plus de la
+limitation DeepAssignation ci-dessus.
 
-### M4 — tous les plugins (`docs/spec/plugins.md`), puis `tests/functional.rs` complet (retirer les `#[ignore]`)
-Ordre conseillé : injection_shell (B602–B607), general_hardcoded_password (B105–B107), injection_sql (B608 :
-`concat_string` sur la chaîne de `BinOp` via `ctx.ancestors`), insecure_ssl_tls, weak_cryptographic_key,
-crypto_request/request_without_timeout, hashlib, yaml_load/pytorch/huggingface, tarfile, snmp, paramiko/ssh,
-jinja2 (parcours BFS du sous-arbre de l'appel), mako, django_sql_injection, django_xss (le plus complexe :
-`DeepAssignation` sur `parent.body`), markupsafe, logging_config, trojansource (contexte `File`,
-`str_splitlines`, index en caractères). Ajouter les tests à config (`test_asserts`, `test_try_except_*`,
-`test_markupsafe_*`, `test_django_xss_*` avec profil `exclude B308`).
-
-### M5 — manager
-`discover::discover_files` (règles §1.2 de core.md), `scan::scan_file` (pipeline dans la doc de module, `catch_unwind`),
-`Manager::run_tests` (`rayon::par_iter` sur `files_list`, `log::with_buffer` par fichier, fusion dans l'ordre,
-`-` → `<stdin>`, `metrics.insert`, `metrics.aggregate()`), `SourceStore::global().insert` pour les snippets.
-Tests : `test_multiline_code`, `test_nonsense`, `test_metric_gathering`, `test_baseline_filter`, `tests/unit/core/test_manager.py`.
+Note pour la suite : le chargement de `BanditConfig` depuis un fichier (YAML/TOML) et `profile(name)` (legacy)
+sont encore des stubs dans `core/config.rs` (`BanditConfig::new(Some(path))`, `todo!()`) ; nécessaires pour M7
+(`-c`/`-p`) et pour les tests M4 ci-dessus. À faire : YAML via `pycompat::yaml_load` (à écrire : `saphyr-parser`
++ résolveurs PyYAML 1.1) ou TOML (`toml` crate, `[tool.bandit]`) ; `validate()` ; `convert_legacy_config()`
+(garder l'inversion `bad_calls`/`bad_imports`, testée) ; `profile(name)`. Tests : `tests/unit/core/test_config.py`.
 
 ### M6 — formatters (`docs/spec/cli_formatters_tests.md` partie B) : json/txt/screen d'abord (tests runtime), puis
 custom (`pycompat::pyformat`), csv, xml, html (templates verbatim à recopier depuis `bandit/formatters/html.py:171-323`),
@@ -167,8 +149,7 @@ version de doc) ; les écarts restants doivent être expliqués par `DEVIATIONS.
 ## 7. Commandes utiles
 
 ```bash
-cargo build --release && cargo test                       # unités
-cargo test --test functional -- --ignored                 # fonctionnels (une fois M3–M5 faits, retirer les #[ignore])
+cargo build --release && cargo test                       # unités + 78 fonctionnels (tests/functional.rs)
 BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit --dump-walk examples/nosec.py   # trace Rust
 /home/user/.pyenv-bandit/bin/python scripts/dump_walk.py examples/nosec.py           # trace Python
 scripts/diff_against_python.sh examples                   # harnais différentiel complet (après M7)

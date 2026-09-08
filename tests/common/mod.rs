@@ -1,15 +1,13 @@
 //! Helpers shared by the integration tests (port of the `FunctionalTests`
 //! helpers in `tests/functional/test_functional.py`).
-//!
-//! Status: stubs until the manager exists (PLAN.md M5). Expected usage:
-//!
-//! ```ignore
-//! let mut mgr = manager_for(&Profile::default(), BanditConfig::default());
-//! check_example(&mut mgr, "binding.py", [0, 0, 1, 0], [0, 0, 1, 0], false);
-//! ```
 #![allow(dead_code)]
 
 use std::path::PathBuf;
+
+use banditrs::core::config::BanditConfig;
+use banditrs::core::manager::{AggType, Manager};
+use banditrs::core::metrics::Scores;
+use banditrs::core::test_set::TestSet;
 
 /// Absolute path of `examples/<name>` (the fixtures copied from upstream).
 pub fn example_path(name: &str) -> PathBuf {
@@ -19,19 +17,41 @@ pub fn example_path(name: &str) -> PathBuf {
 /// Expected counts per rank, in `RANKING` order (UNDEFINED, LOW, MEDIUM, HIGH).
 pub type Counts = [u64; 4];
 
+/// A manager built from the default configuration and profile (no `-p`, no
+/// `-t`/`-s`), matching `FunctionalTests.setUp`.
+fn manager_for_default() -> Manager {
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let test_set = TestSet::new(&config, &profile);
+    Manager::new(config, AggType::File, test_set)
+}
+
 /// Run bandit on `examples/<name>` and compare the issue counts by severity
-/// and confidence (`check_example`). `ignore_nosec` mirrors the helper's
-/// argument.
-/// TODO(M5): build a `Manager` with the default profile (plus `profile` /
-/// `config` overrides), `discover_files([path], true)`, `run_tests()`, then
-/// derive the counts from `manager.scores` exactly like the Python helper
-/// (`score // RANKING_VALUES[rank]`).
-pub fn check_example(_name: &str, _severity: Counts, _confidence: Counts, _ignore_nosec: bool) {
-    unimplemented!("M5: check_example")
+/// and confidence (`check_example`).
+pub fn check_example(name: &str, severity: Counts, confidence: Counts, ignore_nosec: bool) {
+    let mut mgr = manager_for_default();
+    mgr.ignore_nosec = ignore_nosec;
+    let path = example_path(name).to_string_lossy().into_owned();
+    mgr.discover_files(&[path], true, None);
+    mgr.run_tests();
+
+    let mut total = Scores::default();
+    for s in &mgr.scores {
+        total.add(s);
+    }
+    let counts = total.issue_counts();
+    assert_eq!(counts[0], severity, "severity mismatch for {name}: skipped={:?}", mgr.skipped);
+    assert_eq!(counts[1], confidence, "confidence mismatch for {name}: skipped={:?}", mgr.skipped);
 }
 
 /// `check_metrics`: compare `_totals` entries (`loc`, `nosec`, `skipped_tests`
 /// and optional `SEVERITY.*`/`CONFIDENCE.*` counts).
-pub fn check_metrics(_name: &str, _expect: &[(&str, u64)]) {
-    unimplemented!("M5: check_metrics")
+pub fn check_metrics(name: &str, expect: &[(&str, u64)]) {
+    let mut mgr = manager_for_default();
+    let path = example_path(name).to_string_lossy().into_owned();
+    mgr.discover_files(&[path], true, None);
+    mgr.run_tests();
+    for (label, value) in expect {
+        assert_eq!(mgr.metrics.totals.get(label), Some(*value), "metric {label} mismatch for {name}");
+    }
 }

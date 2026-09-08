@@ -1,8 +1,9 @@
 //! File discovery (port of `BanditManager.discover_files` and helpers). See
-//! docs/spec/core.md §1.2. Status: helpers implemented, `discover_files` stub (M5).
+//! docs/spec/core.md §1.2. Status: implemented.
 
 use std::path::Path;
 
+use crate::core::config::ConfigValue;
 use crate::pycompat::fnmatch::fnmatch;
 use crate::pycompat::path;
 
@@ -58,21 +59,50 @@ pub fn get_files_from_dir(dir: &str, included: &[String], excluded: &[String]) -
 }
 
 /// `discover_files(targets, recursive, excluded_paths)`.
-///
-/// TODO(M5): `excluded_globs = config exclude_dirs (owned copy) + each
-/// comma-separated `excluded_paths` entry (an existing directory becomes
-/// `dir/*`)`; `included = config include or ["*.py"]`; per target: directory
-/// → recurse when `recursive` else
-/// `log_warning!("manager", "Skipping directory ({}), use -r flag to scan contents", t)`;
-/// file → `is_file_included(..., enforce_glob=false)` → `"./" + name`
-/// (`path::join(".", name)`, `-` kept) else excluded. Sort + dedup both lists.
 pub fn discover_files(
-    _targets: &[String],
-    _recursive: bool,
-    _excluded_paths: Option<&str>,
-    _config: &crate::core::config::BanditConfig,
+    targets: &[String],
+    recursive: bool,
+    excluded_paths: Option<&str>,
+    config: &crate::core::config::BanditConfig,
 ) -> Discovered {
-    todo!("M5: discover_files")
+    let as_str_list = |v: Option<&ConfigValue>| -> Option<Vec<String>> {
+        v.and_then(ConfigValue::as_list).map(|l| l.iter().map(ConfigValue::py_str).collect())
+    };
+
+    let mut excluded_globs = as_str_list(config.get_option("exclude_dirs")).unwrap_or_default();
+    if let Some(paths) = excluded_paths {
+        for entry in paths.split(',') {
+            if Path::new(entry).is_dir() {
+                excluded_globs.push(path::join(entry, "*"));
+            } else {
+                excluded_globs.push(entry.to_string());
+            }
+        }
+    }
+    let included = as_str_list(config.get_option("include")).unwrap_or_else(|| vec!["*.py".to_string()]);
+
+    let mut files = Vec::new();
+    let mut excluded = Vec::new();
+    for t in targets {
+        if Path::new(t).is_dir() {
+            if recursive {
+                let (inc, exc) = get_files_from_dir(t, &included, &excluded_globs);
+                files.extend(inc);
+                excluded.extend(exc);
+            } else {
+                crate::log_warning!("manager", "Skipping directory ({}), use -r flag to scan contents", t);
+            }
+        } else if is_file_included(t, &included, &excluded_globs, false) {
+            files.push(if t == "-" { t.clone() } else { path::join(".", t) });
+        } else {
+            excluded.push(t.clone());
+        }
+    }
+    files.sort();
+    files.dedup();
+    excluded.sort();
+    excluded.dedup();
+    Discovered { files, excluded }
 }
 
 #[allow(dead_code)]

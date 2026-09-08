@@ -60,14 +60,11 @@ impl NosecLines {
 
 /// `_parse_nosec_comment(comment)`: `None` when the comment is not a nosec
 /// comment, `Some(empty)` for a blanket nosec, `Some(ids)` otherwise.
-/// TODO(M3): resolve names through the registry (`check_id` / `get_test_id`).
 pub fn parse_nosec_comment(comment: &str) -> Option<FxHashSet<String>> {
     let caps = NOSEC_COMMENT.captures(comment)?;
     let mut ids = FxHashSet::default();
     if let Some(tests) = caps.name("tests") {
         for token in tests.as_str().split(|c: char| c == ',' || c.is_whitespace()).filter(|t| !t.is_empty()) {
-            // TODO(M3): registry lookup; unknown tokens must log
-            // "Test in comment: %s is not a test name or id, ignoring".
             if let Some(id) = crate::core::registry::resolve_test_token(token) {
                 ids.insert(id);
             } else {

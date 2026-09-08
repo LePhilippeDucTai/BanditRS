@@ -1,7 +1,9 @@
 //! The scan manager (port of `bandit/core/manager.py`). See docs/spec/core.md §1.
-//! Status: data model defined; behaviour stubs (M5).
+//! Status: implemented (`run_tests` scans files in parallel with `rayon`).
 
 use std::sync::Arc;
+
+use rayon::prelude::*;
 
 use crate::ast::PyCompat;
 use crate::constants::Rank;
@@ -103,9 +105,66 @@ impl Manager {
     /// `run_tests()`: scan every file (in parallel with rayon, merged in
     /// `files_list` order), handle `-` (stdin → `<stdin>`), collect
     /// results/scores/metrics/skipped, then `metrics.aggregate()`.
-    /// TODO(M5).
     pub fn run_tests(&mut self) {
-        todo!("M5: Manager::run_tests")
+        let mut new_files_list = self.files_list.clone();
+        let stdin_data = if new_files_list.iter().any(|f| f == "-") {
+            use std::io::Read;
+            let mut buf = Vec::new();
+            let _ = std::io::stdin().read_to_end(&mut buf);
+            for f in new_files_list.iter_mut() {
+                if f == "-" {
+                    *f = "<stdin>".to_string();
+                }
+            }
+            Some(buf)
+        } else {
+            None
+        };
+
+        enum Outcome {
+            OsError(String),
+            Scanned(crate::core::scan::FileOutcome),
+        }
+
+        let outcomes: Vec<(String, Outcome)> = new_files_list
+            .par_iter()
+            .map(|fname| {
+                let bytes = if fname == "<stdin>" {
+                    stdin_data.clone().unwrap_or_default()
+                } else {
+                    match std::fs::read(fname) {
+                        Ok(b) => b,
+                        Err(e) => return (fname.clone(), Outcome::OsError(io_error_message(&e))),
+                    }
+                };
+                let outcome = crate::core::scan::scan_file(fname, &bytes, &self.test_set, self.ignore_nosec, self.compat);
+                (fname.clone(), Outcome::Scanned(outcome))
+            })
+            .collect();
+
+        let mut kept_files = Vec::with_capacity(outcomes.len());
+        for (fname, outcome) in outcomes {
+            match outcome {
+                Outcome::OsError(reason) => self.skipped.push((fname, reason)),
+                Outcome::Scanned(outcome) => {
+                    crate::log::flush_entries(&outcome.logs);
+                    self.metrics.insert(&fname, outcome.metrics);
+                    match outcome.skipped {
+                        Some(reason) => self.skipped.push((fname, reason)),
+                        None => {
+                            self.results.extend(outcome.issues);
+                            self.scores.push(outcome.scores);
+                            if let Some(src) = outcome.source {
+                                self.sources.push(src);
+                            }
+                            kept_files.push(fname);
+                        }
+                    }
+                }
+            }
+        }
+        self.files_list = kept_files;
+        self.metrics.aggregate();
     }
 
     /// `populate_baseline(data)`: parse the JSON report; any error →
@@ -148,6 +207,13 @@ impl Manager {
     pub fn get_skipped(&self) -> &[(String, String)] {
         &self.skipped
     }
+}
+
+/// `e.strerror` equivalent: `std::io::Error`'s `Display` appends `(os error N)`;
+/// bandit only reports the OS message itself.
+fn io_error_message(e: &std::io::Error) -> String {
+    let full = e.to_string();
+    full.split(" (os error").next().unwrap_or(&full).to_string()
 }
 
 /// `_compare_baseline_results(baseline, results)`: results not in the baseline.

@@ -7,9 +7,12 @@
 //! is a `KeyError`, a `null` value a `TypeError` when used as a list — the
 //! plugin then returns `Err(PyErr)` and reports nothing.
 //!
-//! Status: defaults complete; parsing from `ConfigValue` is a stub (M3).
+//! Status: defaults and `from_config` parsing are implemented.
+
+use indexmap::IndexMap;
 
 use crate::ast::literal::PyErr;
+use crate::core::config::ConfigValue;
 
 /// A list option with its Python failure states.
 #[derive(Debug, Clone, PartialEq)]
@@ -23,6 +26,17 @@ pub enum ListOpt {
 }
 
 impl ListOpt {
+    /// `config.get(key, [])`: a missing key behaves like the empty-list
+    /// default; an explicit `null` still raises (Python would try to iterate
+    /// `None`).
+    pub fn items_or_empty(&self) -> Result<&[String], PyErr> {
+        match self {
+            ListOpt::Missing => Ok(&[]),
+            ListOpt::Null => Err(PyErr::type_error("'NoneType' object is not iterable")),
+            ListOpt::Items(items) => Ok(items),
+        }
+    }
+
     /// `value in config[key]` with Python error semantics.
     pub fn contains_str(&self, key: &str, value: &str) -> Result<bool, PyErr> {
         match self {
@@ -218,14 +232,105 @@ pub struct PluginConfigs {
     pub markupsafe_xss: MarkupSafeConfig,
 }
 
+/// `config[key]` where `config` is the section map (raises `KeyError` when the
+/// key is absent, `TypeError` when the value is `null` and iterated/searched).
+fn list_opt(map: &IndexMap<String, ConfigValue>, key: &str) -> ListOpt {
+    match map.get(key) {
+        None => ListOpt::Missing,
+        Some(ConfigValue::Null) => ListOpt::Null,
+        Some(v) => ListOpt::Items(v.as_list().map(|l| l.iter().map(ConfigValue::py_str).collect()).unwrap_or_else(|| vec![v.py_str()])),
+    }
+}
+
+/// `config[key]` truthiness (used by `not config["check_typed_exception"]`).
+fn bool_opt(map: &IndexMap<String, ConfigValue>, key: &str) -> Result<bool, PyErr> {
+    match map.get(key) {
+        None => Err(PyErr::key_error(key)),
+        Some(v) => Ok(v.truthy()),
+    }
+}
+
+/// `config[key]` as an integer (`KeyError` when absent).
+fn int_opt(map: &IndexMap<String, ConfigValue>, key: &str) -> Result<i64, PyErr> {
+    match map.get(key) {
+        None => Err(PyErr::key_error(key)),
+        Some(ConfigValue::Int(i)) => Ok(*i),
+        Some(ConfigValue::Float(f)) => Ok(*f as i64),
+        Some(v) => Err(PyErr::type_error(format!("'{}' object cannot be interpreted as an integer", v.py_str()))),
+    }
+}
+
 impl PluginConfigs {
     /// Build from a loaded configuration: each section overrides the
-    /// defaults when present (`BanditTestSet._load_tests`).
-    /// TODO(M3): read `config.get_option(key)` for every section and convert
-    /// `ConfigValue` lists/bools/ints into the typed fields, keeping
-    /// `Missing`/`Null` states.
-    pub fn from_config(_config: &crate::core::config::BanditConfig) -> PluginConfigs {
-        todo!("M3: PluginConfigs::from_config")
+    /// defaults when present (`BanditTestSet._load_tests`). A present section
+    /// entirely replaces the plugin's `gen_config` defaults (no merging), so a
+    /// field missing from a present section reproduces the Python `KeyError`.
+    pub fn from_config(config: &crate::core::config::BanditConfig) -> PluginConfigs {
+        let section = |key: &str| config.get_option(key).and_then(ConfigValue::as_map);
+
+        let shell_injection = match section("shell_injection") {
+            None => ShellInjectionConfig::default(),
+            Some(m) => ShellInjectionConfig {
+                present: true,
+                subprocess: list_opt(m, "subprocess"),
+                shell: list_opt(m, "shell"),
+                no_shell: list_opt(m, "no_shell"),
+            },
+        };
+        let assert_used = match section("assert_used") {
+            None => AssertUsedConfig::default(),
+            Some(m) => AssertUsedConfig { skips: list_opt(m, "skips") },
+        };
+        let hardcoded_tmp_directory = match section("hardcoded_tmp_directory") {
+            None => TmpDirConfig::default(),
+            Some(m) => TmpDirConfig { tmp_dirs: list_opt(m, "tmp_dirs") },
+        };
+        let try_except_pass = match section("try_except_pass") {
+            None => TryExceptConfig::default(),
+            Some(m) => TryExceptConfig { check_typed_exception: bool_opt(m, "check_typed_exception") },
+        };
+        let try_except_continue = match section("try_except_continue") {
+            None => TryExceptConfig::default(),
+            Some(m) => TryExceptConfig { check_typed_exception: bool_opt(m, "check_typed_exception") },
+        };
+        let ssl_with_bad_version = match section("ssl_with_bad_version") {
+            None => SslConfig::default(),
+            Some(m) => SslConfig { bad_protocol_versions: list_opt(m, "bad_protocol_versions") },
+        };
+        let weak_cryptographic_key = match section("weak_cryptographic_key") {
+            None => WeakKeyConfig::default(),
+            Some(m) => WeakKeyConfig {
+                weak_key_size_dsa_high: int_opt(m, "weak_key_size_dsa_high"),
+                weak_key_size_dsa_medium: int_opt(m, "weak_key_size_dsa_medium"),
+                weak_key_size_rsa_high: int_opt(m, "weak_key_size_rsa_high"),
+                weak_key_size_rsa_medium: int_opt(m, "weak_key_size_rsa_medium"),
+                weak_key_size_ec_high: int_opt(m, "weak_key_size_ec_high"),
+                weak_key_size_ec_medium: int_opt(m, "weak_key_size_ec_medium"),
+            },
+        };
+        let markupsafe_xss = match section("markupsafe_xss") {
+            None => MarkupSafeConfig::default(),
+            Some(m) => MarkupSafeConfig {
+                extend_markup_names: match m.get("extend_markup_names") {
+                    None => ListOpt::Items(vec![]),
+                    Some(_) => list_opt(m, "extend_markup_names"),
+                },
+                allowed_calls: match m.get("allowed_calls") {
+                    None => ListOpt::Items(vec![]),
+                    Some(_) => list_opt(m, "allowed_calls"),
+                },
+            },
+        };
+        PluginConfigs {
+            shell_injection,
+            assert_used,
+            hardcoded_tmp_directory,
+            try_except_pass,
+            try_except_continue,
+            ssl_with_bad_version,
+            weak_cryptographic_key,
+            markupsafe_xss,
+        }
     }
 
     /// `gen_config(name)` defaults rendered as JSON-like values, in the

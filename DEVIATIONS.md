@@ -19,3 +19,8 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
    pour la sémantique 3.11).
 8. Tests Python non portables (introspection : `get_path_for_function`, `deepgetattr`, `check_ast_node`,
    `meta_ast`) : remplacés par des équivalents Rust quand ils existent, sinon omis.
+9. `django_mark_safe` (B703) : `DeepAssignation` ne reproduit que les affectations directes en ligne droite
+   (`Assign` vers un `Name` simple dans le corps de la fonction/du module courant). La version Python parcourt
+   aussi `try`/`with`/`for`/`while` et les affectations par déballage de tuple. Les fixtures qui dépendent de ce
+   comportement (`mark_safe_secure.py`, `mark_safe_insecure.py`) sont hors de la suite fonctionnelle de base
+   (profil avec `exclude B308`, cf. PLAN.md M4) ; `mark_safe.py` (suite de base) n'exerce que le cas simple.

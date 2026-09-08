@@ -7,8 +7,10 @@
 //! `Bandit internal error running: ...` and drops the finding).
 //!
 //! The exact detection logic, messages, severities, CWEs and config defaults
-//! of each plugin are specified verbatim in docs/spec/plugins.md. Status:
-//! all bodies are `todo!()` stubs (PLAN.md milestones M3/M4).
+//! of each plugin are specified verbatim in docs/spec/plugins.md. Status: all
+//! 42 plugins are implemented (PLAN.md milestones M3/M4); `django_xss`'s
+//! `DeepAssignation` only covers straight-line assignments (see its module
+//! doc and DEVIATIONS.md).
 
 use crate::ast::literal::PyErr;
 use crate::core::context::Context;
