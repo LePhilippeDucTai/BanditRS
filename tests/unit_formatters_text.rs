@@ -140,7 +140,10 @@ fn test_output_issue() {
                 "{ind}   More Info: {}",
                 banditrs::core::docs_utils::get_url(&i.test_id)
             ),
-            format!("{ind}   Location: {}:{}:{}", i.fname, i.lineno, i.col_offset),
+            format!(
+                "{ind}   Location: {}:{}:{}",
+                i.fname, i.lineno, i.col_offset
+            ),
         ];
         if !code.is_empty() {
             for line in code.split('\n') {

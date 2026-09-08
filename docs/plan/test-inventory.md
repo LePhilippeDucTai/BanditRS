@@ -36,8 +36,8 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/formatters/test_html.py` | `tests/unit_formatters_html.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 3 | 1 | 1 | 1 | 0 | 0 |
 | `tests/unit/formatters/test_json.py` | `tests/unit_formatters_json.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_sarif.py` | `tests/unit_formatters_sarif.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
-| `tests/unit/formatters/test_screen.py` | `tests/unit_formatters_screen.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 0 | 0 | 4 | 0 | 0 |
-| `tests/unit/formatters/test_text.py` | `tests/unit_formatters_text.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 1 | 1 | 2 | 0 | 0 |
+| `tests/unit/formatters/test_screen.py` | `tests/unit_formatters_screen.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 4 | 0 | 0 | 0 | 0 |
+| `tests/unit/formatters/test_text.py` | `tests/unit_formatters_text.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 4 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_xml.py` | `tests/unit_formatters_xml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 0 | 1 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_yaml.py` | `tests/unit_formatters_yaml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 0 | 1 | 0 | 0 | 0 |
 | **Total** | | | **273** | **82** | **5** | **125** | **51** | **10** |
@@ -411,19 +411,19 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `ScreenFormatterTests::test_no_issues` | `test_no_issues` | à porter | rendre `screen::report` testable (sortie vers `impl Write` au lieu de stdout) |
-| `ScreenFormatterTests::test_output_issue` | `test_output_issue` | à porter | idem text + couleurs `COLOR[severity]`/`COLOR["DEFAULT"]` |
-| `ScreenFormatterTests::test_report_baseline` | `test_report_baseline` | à porter |  |
-| `ScreenFormatterTests::test_report_nobaseline` | `test_report_nobaseline` | à porter | en-têtes colorés `header(...)`, blocs exacts |
+| `ScreenFormatterTests::test_no_issues` | `test_no_issues` | porté | `screen::report_to` rend `screen::report` testable (sortie vers `impl Write` au lieu de stdout) |
+| `ScreenFormatterTests::test_output_issue` | `test_output_issue` | porté | idem text (adapté : `SourceFile` réel au lieu du mock de `get_code`) + couleurs `COLOR[severity]`/`COLOR["DEFAULT"]` |
+| `ScreenFormatterTests::test_report_baseline` | `test_report_baseline` | porté | adapté : `results = [a, b1, b2]` (signatures réelles) au lieu du mock de `get_issue_list` |
+| `ScreenFormatterTests::test_report_nobaseline` | `test_report_nobaseline` | porté | en-têtes colorés `header(...)`, blocs exacts |
 
 ## `tests/unit/formatters/test_text.py` → `tests/unit_formatters_text.rs` ([WP-12](wp/WP-12-unit-formatters-text-screen.md))
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
 | `TextFormatterTests::test_no_issues` | `test_no_issues` | porté | ex-`text_report_no_issues` |
-| `TextFormatterTests::test_output_issue` | `test_output_issue` | à porter | exposer `text::output_issue_str(issue, indent, show_lineno, show_code, lines)` ; 3 variantes exactes |
-| `TextFormatterTests::test_report_baseline` | `test_report_baseline` | à porter | candidats indentés de 10 espaces ; issue à >1 candidat sans code ni lineno |
-| `TextFormatterTests::test_report_nobaseline` | `test_report_nobaseline` | partiel | ex-`text_report_with_issue` : ajouter `_totals` forcés (loc 1000, nosec 50, compteurs à 1) et les 20 sous-chaînes exactes |
+| `TextFormatterTests::test_output_issue` | `test_output_issue` | porté | `text::output_issue_str(issue, indent, show_lineno, show_code, lines)` exposé ; 3 variantes exactes (adapté : `SourceFile` réel au lieu du mock de `get_code`) |
+| `TextFormatterTests::test_report_baseline` | `test_report_baseline` | porté | adapté : `results = [a, b1, b2]` (signatures réelles) au lieu du mock de `get_issue_list` ; candidats indentés de 10 espaces |
+| `TextFormatterTests::test_report_nobaseline` | `test_report_nobaseline` | porté | `_totals` forcés (loc 1000, nosec 50, compteurs à 1) et les 20 sous-chaînes exactes |
 
 ## `tests/unit/formatters/test_xml.py` → `tests/unit_formatters_xml.rs` ([WP-13](wp/WP-13-unit-formatters-structured.md))
 
