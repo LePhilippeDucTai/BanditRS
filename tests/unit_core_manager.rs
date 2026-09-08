@@ -248,7 +248,8 @@ fn test_output_results_invalid_format() {
         file,
     };
 
-    let result = formatters::output_results(&mgr, 5, Rank::Low, Rank::Low, &mut output, "invalid", None);
+    let result =
+        formatters::output_results(&mgr, 5, Rank::Low, Rank::Low, &mut output, "invalid", None);
 
     assert!(result.is_ok());
     assert!(path.is_file());
@@ -266,7 +267,8 @@ fn test_output_results_valid_format() {
         file,
     };
 
-    let result = formatters::output_results(&mgr, 5, Rank::Low, Rank::Low, &mut output, "txt", None);
+    let result =
+        formatters::output_results(&mgr, 5, Rank::Low, Rank::Low, &mut output, "txt", None);
 
     assert!(result.is_ok());
     assert!(path.is_file());
@@ -303,7 +305,12 @@ fn test_discover_files_recurse_files() {
     );
     assert_eq!(
         mgr.excluded_files,
-        vec![tmp.path().join("excluded.ww").to_string_lossy().into_owned()]
+        vec![
+            tmp.path()
+                .join("excluded.ww")
+                .to_string_lossy()
+                .into_owned()
+        ]
     );
 }
 
@@ -318,7 +325,7 @@ fn test_discover_files_exclude() {
     let tmp = tempfile::tempdir().unwrap();
     let target = tmp.path().join("thing.py").to_string_lossy().into_owned();
 
-    mgr.discover_files(&[target.clone()], true, Some(target.as_str()));
+    mgr.discover_files(std::slice::from_ref(&target), true, Some(target.as_str()));
 
     assert!(mgr.files_list.is_empty());
     assert_eq!(mgr.excluded_files, vec![target]);
@@ -342,22 +349,30 @@ fn test_discover_files_exclude_dir() {
     let mut mgr = base_manager();
 
     // Exclude dir using a wildcard.
-    mgr.discover_files(&[y_py.clone()], true, Some(&format!("{x_str}/*")));
+    mgr.discover_files(
+        std::slice::from_ref(&y_py),
+        true,
+        Some(&format!("{x_str}/*")),
+    );
     assert!(mgr.files_list.is_empty());
     assert_eq!(mgr.excluded_files, vec![y_py.clone()]);
 
     // Exclude dir without a wildcard (trailing slash).
-    mgr.discover_files(&[y_py.clone()], true, Some(&format!("{x_str}/")));
+    mgr.discover_files(
+        std::slice::from_ref(&y_py),
+        true,
+        Some(&format!("{x_str}/")),
+    );
     assert!(mgr.files_list.is_empty());
     assert_eq!(mgr.excluded_files, vec![y_py.clone()]);
 
     // Exclude dir without wildcard or trailing slash.
-    mgr.discover_files(&[y_py.clone()], true, Some(&x_str));
+    mgr.discover_files(std::slice::from_ref(&y_py), true, Some(&x_str));
     assert!(mgr.files_list.is_empty());
     assert_eq!(mgr.excluded_files, vec![y_py.clone()]);
 
     // Exclude by substring, no prefix or suffix.
-    mgr.discover_files(&[z_py.clone()], true, Some("y"));
+    mgr.discover_files(std::slice::from_ref(&z_py), true, Some("y"));
     assert!(mgr.files_list.is_empty());
     assert_eq!(mgr.excluded_files, vec![z_py]);
 }
@@ -430,10 +445,7 @@ fn test_compare_baseline() {
 
     // issue_c is in results, not in baseline.
     assert_issues_eq(
-        &manager::compare_baseline_results(
-            &[&issue_a, &issue_b],
-            &[&issue_a, &issue_b, &issue_c],
-        ),
+        &manager::compare_baseline_results(&[&issue_a, &issue_b], &[&issue_a, &issue_b, &issue_c]),
         &[&issue_c],
     );
 
