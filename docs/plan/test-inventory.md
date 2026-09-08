@@ -30,7 +30,7 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/core/test_manager.py` | `tests/unit_core_manager.rs` | [WP-06](wp/WP-06-unit-core-manager.md) | 21 | 0 | 0 | 13 | 7 | 1 |
 | `tests/unit/core/test_meta_ast.py` | `—` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 0 | 0 | 0 | 0 | 2 |
 | `tests/unit/core/test_test_set.py` | `tests/unit_core_test_set.rs` | [WP-10](wp/WP-10-unit-core-test-set.md) | 13 | 0 | 0 | 0 | 13 | 0 |
-| `tests/unit/core/test_util.py` | `tests/unit_core_util.rs` | [WP-07](wp/WP-07-unit-core-util.md) | 30 | 0 | 0 | 22 | 4 | 4 |
+| `tests/unit/core/test_util.py` | `tests/unit_core_util.rs` | [WP-07](wp/WP-07-unit-core-util.md) | 30 | 26 | 0 | 0 | 0 | 4 |
 | `tests/unit/formatters/test_csv.py` | `tests/unit_formatters_csv.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 0 | 1 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_custom.py` | `tests/unit_formatters_custom.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_html.py` | `tests/unit_formatters_html.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 3 | 1 | 1 | 1 | 0 | 0 |
@@ -344,33 +344,33 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `UtilTests::test_check_ast_node_bad_node` | `test_check_ast_node_bad_node` | à porter (adapté) | `NodeKind::parse("Derp")` → `None` |
-| `UtilTests::test_check_ast_node_bad_type` | `test_check_ast_node_bad_type` | à porter (adapté) | `NodeKind::parse("walk")` → `None` |
-| `UtilTests::test_check_ast_node_good` | `test_check_ast_node_good` | à porter (adapté) | `NodeKind::parse("Call")` → `Some` |
+| `UtilTests::test_check_ast_node_bad_node` | `test_check_ast_node_bad_node` | porté (adapté) | `NodeKind::parse("Derp")` → `None` |
+| `UtilTests::test_check_ast_node_bad_type` | `test_check_ast_node_bad_type` | porté (adapté) | `NodeKind::parse("walk")` → `None` |
+| `UtilTests::test_check_ast_node_good` | `test_check_ast_node_good` | porté (adapté) | `NodeKind::parse("Call")` → `Some` |
 | `UtilTests::test_deepgetattr` | — | non portable | introspection Python — DEVIATIONS.md #8 |
-| `UtilTests::test_escaped_representation_invalid` | `test_escaped_representation_invalid` | à porter |  |
-| `UtilTests::test_escaped_representation_mixed` | `test_escaped_representation_mixed` | à porter |  |
-| `UtilTests::test_escaped_representation_simple` | `test_escaped_representation_simple` | à porter |  |
-| `UtilTests::test_escaped_representation_valid_not_printable` | `test_escaped_representation_valid_not_printable` | à porter |  |
-| `UtilTests::test_get_call_name1` | `test_get_call_name1` | à porter | `ast::qualname::call_name` sur `a.b.c.d(x,y)` (couvert par `qualname.rs::get_call_name`) |
-| `UtilTests::test_get_call_name2` | `test_get_call_name2` | à porter | alias `a`, `a.b`, `a.b.c.d` |
-| `UtilTests::test_get_call_name3` | `test_get_call_name3` | à porter | `a.list[0](x,y)` → `attr_qual_name` = `""` |
-| `UtilTests::test_get_module_qualname_from_path_abs_missingend` | `test_get_module_qualname_from_path_abs_missingend` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_abs_missingmid` | `test_get_module_qualname_from_path_abs_missingmid` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_abs_syms` | `test_get_module_qualname_from_path_abs_syms` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_abs_typical` | `test_get_module_qualname_from_path_abs_typical` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_dir` | `test_get_module_qualname_from_path_dir` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_invalid_path` | `test_get_module_qualname_from_path_invalid_path` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_rel_missingend` | `test_get_module_qualname_from_path_rel_missingend` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_rel_missingmid` | `test_get_module_qualname_from_path_rel_missingmid` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_rel_syms` | `test_get_module_qualname_from_path_rel_syms` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_rel_typical` | `test_get_module_qualname_from_path_rel_typical` | à porter |  |
-| `UtilTests::test_get_module_qualname_from_path_sys` | `test_get_module_qualname_from_path_sys` | à porter (adapté) | `os.__file__` → `/usr/lib/python3.11/os.py` (skip proprement si absent) → `os` |
-| `UtilTests::test_get_module_qualname_from_path_with_dot` | `test_get_module_qualname_from_path_with_dot` | à porter |  |
-| `UtilTests::test_linerange` | `test_linerange` | à porter | `jinja2_templating.py` `body[8]` → `[11, 12, 13]` |
-| `UtilTests::test_namespace_path_join` | `test_namespace_path_join` | à porter |  |
-| `UtilTests::test_namespace_path_split` | `test_namespace_path_split` | à porter |  |
-| `UtilTests::test_parse_ini_file` | `test_parse_ini_file` | à porter | `pycompat::configparser` (couvert partiellement par ses tests unitaires) |
+| `UtilTests::test_escaped_representation_invalid` | `test_escaped_representation_invalid` | porté |  |
+| `UtilTests::test_escaped_representation_mixed` | `test_escaped_representation_mixed` | porté |  |
+| `UtilTests::test_escaped_representation_simple` | `test_escaped_representation_simple` | porté |  |
+| `UtilTests::test_escaped_representation_valid_not_printable` | `test_escaped_representation_valid_not_printable` | porté |  |
+| `UtilTests::test_get_call_name1` | `test_get_call_name1` | porté | `ast::qualname::call_name` sur `a.b.c.d(x,y)` (couvert par `qualname.rs::get_call_name`) |
+| `UtilTests::test_get_call_name2` | `test_get_call_name2` | porté | alias `a`, `a.b`, `a.b.c.d` |
+| `UtilTests::test_get_call_name3` | `test_get_call_name3` | porté | `a.list[0](x,y)` → `attr_qual_name` = `""` |
+| `UtilTests::test_get_module_qualname_from_path_abs_missingend` | `test_get_module_qualname_from_path_abs_missingend` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_abs_missingmid` | `test_get_module_qualname_from_path_abs_missingmid` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_abs_syms` | `test_get_module_qualname_from_path_abs_syms` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_abs_typical` | `test_get_module_qualname_from_path_abs_typical` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_dir` | `test_get_module_qualname_from_path_dir` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_invalid_path` | `test_get_module_qualname_from_path_invalid_path` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_rel_missingend` | `test_get_module_qualname_from_path_rel_missingend` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_rel_missingmid` | `test_get_module_qualname_from_path_rel_missingmid` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_rel_syms` | `test_get_module_qualname_from_path_rel_syms` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_rel_typical` | `test_get_module_qualname_from_path_rel_typical` | porté |  |
+| `UtilTests::test_get_module_qualname_from_path_sys` | `test_get_module_qualname_from_path_sys` | porté (adapté) | `os.__file__` résolu via `python3 -c "import os; print(os.__file__)"` → `os` |
+| `UtilTests::test_get_module_qualname_from_path_with_dot` | `test_get_module_qualname_from_path_with_dot` | porté |  |
+| `UtilTests::test_linerange` | `test_linerange` | porté | `jinja2_templating.py` `body[8]` → `[11, 12, 13]` |
+| `UtilTests::test_namespace_path_join` | `test_namespace_path_join` | porté |  |
+| `UtilTests::test_namespace_path_split` | `test_namespace_path_split` | porté |  |
+| `UtilTests::test_parse_ini_file` | `test_parse_ini_file` | porté | `pycompat::configparser` (couvert partiellement par ses tests unitaires) |
 | `UtilTests::test_path_for_function` | — | non portable | introspection Python (`get_path_for_function`) — DEVIATIONS.md #8 |
 | `UtilTests::test_path_for_function_no_file` | — | non portable | idem |
 | `UtilTests::test_path_for_function_no_module` | — | non portable | idem |
