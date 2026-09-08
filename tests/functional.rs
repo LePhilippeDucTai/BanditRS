@@ -432,11 +432,43 @@ fn test_asserts() {
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_baseline_filter`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_baseline_filter() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_baseline_filter"
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let mut mgr = manager_with(config, profile);
+
+    let filename = example_path("flask_debug.py").to_string_lossy().into_owned();
+    let json = format!(
+        r#"{{
+          "results": [
+            {{
+              "code": "...",
+              "filename": "{filename}",
+              "issue_confidence": "MEDIUM",
+              "issue_severity": "HIGH",
+              "issue_cwe": {{
+                "id": 94,
+                "link": "https://cwe.mitre.org/data/definitions/94.html"
+              }},
+              "issue_text": "A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+              "line_number": 10,
+              "col_offset": 0,
+              "line_range": [
+                10
+              ],
+              "test_name": "flask_debug_true",
+              "test_id": "B201"
+            }}
+          ]
+        }}
+        "#
     );
+
+    mgr.populate_baseline(&json);
+    mgr.discover_files(&[filename], true, None);
+    mgr.run_tests();
+    assert_eq!(1, mgr.baseline.len());
+    assert!(mgr.get_issue_list(Rank::Low, Rank::Low).is_empty());
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_code_line_numbers`.
