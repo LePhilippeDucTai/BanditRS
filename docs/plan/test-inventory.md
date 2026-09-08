@@ -19,7 +19,7 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/functional/test_baseline.py` | `tests/functional_baseline.rs` | [WP-02](wp/WP-02-functional-baseline.md) | 7 | 0 | 0 | 7 | 0 | 0 |
 | `tests/functional/test_functional.py` | `tests/functional.rs` | [WP-01](wp/WP-01-functional-config-profiles.md) | 79 | 68 | 0 | 11 | 0 | 0 |
 | `tests/functional/test_runtime.py` | `tests/runtime.rs` | — | 9 | 9 | 0 | 0 | 0 | 0 |
-| `tests/unit/cli/test_baseline.py` | `tests/unit_cli_baseline.rs` | [WP-04](wp/WP-04-unit-cli-baseline.md) | 12 | 0 | 0 | 8 | 4 | 0 |
+| `tests/unit/cli/test_baseline.py` | `tests/unit_cli_baseline.rs` | [WP-04](wp/WP-04-unit-cli-baseline.md) | 12 | 8 | 0 | 0 | 4 | 0 |
 | `tests/unit/cli/test_config_generator.py` | `tests/unit_cli_config_generator.rs` | [WP-05](wp/WP-05-unit-cli-config-generator.md) | 6 | 6 | 0 | 0 | 0 | 0 |
 | `tests/unit/cli/test_main.py` | `tests/unit_cli_main.rs` | [WP-03](wp/WP-03-unit-cli-main.md) | 20 | 0 | 0 | 14 | 5 | 1 |
 | `tests/unit/core/test_blacklisting.py` | `tests/unit_core_blacklisting.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 2 | 0 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/formatters/test_text.py` | `tests/unit_formatters_text.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 4 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_xml.py` | `tests/unit_formatters_xml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_yaml.py` | `tests/unit_formatters_yaml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
-| **Total** | | | **273** | **137** | **0** | **79** | **47** | **10** |
+| **Total** | | | **273** | **145** | **0** | **71** | **47** | **10** |
 
 Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partiel) ; 10 tests non portables ; 87 déjà au vert.
 
@@ -158,18 +158,18 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `BanditBaselineToolTests::test_bandit_baseline` | `test_bandit_baseline` | à porter |  |
-| `BanditBaselineToolTests::test_init_logger` | `test_init_logger` | à porter |  |
-| `BanditBaselineToolTests::test_initialize_dirty_repo` | `test_initialize_dirty_repo` | à porter |  |
-| `BanditBaselineToolTests::test_initialize_existing_report_file` | `test_initialize_existing_report_file` | à porter |  |
-| `BanditBaselineToolTests::test_initialize_existing_temp_file` | `test_initialize_existing_temp_file` | à porter |  |
-| `BanditBaselineToolTests::test_initialize_git_command_failure` | `test_initialize_git_command_failure` | à porter (adapté) | `git` absent du PATH → `initialize()` renvoie `None` (`Git command not found`/`Git not available`) |
-| `BanditBaselineToolTests::test_initialize_no_repo` | `test_initialize_no_repo` | à porter |  |
-| `BanditBaselineToolTests::test_initialize_with_output_argument` | `test_initialize_with_output_argument` | à porter (adapté) | `bandit_args = ["-o", "bandit_baseline_result"]` passé explicitement à `initialize(args)` |
-| `BanditBaselineToolTests::test_main_git_command_failure` | `test_main_git_command_failure` | à porter (adapté) | mock `git.Repo.commit` → faux `git` en tête de PATH qui échoue sur `rev-parse`/`log` → rc 2 (`Unable to get current or parent commit`) |
-| `BanditBaselineToolTests::test_main_no_parent_commit` | `test_main_no_parent_commit` | à porter |  |
-| `BanditBaselineToolTests::test_main_non_repo` | `test_main_non_repo` | à porter |  |
-| `BanditBaselineToolTests::test_main_subprocess_error` | `test_main_subprocess_error` | à porter (adapté) | mock `subprocess.check_output` → faux `bandit` en tête de PATH retournant 3 → rc 3 |
+| `BanditBaselineToolTests::test_bandit_baseline` | `test_bandit_baseline` | porté |  |
+| `BanditBaselineToolTests::test_init_logger` | `test_init_logger` | porté |  |
+| `BanditBaselineToolTests::test_initialize_dirty_repo` | `test_initialize_dirty_repo` | porté |  |
+| `BanditBaselineToolTests::test_initialize_existing_report_file` | `test_initialize_existing_report_file` | porté |  |
+| `BanditBaselineToolTests::test_initialize_existing_temp_file` | `test_initialize_existing_temp_file` | porté |  |
+| `BanditBaselineToolTests::test_initialize_git_command_failure` | `test_initialize_git_command_failure` | porté (adapté) | `git` absent du PATH → `initialize()` renvoie `None` (`Git command not found`/`Git not available`) |
+| `BanditBaselineToolTests::test_initialize_no_repo` | `test_initialize_no_repo` | porté |  |
+| `BanditBaselineToolTests::test_initialize_with_output_argument` | `test_initialize_with_output_argument` | porté (adapté) | `bandit_args = ["-o", "bandit_baseline_result"]` passé explicitement à `initialize(args)` |
+| `BanditBaselineToolTests::test_main_git_command_failure` | `test_main_git_command_failure` | porté (adapté) | faux `git` en tête de PATH qui délègue au vrai `git` sauf pour `rev-parse HEAD`, forcé en échec → rc 2 (`Unable to get current or parent commit`) |
+| `BanditBaselineToolTests::test_main_no_parent_commit` | `test_main_no_parent_commit` | porté |  |
+| `BanditBaselineToolTests::test_main_non_repo` | `test_main_non_repo` | porté |  |
+| `BanditBaselineToolTests::test_main_subprocess_error` | `test_main_subprocess_error` | porté (adapté) | `BANDITRS_BANDIT_EXE` pointe un faux `bandit` en tête de PATH retournant 3 → rc 3 |
 
 ## `tests/unit/cli/test_config_generator.py` → `tests/unit_cli_config_generator.rs` ([WP-05](wp/WP-05-unit-cli-config-generator.md))
 
