@@ -19,11 +19,27 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
    pour la sémantique 3.11).
 8. Tests Python non portables (introspection : `get_path_for_function`, `deepgetattr`, `check_ast_node`,
    `meta_ast`) : remplacés par des équivalents Rust quand ils existent, sinon omis.
-9. `django_mark_safe` (B703) : `DeepAssignation` ne reproduit que les affectations directes en ligne droite
-   (`Assign` vers un `Name` simple dans le corps de la fonction/du module courant). La version Python parcourt
-   aussi `try`/`with`/`for`/`while` et les affectations par déballage de tuple. Les fixtures qui dépendent de ce
-   comportement (`mark_safe_secure.py`, `mark_safe_insecure.py`) sont hors de la suite fonctionnelle de base
-   (profil avec `exclude B308`, cf. PLAN.md M4) ; `mark_safe.py` (suite de base) n'exerce que le cas simple.
+9. `django_mark_safe` (B703) : `DeepAssignation` est désormais porté intégralement — `try`/`with`/`for`/`while`/
+   `ExceptHandler` et le déballage de tuple (`a, b = ...`) sont tous parcourus, comme côté Python. La limitation
+   d'origine (affectations directes en ligne droite seulement) n'existe plus. Il subsiste deux divergences,
+   volontaires, où BanditRS est plus strict que Python parce qu'il ne reproduit pas deux bugs de
+   `django_xss.py` :
+   - Cas d'une fonction imbriquée qui prend la variable en paramètre puis la réaffecte dans son corps :
+     `is_assigned`, branche `FunctionDef`, fait `for name in node.args.args: if isinstance(name, ast.Name):
+     ... return assigned` — or `args.args` contient des `ast.arg`, jamais des `ast.Name` ; la condition est
+     donc **toujours fausse** et Python ne court-circuite jamais sur un paramètre de fonction imbriquée : il
+     descend systématiquement dans le corps de la fonction, y trouve l'affectation censée être « sûre » et ne
+     remonte pas d'issue (0 B703). BanditRS teste réellement l'appartenance à `parameters.args` (`is_param`) et
+     court-circuite correctement, donc considère la variable non résolue et remonte l'issue (1 B703).
+   - Cas d'un déballage de tuple imbriqué (`a, (b, c) = ...`) : côté Python, `is_assigned` fait
+     `for name in target.elts: if name.id == ...` sans vérifier que chaque élément est un `ast.Name` ; un
+     élément qui est lui-même un `ast.Tuple` n'a pas d'attribut `.id`, ce qui lève une `AttributeError` — avalée
+     par le testeur (`bandit/core/tester.py`), qui journalise l'exception et n'émet aucune issue pour ce nœud
+     (0 B703). BanditRS traite un élément non-`Name` de façon défensive (retourne « non assigné ») au lieu de
+     paniquer, et l'analyse se poursuit normalement jusqu'à remonter l'issue (1 B703).
+   Aucun test de la suite ni aucune fixture (`mark_safe.py`, `mark_safe_insecure.py`, `mark_safe_secure.py`) n'exerce
+   ces deux cas ; ils ne sont visibles qu'en construisant un fichier ad hoc et en comparant à l'exécutable Python
+   de référence.
 10. Formatter YAML (`pycompat::yaml_emit`) : le pliage à 80 colonnes (`write_plain`/`write_single_quoted`) est
     reproduit exactement (algorithme de `emitter.py` vérifié empiriquement contre PyYAML 6.0.1), mais les scalaires
     en style double-quoted (texte avec caractères non-ASCII/de contrôle, rare dans les données de bandit) ne sont

@@ -6,7 +6,15 @@
 
 mod common;
 
-use common::{check_example, check_metrics};
+use indexmap::IndexSet;
+
+use banditrs::constants::Rank;
+use banditrs::core::config::{BanditConfig, ConfigValue, Profile};
+
+use common::{
+    check_example, check_example_with, check_metrics, config_map, config_str_list,
+    config_with_section, example_path, manager_with,
+};
 
 macro_rules! example_test {
     ($name:ident, $file:literal, $sev:expr, $conf:expr) => {
@@ -391,100 +399,257 @@ fn test_multiline_sql_statements_metrics() {
 // --- Ports pending (WP-01, docs/plan/wp/WP-01-functional-config-profiles.md) ---
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_asserts`.
+///
+/// Adapted: Python mutates `test._config` on the already-built `assert_used`
+/// plugin instance directly; we get the same effect by building a fresh
+/// manager from a config carrying the `assert_used` section, since
+/// `TestSet::new` reads it through `PluginConfigs::from_config` — same
+/// input, same output.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_asserts() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_asserts"
+    let profile = BanditConfig::default().default_profile();
+
+    let config = config_with_section(
+        "assert_used",
+        config_map(vec![("skips", config_str_list(&[]))]),
     );
+    let mut mgr = manager_with(config, profile.clone());
+    check_example_with(&mut mgr, "assert.py", [0, 1, 0, 0], [0, 0, 0, 1]);
+
+    let config = config_with_section(
+        "assert_used",
+        config_map(vec![("skips", config_str_list(&["*assert.py"]))]),
+    );
+    let mut mgr = manager_with(config, profile.clone());
+    check_example_with(&mut mgr, "assert.py", [0, 0, 0, 0], [0, 0, 0, 0]);
+
+    // Section present but empty: `config.get("skips", [])` still defaults to
+    // `[]`, same result as the first case.
+    let config = config_with_section("assert_used", config_map(vec![]));
+    let mut mgr = manager_with(config, profile);
+    check_example_with(&mut mgr, "assert.py", [0, 1, 0, 0], [0, 0, 0, 1]);
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_baseline_filter`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_baseline_filter() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_baseline_filter"
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let mut mgr = manager_with(config, profile);
+
+    let filename = example_path("flask_debug.py")
+        .to_string_lossy()
+        .into_owned();
+    let json = format!(
+        r#"{{
+          "results": [
+            {{
+              "code": "...",
+              "filename": "{filename}",
+              "issue_confidence": "MEDIUM",
+              "issue_severity": "HIGH",
+              "issue_cwe": {{
+                "id": 94,
+                "link": "https://cwe.mitre.org/data/definitions/94.html"
+              }},
+              "issue_text": "A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+              "line_number": 10,
+              "col_offset": 0,
+              "line_range": [
+                10
+              ],
+              "test_name": "flask_debug_true",
+              "test_id": "B201"
+            }}
+          ]
+        }}
+        "#
     );
+
+    mgr.populate_baseline(&json);
+    mgr.discover_files(&[filename], true, None);
+    mgr.run_tests();
+    assert_eq!(1, mgr.baseline.len());
+    assert!(mgr.get_issue_list(Rank::Low, Rank::Low).is_empty());
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_code_line_numbers`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_code_line_numbers() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_code_line_numbers"
-    );
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let mut mgr = manager_with(config, profile);
+    let path = example_path("binding.py").to_string_lossy().into_owned();
+    mgr.discover_files(&[path], true, None);
+    mgr.run_tests();
+
+    let issues = mgr.get_issue_list(Rank::Low, Rank::Low);
+    let issues: Vec<_> = issues.issues().collect();
+    // `issues[0].get_code()`: Python's default `max_lines` is 3.
+    let code = issues[0].get_code(3, false);
+    let code_lines: Vec<&str> = code.lines().collect();
+    let lineno = issues[0].lineno;
+    // Python compares the first two characters of `"%i " % n`.
+    assert_eq!(&format!("{} ", lineno - 1)[..2], &code_lines[0][..2]);
+    assert_eq!(&format!("{lineno} ")[..2], &code_lines[1][..2]);
+    assert_eq!(&format!("{} ", lineno + 1)[..2], &code_lines[2][..2]);
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_django_xss_insecure`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_django_xss_insecure() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_django_xss_insecure"
+    let profile = Profile {
+        exclude: IndexSet::from(["B308".to_string()]),
+        ..Default::default()
+    };
+    let mut mgr = manager_with(BanditConfig::default(), profile);
+    check_example_with(
+        &mut mgr,
+        "mark_safe_insecure.py",
+        [0, 0, 29, 0],
+        [0, 0, 0, 29],
     );
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_django_xss_secure`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_django_xss_secure() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_django_xss_secure"
-    );
+    let profile = Profile {
+        exclude: IndexSet::from(["B308".to_string()]),
+        ..Default::default()
+    };
+    let mut mgr = manager_with(BanditConfig::default(), profile);
+    check_example_with(&mut mgr, "mark_safe_secure.py", [0, 0, 0, 0], [0, 0, 0, 0]);
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_allowed_calls`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_markupsafe_markup_xss_allowed_calls() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_allowed_calls"
+    let profile = BanditConfig::default().default_profile();
+    let config = config_with_section(
+        "markupsafe_xss",
+        config_map(vec![("allowed_calls", config_str_list(&["bleach.clean"]))]),
+    );
+    let mut mgr = manager_with(config, profile);
+    check_example_with(
+        &mut mgr,
+        "markupsafe_markup_xss_allowed_calls.py",
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
     );
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_extend_markup_names`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_markupsafe_markup_xss_extend_markup_names() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_extend_markup_names"
+    let profile = BanditConfig::default().default_profile();
+    let config = config_with_section(
+        "markupsafe_xss",
+        config_map(vec![(
+            "extend_markup_names",
+            config_str_list(&["webhelpers.html.literal"]),
+        )]),
+    );
+    let mut mgr = manager_with(config, profile);
+    check_example_with(
+        &mut mgr,
+        "markupsafe_markup_xss_extend_markup_names.py",
+        [0, 0, 2, 0],
+        [0, 0, 0, 2],
     );
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_multiline_code`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_multiline_code() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_multiline_code"
-    );
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let mut mgr = manager_with(config, profile);
+    let path = example_path("multiline_statement.py")
+        .to_string_lossy()
+        .into_owned();
+    mgr.discover_files(&[path], true, None);
+    mgr.run_tests();
+    assert_eq!(0, mgr.skipped.len());
+    assert_eq!(1, mgr.files_list.len());
+    assert!(mgr.files_list[0].ends_with("multiline_statement.py"));
+
+    let issues = mgr.get_issue_list(Rank::Low, Rank::Low);
+    assert_eq!(3, issues.len());
+    let issues: Vec<_> = issues.issues().collect();
+    assert!(issues[0].fname.ends_with("examples/multiline_statement.py"));
+    assert_eq!(1, issues[0].lineno);
+    assert_eq!(vec![1], issues[0].linerange.to_vec());
+    // `issues[N].get_code()`: Python's default `max_lines` is 3.
+    assert!(issues[0].get_code(3, false).contains("subprocess"));
+    assert_eq!(5, issues[1].lineno);
+    assert_eq!(vec![3, 4, 5, 6], issues[1].linerange.to_vec());
+    assert!(issues[1].get_code(3, false).contains("shell=True"));
+    assert_eq!(11, issues[2].lineno);
+    assert_eq!(vec![8, 9, 10, 11, 12, 13], issues[2].linerange.to_vec());
+    assert!(issues[2].get_code(3, false).contains("shell=True"));
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_nonsense`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_nonsense() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_nonsense"
-    );
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let mut mgr = manager_with(config, profile);
+    let path = example_path("nonsense.py").to_string_lossy().into_owned();
+    mgr.discover_files(&[path], true, None);
+    mgr.run_tests();
+    assert_eq!(1, mgr.skipped.len());
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_try_except_continue`.
+///
+/// Adapted like `test_asserts`: config sections instead of poking `_config`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_try_except_continue() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_try_except_continue"
+    let profile = BanditConfig::default().default_profile();
+
+    let config = config_with_section(
+        "try_except_continue",
+        config_map(vec![("check_typed_exception", ConfigValue::Bool(true))]),
+    );
+    let mut mgr = manager_with(config, profile.clone());
+    check_example_with(
+        &mut mgr,
+        "try_except_continue.py",
+        [0, 3, 0, 0],
+        [0, 0, 0, 3],
+    );
+
+    let config = config_with_section(
+        "try_except_continue",
+        config_map(vec![("check_typed_exception", ConfigValue::Bool(false))]),
+    );
+    let mut mgr = manager_with(config, profile);
+    check_example_with(
+        &mut mgr,
+        "try_except_continue.py",
+        [0, 2, 0, 0],
+        [0, 0, 0, 2],
     );
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_try_except_pass`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_try_except_pass() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_try_except_pass"
+    let profile = BanditConfig::default().default_profile();
+
+    let config = config_with_section(
+        "try_except_pass",
+        config_map(vec![("check_typed_exception", ConfigValue::Bool(true))]),
     );
+    let mut mgr = manager_with(config, profile.clone());
+    check_example_with(&mut mgr, "try_except_pass.py", [0, 3, 0, 0], [0, 0, 0, 3]);
+
+    let config = config_with_section(
+        "try_except_pass",
+        config_map(vec![("check_typed_exception", ConfigValue::Bool(false))]),
+    );
+    let mut mgr = manager_with(config, profile);
+    check_example_with(&mut mgr, "try_except_pass.py", [0, 2, 0, 0], [0, 0, 0, 2]);
 }
