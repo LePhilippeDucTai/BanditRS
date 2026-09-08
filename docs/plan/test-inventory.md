@@ -27,7 +27,7 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/core/test_context.py` | `tests/unit_core_context.rs` | [WP-09](wp/WP-09-unit-core-context.md) | 19 | 0 | 0 | 0 | 17 | 2 |
 | `tests/unit/core/test_docs_util.py` | `tests/unit_core_docs_util.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 3 | 3 | 0 | 0 | 0 | 0 |
 | `tests/unit/core/test_issue.py` | `tests/unit_core_issue.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 7 | 6 | 0 | 0 | 1 | 0 |
-| `tests/unit/core/test_manager.py` | `tests/unit_core_manager.rs` | [WP-06](wp/WP-06-unit-core-manager.md) | 21 | 0 | 0 | 13 | 7 | 1 |
+| `tests/unit/core/test_manager.py` | `tests/unit_core_manager.rs` | [WP-06](wp/WP-06-unit-core-manager.md) | 21 | 13 | 0 | 0 | 7 | 1 |
 | `tests/unit/core/test_meta_ast.py` | `—` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 0 | 0 | 0 | 0 | 2 |
 | `tests/unit/core/test_test_set.py` | `tests/unit_core_test_set.rs` | [WP-10](wp/WP-10-unit-core-test-set.md) | 13 | 0 | 0 | 0 | 13 | 0 |
 | `tests/unit/core/test_util.py` | `tests/unit_core_util.rs` | [WP-07](wp/WP-07-unit-core-util.md) | 30 | 26 | 0 | 0 | 0 | 4 |
@@ -40,7 +40,7 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/formatters/test_text.py` | `tests/unit_formatters_text.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 4 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_xml.py` | `tests/unit_formatters_xml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_yaml.py` | `tests/unit_formatters_yaml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
-| **Total** | | | **273** | **137** | **0** | **79** | **47** | **10** |
+| **Total** | | | **273** | **150** | **0** | **66** | **47** | **10** |
 
 Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partiel) ; 10 tests non portables ; 87 déjà au vert.
 
@@ -293,26 +293,26 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `ManagerTests::test_compare_baseline` | `test_compare_baseline` | à porter | déjà couvert par `manager.rs::baseline_helpers` ; porter le miroir |
-| `ManagerTests::test_create_manager` | `test_create_manager` | à porter |  |
-| `ManagerTests::test_create_manager_with_profile` | `test_create_manager_with_profile` | à porter |  |
-| `ManagerTests::test_discover_files_exclude` | `test_discover_files_exclude` | à porter (adapté) | mock `_is_file_included=False` → fichier réel exclu par `-x` |
-| `ManagerTests::test_discover_files_exclude_cmdline` | `test_discover_files_exclude_cmdline` | à porter (adapté) | `assert_called_with` → vérifier `excluded_files == [a, b]` et `c` traité |
-| `ManagerTests::test_discover_files_exclude_dir` | `test_discover_files_exclude_dir` | à porter (adapté) | 4 formes d'exclusion `./x/*`, `./x/`, `./x`, `y` sur une arborescence réelle |
-| `ManagerTests::test_discover_files_exclude_glob` | `test_discover_files_exclude_glob` | à porter |  |
-| `ManagerTests::test_discover_files_include` | `test_discover_files_include` | à porter (adapté) | fichier réel `thing` (sans extension) → `enforce_glob=False` → `./thing` inclus |
-| `ManagerTests::test_discover_files_recurse_files` | `test_discover_files_recurse_files` | à porter (adapté) | mock `_get_files_from_dir` → répertoire réel contenant `files.py` |
-| `ManagerTests::test_discover_files_recurse_skip` | `test_discover_files_recurse_skip` | à porter (adapté) | mock `isdir` → vrai répertoire temporaire |
-| `ManagerTests::test_find_candidate_matches` | `test_find_candidate_matches` | à porter | idem |
-| `ManagerTests::test_get_files_from_dir` | `test_get_files_from_dir` | à porter (adapté) | mock `os.walk` → vrai tmpdir `/a/{a.py,b.py,c.ww}` |
-| `ManagerTests::test_is_file_included` | `test_is_file_included` | à porter | idem (6 cas a–f) |
-| `ManagerTests::test_matches_globlist` | `test_matches_globlist` | à porter | déjà couvert par `src/core/discover.rs::glob_list_and_inclusion` ; porter quand même le test miroir |
-| `ManagerTests::test_output_results_invalid_format` | `test_output_results_invalid_format` | à porter |  |
-| `ManagerTests::test_output_results_valid_format` | `test_output_results_valid_format` | à porter |  |
-| `ManagerTests::test_populate_baseline_invalid_json` | `test_populate_baseline_invalid_json` | à porter | `log::with_buffer` pour capturer le warning |
-| `ManagerTests::test_populate_baseline_success` | `test_populate_baseline_success` | à porter |  |
-| `ManagerTests::test_results_count` | `test_results_count` | à porter |  |
-| `ManagerTests::test_run_tests_ioerror` | `test_run_tests_ioerror` | à porter |  |
+| `ManagerTests::test_compare_baseline` | `test_compare_baseline` | porté | déjà couvert par `manager.rs::baseline_helpers` ; miroir porté |
+| `ManagerTests::test_create_manager` | `test_create_manager` | porté |  |
+| `ManagerTests::test_create_manager_with_profile` | `test_create_manager_with_profile` | porté |  |
+| `ManagerTests::test_discover_files_exclude` | `test_discover_files_exclude` | adapté | mock `_is_file_included=False` → fichier temporaire réel exclu par son propre chemin |
+| `ManagerTests::test_discover_files_exclude_cmdline` | `test_discover_files_exclude_cmdline` | adapté | `assert_called_with` → `is_file_included` réelle (non mockée) exécutée ; `excluded_files == [a, b]`, `files_list == [./c]` |
+| `ManagerTests::test_discover_files_exclude_dir` | `test_discover_files_exclude_dir` | adapté | 4 formes d'exclusion `<tmp>/x/*`, `<tmp>/x/`, `<tmp>/x`, `y` sur une arborescence réelle `<tmp>/x/y.py` + `<tmp>/x/y/z.py` |
+| `ManagerTests::test_discover_files_exclude_glob` | `test_discover_files_exclude_glob` | porté |  |
+| `ManagerTests::test_discover_files_include` | `test_discover_files_include` | adapté | fichier réel `thing` (sans extension) → `enforce_glob=False` → `./thing` inclus |
+| `ManagerTests::test_discover_files_recurse_files` | `test_discover_files_recurse_files` | adapté | mock `_get_files_from_dir` → répertoire temporaire réel contenant `files.py`/`excluded.ww` |
+| `ManagerTests::test_discover_files_recurse_skip` | `test_discover_files_recurse_skip` | adapté | mock `isdir` → vrai répertoire temporaire |
+| `ManagerTests::test_find_candidate_matches` | `test_find_candidate_matches` | porté | idem |
+| `ManagerTests::test_get_files_from_dir` | `test_get_files_from_dir` | adapté | mock `os.walk` → vrai tmpdir `/a/{a.py,b.py,c.ww}` |
+| `ManagerTests::test_is_file_included` | `test_is_file_included` | porté | idem (6 cas a–f) |
+| `ManagerTests::test_matches_globlist` | `test_matches_globlist` | porté | déjà couvert par `src/core/discover.rs::glob_list_and_inclusion` ; miroir porté |
+| `ManagerTests::test_output_results_invalid_format` | `test_output_results_invalid_format` | porté |  |
+| `ManagerTests::test_output_results_valid_format` | `test_output_results_valid_format` | porté |  |
+| `ManagerTests::test_populate_baseline_invalid_json` | `test_populate_baseline_invalid_json` | porté | `log::with_buffer` pour capturer le warning |
+| `ManagerTests::test_populate_baseline_success` | `test_populate_baseline_success` | porté |  |
+| `ManagerTests::test_results_count` | `test_results_count` | porté |  |
+| `ManagerTests::test_run_tests_ioerror` | `test_run_tests_ioerror` | porté |  |
 | `ManagerTests::test_run_tests_keyboardinterrupt` | — | non portable | `KeyboardInterrupt` (SIGINT) → non portable ; comportement Rust = code de sortie 130 par défaut |
 
 ## `tests/unit/core/test_meta_ast.py` → `—` ([WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md))
