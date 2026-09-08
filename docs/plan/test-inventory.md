@@ -60,20 +60,20 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `FunctionalTests::test_asserts` | `test_asserts` | à porter | 3 configs `assert_used` (`skips: []`, `skips: ['*assert.py']`, `{}`) via `BanditConfig.raw` |
-| `FunctionalTests::test_baseline_filter` | `test_baseline_filter` | à porter | `populate_baseline` JSON B201 → `get_issue_list()` vide |
+| `FunctionalTests::test_asserts` | `test_asserts` | porté | 3 configs `assert_used` (`skips: []`, `skips: ['*assert.py']`, `{}`) via `BanditConfig.raw` |
+| `FunctionalTests::test_baseline_filter` | `test_baseline_filter` | porté | `populate_baseline` JSON B201 → `get_issue_list()` vide |
 | `FunctionalTests::test_binding` | `test_binding` | porté |  |
 | `FunctionalTests::test_blacklist_pycrypto` | `test_blacklist_pycrypto` | porté |  |
 | `FunctionalTests::test_blacklist_pyghmi` | `test_blacklist_pyghmi` | porté |  |
 | `FunctionalTests::test_cipher_modes` | `test_cipher_modes` | porté |  |
 | `FunctionalTests::test_ciphers` | `test_ciphers` | porté |  |
-| `FunctionalTests::test_code_line_numbers` | `test_code_line_numbers` | à porter | préfixes de lignes de `get_code()` sur `binding.py` |
+| `FunctionalTests::test_code_line_numbers` | `test_code_line_numbers` | porté | préfixes de lignes de `get_code()` sur `binding.py` |
 | `FunctionalTests::test_crypto_md5` | `test_crypto_md5` | porté |  |
 | `FunctionalTests::test_dill` | `test_dill` | porté |  |
 | `FunctionalTests::test_django_sql_injection` | `test_django_sql_injection` | porté |  |
 | `FunctionalTests::test_django_sql_injection_raw` | `test_django_sql_injection_raw` | porté |  |
-| `FunctionalTests::test_django_xss_insecure` | `test_django_xss_insecure` | à porter | profil `exclude: [B308]` ; dépend de DEVIATIONS.md #9 (DeepAssignation) — à implémenter complètement |
-| `FunctionalTests::test_django_xss_secure` | `test_django_xss_secure` | à porter | profil `exclude: [B308]` → `TestSet` construit avec ce profil |
+| `FunctionalTests::test_django_xss_insecure` | `test_django_xss_insecure` | porté | profil `exclude: [B308]` ; `DeepAssignation` complet (DEVIATIONS.md #9 supprimé) |
+| `FunctionalTests::test_django_xss_secure` | `test_django_xss_secure` | porté | profil `exclude: [B308]` → `TestSet` construit avec ce profil |
 | `FunctionalTests::test_eval` | `test_eval` | porté |  |
 | `FunctionalTests::test_exec` | `test_exec` | porté |  |
 | `FunctionalTests::test_flask_debug_true` | `test_flask_debug_true` | porté |  |
@@ -95,14 +95,14 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 | `FunctionalTests::test_mako_templating` | `test_mako_templating` | porté |  |
 | `FunctionalTests::test_mark_safe` | `test_mark_safe` | porté |  |
 | `FunctionalTests::test_markupsafe_markup_xss` | `test_markupsafe_markup_xss` | porté |  |
-| `FunctionalTests::test_markupsafe_markup_xss_allowed_calls` | `test_markupsafe_markup_xss_allowed_calls` | à porter | config `markupsafe_xss.allowed_calls` |
-| `FunctionalTests::test_markupsafe_markup_xss_extend_markup_names` | `test_markupsafe_markup_xss_extend_markup_names` | à porter | config `markupsafe_xss.extend_markup_names` |
+| `FunctionalTests::test_markupsafe_markup_xss_allowed_calls` | `test_markupsafe_markup_xss_allowed_calls` | porté | config `markupsafe_xss.allowed_calls` |
+| `FunctionalTests::test_markupsafe_markup_xss_extend_markup_names` | `test_markupsafe_markup_xss_extend_markup_names` | porté | config `markupsafe_xss.extend_markup_names` |
 | `FunctionalTests::test_metric_gathering` | `test_metric_gathering` | porté |  |
 | `FunctionalTests::test_mktemp` | `test_mktemp` | porté |  |
-| `FunctionalTests::test_multiline_code` | `test_multiline_code` | à porter | lineno/linerange/get_code des 3 issues de `multiline_statement.py` |
+| `FunctionalTests::test_multiline_code` | `test_multiline_code` | porté | lineno/linerange/get_code des 3 issues de `multiline_statement.py` |
 | `FunctionalTests::test_multiline_sql_statements` | `test_multiline_sql_statements + test_multiline_sql_statements_metrics` | porté |  |
 | `FunctionalTests::test_no_blacklist_pycryptodome` | `test_no_blacklist_pycryptodome` | porté |  |
-| `FunctionalTests::test_nonsense` | `test_nonsense` | à porter | 1 fichier dans `skipped` (syntax error) |
+| `FunctionalTests::test_nonsense` | `test_nonsense` | porté | 1 fichier dans `skipped` (syntax error) |
 | `FunctionalTests::test_nosec` | `test_nosec` | porté |  |
 | `FunctionalTests::test_okay` | `test_okay` | porté |  |
 | `FunctionalTests::test_os_chmod` | `test_os_chmod` | porté |  |
@@ -131,8 +131,8 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 | `FunctionalTests::test_telnet_usage` | `test_telnet_usage` | porté |  |
 | `FunctionalTests::test_trojansource` | `test_trojansource` | porté |  |
 | `FunctionalTests::test_trojansource_latin1` | `test_trojansource_latin1` | porté |  |
-| `FunctionalTests::test_try_except_continue` | `test_try_except_continue` | à porter | `check_typed_exception` True/False via config |
-| `FunctionalTests::test_try_except_pass` | `test_try_except_pass` | à porter | `check_typed_exception` True/False via config |
+| `FunctionalTests::test_try_except_continue` | `test_try_except_continue` | porté | `check_typed_exception` True/False via config |
+| `FunctionalTests::test_try_except_pass` | `test_try_except_pass` | porté | `check_typed_exception` True/False via config |
 | `FunctionalTests::test_unverified_context` | `test_unverified_context` | porté |  |
 | `FunctionalTests::test_urlopen` | `test_urlopen` | porté |  |
 | `FunctionalTests::test_weak_cryptographic_key` | `test_weak_cryptographic_key` | porté |  |

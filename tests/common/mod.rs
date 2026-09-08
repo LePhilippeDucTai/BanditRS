@@ -94,7 +94,12 @@ pub fn config_map(entries: Vec<(&str, ConfigValue)>) -> ConfigValue {
 
 /// A `ConfigValue::List` of strings.
 pub fn config_str_list(items: &[&str]) -> ConfigValue {
-    ConfigValue::List(items.iter().map(|s| ConfigValue::Str(s.to_string())).collect())
+    ConfigValue::List(
+        items
+            .iter()
+            .map(|s| ConfigValue::Str(s.to_string()))
+            .collect(),
+    )
 }
 
 /// `check_example` on a manager the caller built (`manager_with`): same

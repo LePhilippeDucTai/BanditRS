@@ -11,9 +11,7 @@
 
 use std::collections::VecDeque;
 
-use ruff_python_ast::{
-    ExceptHandler, Expr, ExprCall, Operator, Parameters, Stmt,
-};
+use ruff_python_ast::{ExceptHandler, Expr, ExprCall, Operator, Parameters, Stmt};
 use ruff_text_size::Ranged;
 
 use crate::ast::VNode;
@@ -36,9 +34,7 @@ const MARK_SAFE_NAMES: &[&str] = &[
 /// The enclosing function's parameters and body, or the module body when the
 /// call is not nested in a function (`node._bandit_parent` walked up to the
 /// nearest `Module`/`FunctionDef`).
-fn enclosing_scope<'a>(
-    ctx: &Context<'a, '_>,
-) -> (&'a [Stmt], Option<&'a Parameters>) {
+fn enclosing_scope<'a>(ctx: &Context<'a, '_>) -> (&'a [Stmt], Option<&'a Parameters>) {
     for anc in ctx.ancestors.iter().rev() {
         if let VNode::Stmt(Stmt::FunctionDef(f)) = anc {
             return (&f.body, Some(&f.parameters));
@@ -208,7 +204,13 @@ fn is_assigned_in<'a>(stmts: &'a [Stmt], name: &str) -> Vec<Leaf<'a>> {
 }
 
 /// `evaluate_var(xss_var, parent, until, ignore_nodes)`.
-fn evaluate_var(file: &SourceFile, body: &[Stmt], params: Option<&Parameters>, name: &str, until: u32) -> bool {
+fn evaluate_var(
+    file: &SourceFile,
+    body: &[Stmt],
+    params: Option<&Parameters>,
+    name: &str,
+    until: u32,
+) -> bool {
     if is_param(params, name) {
         return false; // Params are not secure.
     }
@@ -266,7 +268,12 @@ fn evaluate_var(file: &SourceFile, body: &[Stmt], params: Option<&Parameters>, n
 
 /// `evaluate_call(call, parent, ignore_nodes)`: only `<constant>.format(...)`
 /// calls without keyword arguments.
-fn evaluate_call(file: &SourceFile, body: &[Stmt], params: Option<&Parameters>, call: &ExprCall) -> bool {
+fn evaluate_call(
+    file: &SourceFile,
+    body: &[Stmt],
+    params: Option<&Parameters>,
+    call: &ExprCall,
+) -> bool {
     let Expr::Attribute(a) = &*call.func else {
         return false;
     };

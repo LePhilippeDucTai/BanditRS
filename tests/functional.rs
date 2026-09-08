@@ -437,7 +437,9 @@ fn test_baseline_filter() {
     let profile = config.default_profile();
     let mut mgr = manager_with(config, profile);
 
-    let filename = example_path("flask_debug.py").to_string_lossy().into_owned();
+    let filename = example_path("flask_debug.py")
+        .to_string_lossy()
+        .into_owned();
     let json = format!(
         r#"{{
           "results": [
@@ -501,7 +503,12 @@ fn test_django_xss_insecure() {
         ..Default::default()
     };
     let mut mgr = manager_with(BanditConfig::default(), profile);
-    check_example_with(&mut mgr, "mark_safe_insecure.py", [0, 0, 29, 0], [0, 0, 0, 29]);
+    check_example_with(
+        &mut mgr,
+        "mark_safe_insecure.py",
+        [0, 0, 29, 0],
+        [0, 0, 0, 29],
+    );
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_django_xss_secure`.
@@ -607,14 +614,24 @@ fn test_try_except_continue() {
         config_map(vec![("check_typed_exception", ConfigValue::Bool(true))]),
     );
     let mut mgr = manager_with(config, profile.clone());
-    check_example_with(&mut mgr, "try_except_continue.py", [0, 3, 0, 0], [0, 0, 0, 3]);
+    check_example_with(
+        &mut mgr,
+        "try_except_continue.py",
+        [0, 3, 0, 0],
+        [0, 0, 0, 3],
+    );
 
     let config = config_with_section(
         "try_except_continue",
         config_map(vec![("check_typed_exception", ConfigValue::Bool(false))]),
     );
     let mut mgr = manager_with(config, profile);
-    check_example_with(&mut mgr, "try_except_continue.py", [0, 2, 0, 0], [0, 0, 0, 2]);
+    check_example_with(
+        &mut mgr,
+        "try_except_continue.py",
+        [0, 2, 0, 0],
+        [0, 0, 0, 2],
+    );
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_try_except_pass`.
