@@ -35,3 +35,10 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
     notion d'identité d'objet partagée (`LineRange` est `Copy`) et répète toujours la valeur littérale — le contenu
     relu est identique, seule la représentation texte diffère (visible dans `scripts/diff_against_python.sh` sur
     `wildcard-injection.py`/`partial_path_process.py`/`nosec.py`, jamais dans un test unitaire).
+12. URLs de documentation (`more_info`) : `DOCS_VERSION` vaut `"latest"` (`src/lib.rs`), donc BanditRS émet
+    `https://bandit.readthedocs.io/en/latest/plugins/…`. Python construit la même URL à partir de la version
+    **installée** du paquet (`https://bandit.readthedocs.io/en/0.0.1.dev49/…` avec la référence de ce dépôt).
+    Choix délibéré (PLAN.md §1) : la version du crate Rust n'a pas de page readthedocs correspondante, et
+    pointer une version figée périmerait les liens. Visible sur toute sortie contenant `more_info` (json, csv,
+    xml, yaml, html, txt, sarif) ; le harnais différentiel normalise ce champ. Aucun test de la suite ne
+    dépend du numéro de version dans l'URL.

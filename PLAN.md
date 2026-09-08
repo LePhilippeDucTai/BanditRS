@@ -41,14 +41,19 @@
 
 `cargo build --all-targets`, `cargo clippy --all-targets -- -D warnings` et `cargo fmt --check` propres.
 `cargo test --all-targets` : **67 tests unitaires** (`src/`) + **274 tests d'intégration** (`tests/`, un fichier
-miroir par fichier de test Python) dont **176 stubs `#[ignore]`** nommés comme les tests Python restant à porter
-(`scripts/wp_status.sh`) ; les 98 tests actifs (78 fonctionnels + 9 runtime + 11 formatters) sont au vert — la
-table complète des exemples upstream (comptes de sévérité/confiance) correspond bit à bit à bandit Python.
+miroir par fichier de test Python) dont **118 stubs `#[ignore]`** nommés comme les tests Python restant à porter
+(`scripts/wp_status.sh`) ; les **223 tests actifs** sont au vert — la table complète des exemples upstream
+(comptes de sévérité/confiance) correspond bit à bit à bandit Python.
+
+Différentiel complet rejoué après la vague A1 (2026-09-08) : `examples/*.py` × {json, csv, xml, yaml, html,
+txt, sarif} = **637 comparaisons, zéro diff inexpliqué** (les 34 diffs restants sont couverts par
+DEVIATIONS.md #5 `tarfile_extractall`, #9 `mark_safe_*`, #11 ancres YAML ; champs volatils normalisés :
+`generated_at`, `Run started:`, `endTimeUtc`, version de l'outil, URL de doc — cf. #12).
 
 | Jalon (plan parallèle) | Contenu | État |
 |---|---|---|
 | J0 | Restructuration : squelette miroir de la suite Python, `docs/plan/` (inventaire, 16 fiches de lots, playbook, benchmarks), agents `.claude/agents/banditrs-wp-*`, skill `banditrs-dispatch`, `benches/e2e.rs`, `scripts/{wp_status,bench_vs_python}.sh`, CI | **Fait** (2026-09-08) |
-| J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | à lancer (`banditrs-dispatch`, vague A) |
+| J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | **en cours** : vague A1 livrée (WP-02, 05, 07, 11, 12, 13 — 58 stubs activés, 176 → 118) ; reste la vague A2 (WP-01, 03, 04, 06, 08, 09, 10) |
 | J2 | Corpus golden + différentiel en CI (WP-14, WP-16) | à lancer (vague B) |
 | J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | à lancer (vague B) |
 
