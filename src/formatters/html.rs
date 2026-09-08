@@ -93,36 +93,20 @@ fn render_issue(index: usize, issue: &Issue, code: &str, candidates: &str) -> St
     )
 }
 
-/// `report(manager, fileobj, sev_level, conf_level, lines)`.
-pub fn report(
-    manager: &Manager,
-    out: &mut dyn Write,
-    sev_level: Rank,
-    conf_level: Rank,
-    lines: i64,
-) -> io::Result<()> {
-    let skipped_str: String = manager
-        .get_skipped()
-        .iter()
-        .map(|(fname, reason)| format!("{fname} <b>reason:</b> {reason}<br>"))
-        .collect();
-    let skipped_text = if skipped_str.is_empty() {
-        String::new()
-    } else {
-        skipped_block(&skipped_str)
-    };
-
-    let issue_list = manager.get_issue_list(sev_level, conf_level);
+/// Renders the `results` HTML for an already-built [`IssueList`] — split out
+/// from `report` so tests can supply a hand-built list (candidates included)
+/// without going through `Manager::get_issue_list`'s baseline matching.
+pub fn render_issues(issue_list: &IssueList, lines: i64) -> String {
     let mut results_str = String::new();
     match issue_list {
         IssueList::Plain(issues) => {
-            for (index, issue) in issues.into_iter().enumerate() {
+            for (index, issue) in issues.iter().enumerate() {
                 let code = code_block(&safe_code(issue, lines));
                 results_str.push_str(&render_issue(index, issue, &code, ""));
             }
         }
         IssueList::Baseline(pairs) => {
-            for (index, (issue, candidates)) in pairs.into_iter().enumerate() {
+            for (index, (issue, candidates)) in pairs.iter().enumerate() {
                 if candidates.len() == 1 {
                     let code = code_block(&safe_code(issue, lines));
                     results_str.push_str(&render_issue(index, issue, &code, ""));
@@ -137,10 +121,47 @@ pub fn report(
             }
         }
     }
+    results_str
+}
 
-    let metrics_summary = metrics_block(manager.metrics.totals.loc, manager.metrics.totals.nosec);
-    let report_contents = report_block(&metrics_summary, &skipped_text, &results_str);
+/// Assembles the full document (header + metrics + skipped files + results),
+/// independent of `Manager` — used by `report` and directly by tests that
+/// build their own `IssueList`.
+pub fn render_document(
+    loc: u64,
+    nosec: u64,
+    skipped: &[(String, String)],
+    results_str: &str,
+) -> String {
+    let skipped_str: String = skipped
+        .iter()
+        .map(|(fname, reason)| format!("{fname} <b>reason:</b> {reason}<br>"))
+        .collect();
+    let skipped_text = if skipped_str.is_empty() {
+        String::new()
+    } else {
+        skipped_block(&skipped_str)
+    };
+    let metrics_summary = metrics_block(loc, nosec);
+    let report_contents = report_block(&metrics_summary, &skipped_text, results_str);
+    format!("{HEADER_BLOCK}{report_contents}")
+}
 
-    out.write_all(HEADER_BLOCK.as_bytes())?;
-    out.write_all(report_contents.as_bytes())
+/// `report(manager, fileobj, sev_level, conf_level, lines)`.
+pub fn report(
+    manager: &Manager,
+    out: &mut dyn Write,
+    sev_level: Rank,
+    conf_level: Rank,
+    lines: i64,
+) -> io::Result<()> {
+    let issue_list = manager.get_issue_list(sev_level, conf_level);
+    let results_str = render_issues(&issue_list, lines);
+    let document = render_document(
+        manager.metrics.totals.loc,
+        manager.metrics.totals.nosec,
+        manager.get_skipped(),
+        &results_str,
+    );
+    out.write_all(document.as_bytes())
 }
