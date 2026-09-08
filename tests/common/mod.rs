@@ -1,6 +1,12 @@
 //! Helpers shared by the integration tests (port of the `FunctionalTests`
 //! helpers in `tests/functional/test_functional.py`).
+//!
+//! Ownership (see docs/plan/README.md §5): this file belongs to WP-01; the
+//! `formatters` sub-module belongs to WP-13. Every other work package keeps
+//! its helpers inside its own `tests/<file>.rs`.
 #![allow(dead_code)]
+
+pub mod formatters;
 
 use std::path::PathBuf;
 

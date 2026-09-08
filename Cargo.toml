@@ -45,6 +45,15 @@ typed-arena = "2"
 [dev-dependencies]
 tempfile = "3"
 pretty_assertions = "1"
+# Pre-provisioned for the parallel work packages (docs/plan/README.md §5) so that
+# no WP has to touch Cargo.toml / Cargo.lock:
+criterion = "0.8.2"  # WP-15 benches/e2e.rs
+roxmltree = "0.21.1" # WP-13 unit_formatters_xml.rs
+scraper = "0.27.0"   # WP-13 unit_formatters_html.rs
+
+[[bench]]
+name = "e2e"
+harness = false
 
 [profile.release]
 lto = "fat"

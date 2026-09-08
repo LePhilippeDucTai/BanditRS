@@ -353,17 +353,6 @@ example_test!(
     [0, 0, 0, 15]
 );
 
-// --- tests needing a specific configuration / profile (see PLAN.md M4) ---
-// test_ignore_skip: "skip.py" with ignore_nosec=true -> [0,7,0,0] / [0,0,0,7]
-// test_django_xss_secure: "mark_safe_secure.py", profile exclude ["B308"] -> all zeros
-// test_django_xss_insecure: "mark_safe_insecure.py", profile exclude ["B308"] -> [0,0,29,0] / [0,0,0,29]
-// test_asserts: "assert.py" with assert_used config {skips: []} -> [0,1,0,0]/[0,0,0,1];
-//               {skips: ["*assert.py"]} -> zeros; {} (missing key -> defaults to []) -> [0,1,0,0]/[0,0,0,1]
-// test_try_except_continue: "try_except_continue.py" check_typed_exception True -> [0,3,0,0]/[0,0,0,3]; False -> [0,2,0,0]/[0,0,0,2]
-// test_try_except_pass: "try_except_pass.py" True -> [0,3,0,0]/[0,0,0,3]; False -> [0,2,0,0]/[0,0,0,2]
-// test_markupsafe_markup_xss_extend_markup_names: config markupsafe_xss {extend_markup_names: ["webhelpers.html.literal"]} -> [0,0,2,0]/[0,0,0,2]
-// test_markupsafe_markup_xss_allowed_calls: config markupsafe_xss {allowed_calls: ["bleach.clean"]} -> [0,0,1,0]/[0,0,0,1]
-
 #[test]
 fn test_ignore_skip() {
     check_example("skip.py", [0, 7, 0, 0], [0, 0, 0, 7], true);
@@ -399,8 +388,103 @@ fn test_multiline_sql_statements_metrics() {
     );
 }
 
-// Also to port (PLAN.md M5): test_nonsense (1 skipped file), test_multiline_code
-// (issue 0: lineno 1 / linerange [1] / code contains "subprocess"; issue 1: lineno 5 /
-// linerange [3,4,5,6] / "shell=True"; issue 2: lineno 11 / linerange [8..=13] / "shell=True"),
-// test_code_line_numbers (binding.py: get_code lines start with "lineno-1 ", "lineno ", "lineno+1 "),
-// test_baseline_filter (flask_debug.py with a baseline containing the B201 issue -> empty issue list).
+// --- Ports pending (WP-01, docs/plan/wp/WP-01-functional-config-profiles.md) ---
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_asserts`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_asserts() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_asserts"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_baseline_filter`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_baseline_filter() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_baseline_filter"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_code_line_numbers`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_code_line_numbers() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_code_line_numbers"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_django_xss_insecure`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_django_xss_insecure() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_django_xss_insecure"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_django_xss_secure`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_django_xss_secure() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_django_xss_secure"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_allowed_calls`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_markupsafe_markup_xss_allowed_calls() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_allowed_calls"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_extend_markup_names`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_markupsafe_markup_xss_extend_markup_names() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_extend_markup_names"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_multiline_code`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_multiline_code() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_multiline_code"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_nonsense`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_nonsense() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_nonsense"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_try_except_continue`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_try_except_continue() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_try_except_continue"
+    );
+}
+
+/// Port of `tests/functional/test_functional.py::FunctionalTests::test_try_except_pass`.
+#[test]
+#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
+fn test_try_except_pass() {
+    unimplemented!(
+        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_try_except_pass"
+    );
+}
