@@ -54,7 +54,7 @@ correspond bit à bit à bandit Python.
 | M7 | `src/cli/{argparse,main}.rs` (parseur maison + flux §A.11), `BanditConfig::new` (YAML via `pycompat::yaml_load` + TOML via `toml`), `BanditConfig::profile()` (conversion nom→id, pas la conversion legacy `blacklist_calls`/`blacklist_imports`), `src/pycompat/{yaml_load,configparser}.rs` | **Fait** ; **9 tests fonctionnels** (`tests/runtime.rs`) au vert |
 | M8 | `src/cli/{baseline,config_generator}.rs` | **Fait** ; testé manuellement (dépôt git jetable) et via différentiel contre Python — voir §5. `tests/baseline_functional.rs`/`tests/cli_tools.rs` restent des placeholders (§C.3/C.4/C.5/C.6 pas portés en tests automatisés) |
 | M9 | Harnais différentiel exécuté ad hoc (voir §5) sur `examples/` (tous formats) : diffs restants tous expliqués par DEVIATIONS.md. `scripts/diff_against_python.sh` (script fichier) pas encore mis à jour/exécuté sur la stdlib | Essentiellement fait, script à finaliser |
-| M10 | perf, README, clippy | À faire (prochaine étape) |
+| M10 | perf, README, clippy | **Fait** : `cargo clippy --all-targets -- -D warnings` propre, `cargo fmt --all`, benchmark (~70× sur stdlib), README à jour |
 
 Chaque stub restant porte un commentaire de module. Chercher `todo!(` pour la liste exhaustive (restant : la
 conversion legacy `blacklist_calls`/`blacklist_imports` de `convert_legacy_config`, cf. §5).
