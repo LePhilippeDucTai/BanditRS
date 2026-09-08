@@ -153,7 +153,8 @@ fn test_bandit_baseline() {
 
     // upstream: tests/unit/cli/test_baseline.py `branches` (benign1 -> malicious -> benign2,
     // each branch created from the current HEAD, i.e. the previous branch's tip).
-    let branches: [(&str, &[(&str, &str)], i32); 3] = [
+    type Branch<'a> = (&'a str, &'a [(&'a str, &'a str)], i32);
+    let branches: [Branch; 3] = [
         ("benign1", &[("benign_one.py", benign_contents.as_str())], 0),
         (
             "malicious",
