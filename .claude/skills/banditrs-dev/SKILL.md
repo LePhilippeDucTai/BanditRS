@@ -23,6 +23,16 @@ Do not treat this as a green-field coding task where you improvise architecture 
 conventions, and even the exact wording of known bugs to reproduce are already settled and written
 down. Your job is to extend the existing pattern, not invent a new one.
 
+## 0. Parallel plan (since J0, 2026-09-08)
+
+The remaining work is organised as 16 independent work packages in **`docs/plan/README.md`**
+(inventory of the 273 upstream tests in `docs/plan/test-inventory.md`, one brief per package under
+`docs/plan/wp/`). If the user wants to run several packages with subagents, use the `banditrs-dispatch`
+skill instead of this one. If the user wants to work on a single package sequentially in this session,
+follow that package's brief and `docs/plan/agent-playbook.md` (file ownership, TDD loop, quality gate),
+then come back here for the end-of-session merge (§5). `scripts/wp_status.sh` shows how many mirror
+test stubs are still `#[ignore]`d per package.
+
 ## 1. Orient yourself
 
 Read, in order:

@@ -1,0 +1,52 @@
+# Continuous integration for BanditRS (docs/plan/wp/WP-16-ci.md).
+#
+# Three independent jobs so a lint failure never hides a test failure:
+#   test   — build every target and run the whole suite (unit + integration),
+#            then print the work-package dashboard (stubs still `#[ignore]`d).
+#   lint   — rustfmt + clippy with `-D warnings` (the repository's standing rule).
+#   bench  — compile the criterion benches (no measurement in CI; see
+#            docs/plan/benchmarks.md for the perf gate strategy).
+name: CI
+
+on:
+  push:
+    branches: ["main", "claude/**", "wp/**"]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+
+jobs:
+  test:
+    name: test (stable)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --all-targets --locked
+      - run: cargo test --all-targets --locked
+      - name: Work-package dashboard
+        run: scripts/wp_status.sh
+
+  lint:
+    name: fmt + clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      - run: cargo clippy --all-targets --locked -- -D warnings
+
+  bench:
+    name: benches compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo bench --no-run --locked
