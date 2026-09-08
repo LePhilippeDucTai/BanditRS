@@ -20,7 +20,7 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/functional/test_functional.py` | `tests/functional.rs` | [WP-01](wp/WP-01-functional-config-profiles.md) | 79 | 68 | 0 | 11 | 0 | 0 |
 | `tests/functional/test_runtime.py` | `tests/runtime.rs` | — | 9 | 9 | 0 | 0 | 0 | 0 |
 | `tests/unit/cli/test_baseline.py` | `tests/unit_cli_baseline.rs` | [WP-04](wp/WP-04-unit-cli-baseline.md) | 12 | 0 | 0 | 8 | 4 | 0 |
-| `tests/unit/cli/test_config_generator.py` | `tests/unit_cli_config_generator.rs` | [WP-05](wp/WP-05-unit-cli-config-generator.md) | 6 | 0 | 0 | 6 | 0 | 0 |
+| `tests/unit/cli/test_config_generator.py` | `tests/unit_cli_config_generator.rs` | [WP-05](wp/WP-05-unit-cli-config-generator.md) | 6 | 6 | 0 | 0 | 0 | 0 |
 | `tests/unit/cli/test_main.py` | `tests/unit_cli_main.rs` | [WP-03](wp/WP-03-unit-cli-main.md) | 20 | 0 | 0 | 14 | 5 | 1 |
 | `tests/unit/core/test_blacklisting.py` | `tests/unit_core_blacklisting.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 0 | 0 | 2 | 0 | 0 |
 | `tests/unit/core/test_config.py` | `tests/unit_core_config.rs` | [WP-08](wp/WP-08-unit-core-config.md) | 26 | 0 | 0 | 26 | 0 | 0 |
@@ -175,12 +175,12 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `BanditConfigGeneratorLoggerTests::test_init_logger` | `test_init_logger` | à porter |  |
-| `BanditConfigGeneratorTests::test_get_config_settings` | `test_get_config_settings` | à porter |  |
-| `BanditConfigGeneratorTests::test_main_show_defaults` | `test_main_show_defaults` | à porter |  |
-| `BanditConfigGeneratorTests::test_parse_args_no_defaults` | `test_parse_args_no_defaults` | à porter |  |
-| `BanditConfigGeneratorTests::test_parse_args_out_file` | `test_parse_args_out_file` | à porter |  |
-| `BanditConfigGeneratorTests::test_parse_args_show_defaults` | `test_parse_args_show_defaults` | à porter |  |
+| `BanditConfigGeneratorLoggerTests::test_init_logger` | `test_init_logger` | porté |  |
+| `BanditConfigGeneratorTests::test_get_config_settings` | `test_get_config_settings` | porté |  |
+| `BanditConfigGeneratorTests::test_main_show_defaults` | `test_main_show_defaults` | porté |  |
+| `BanditConfigGeneratorTests::test_parse_args_no_defaults` | `test_parse_args_no_defaults` | porté |  |
+| `BanditConfigGeneratorTests::test_parse_args_out_file` | `test_parse_args_out_file` | porté |  |
+| `BanditConfigGeneratorTests::test_parse_args_show_defaults` | `test_parse_args_show_defaults` | porté |  |
 
 ## `tests/unit/cli/test_main.py` → `tests/unit_cli_main.rs` ([WP-03](wp/WP-03-unit-cli-main.md))
 
