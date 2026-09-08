@@ -186,26 +186,26 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `BanditCLIMainLoggerTests::test_init_logger` | `test_init_logger` | à porter |  |
-| `BanditCLIMainLoggerTests::test_init_logger_debug_mode` | `test_init_logger_debug_mode` | à porter |  |
-| `BanditCLIMainTests::test_get_options_from_ini_empty_directory_no_target` | `test_get_options_from_ini_empty_directory_no_target` | à porter |  |
-| `BanditCLIMainTests::test_get_options_from_ini_no_ini_path_multi_bandit_files` | `test_get_options_from_ini_no_ini_path_multi_bandit_files` | à porter |  |
-| `BanditCLIMainTests::test_get_options_from_ini_no_ini_path_no_bandit_files` | `test_get_options_from_ini_no_ini_path_no_bandit_files` | à porter |  |
-| `BanditCLIMainTests::test_get_options_from_ini_no_ini_path_no_target` | `test_get_options_from_ini_no_ini_path_no_target` | à porter |  |
+| `BanditCLIMainLoggerTests::test_init_logger` | `test_init_logger` | porté |  |
+| `BanditCLIMainLoggerTests::test_init_logger_debug_mode` | `test_init_logger_debug_mode` | porté |  |
+| `BanditCLIMainTests::test_get_options_from_ini_empty_directory_no_target` | `test_get_options_from_ini_empty_directory_no_target` | porté |  |
+| `BanditCLIMainTests::test_get_options_from_ini_no_ini_path_multi_bandit_files` | `test_get_options_from_ini_no_ini_path_multi_bandit_files` | porté |  |
+| `BanditCLIMainTests::test_get_options_from_ini_no_ini_path_no_bandit_files` | `test_get_options_from_ini_no_ini_path_no_bandit_files` | porté |  |
+| `BanditCLIMainTests::test_get_options_from_ini_no_ini_path_no_target` | `test_get_options_from_ini_no_ini_path_no_target` | porté |  |
 | `BanditCLIMainTests::test_init_extensions` | — | non portable | `extension_loader.MANAGER` n'existe pas (registre statique `registry::PLUGINS`) ; couvert par `registry_is_consistent` |
-| `BanditCLIMainTests::test_log_option_source_arg_val` | `test_log_option_source_arg_val` | à porter |  |
-| `BanditCLIMainTests::test_log_option_source_ini_val_with_str_default_and_no_arg_val` | `test_log_option_source_ini_val_with_str_default_and_no_arg_val` | à porter |  |
-| `BanditCLIMainTests::test_log_option_source_ini_value` | `test_log_option_source_ini_value` | à porter |  |
-| `BanditCLIMainTests::test_log_option_source_no_values` | `test_log_option_source_no_values` | à porter |  |
-| `BanditCLIMainTests::test_main_baseline_ioerror` | `test_main_baseline_ioerror` | à porter (adapté) | mock IOError → `-b` sur un chemin inexistant/illisible → rc 2 + `Could not open baseline report` |
-| `BanditCLIMainTests::test_main_config_unopenable` | `test_main_config_unopenable` | à porter | binaire `bandit -c bandit.yaml test` sans fichier → rc 2 (`Could not read config file.`) |
-| `BanditCLIMainTests::test_main_exit_with_no_results` | `test_main_exit_with_no_results` | à porter (adapté) | cible `examples/okay.py` → rc 0 |
-| `BanditCLIMainTests::test_main_exit_with_results` | `test_main_exit_with_results` | à porter (adapté) | mock `results_count` → cible réelle avec issue (ex. `examples/os_system.py`) → rc 1 |
-| `BanditCLIMainTests::test_main_exit_with_results_and_with_exit_zero_flag` | `test_main_exit_with_results_and_with_exit_zero_flag` | à porter (adapté) | `--exit-zero` sur cible avec issue → rc 0 |
-| `BanditCLIMainTests::test_main_handle_ini_options` | `test_main_handle_ini_options` | à porter (adapté) | mock `_get_options_from_ini` → vrai `.bandit` (`--ini`) avec `tests = some_test`/`skips = skip_test` → rc 2 + `No tests would be run, please check the profile.` sur stderr |
-| `BanditCLIMainTests::test_main_invalid_config` | `test_main_invalid_config` | à porter | YAML invalide dans `bandit.yaml` → rc 2 (`Error parsing file.`) |
-| `BanditCLIMainTests::test_main_invalid_output_format` | `test_main_invalid_output_format` | à porter |  |
-| `BanditCLIMainTests::test_main_profile_not_found` | `test_main_profile_not_found` | à porter |  |
+| `BanditCLIMainTests::test_log_option_source_arg_val` | `test_log_option_source_arg_val` | porté |  |
+| `BanditCLIMainTests::test_log_option_source_ini_val_with_str_default_and_no_arg_val` | `test_log_option_source_ini_val_with_str_default_and_no_arg_val` | porté |  |
+| `BanditCLIMainTests::test_log_option_source_ini_value` | `test_log_option_source_ini_value` | porté |  |
+| `BanditCLIMainTests::test_log_option_source_no_values` | `test_log_option_source_no_values` | porté |  |
+| `BanditCLIMainTests::test_main_baseline_ioerror` | `test_main_baseline_ioerror` | porté (adapté) | mock IOError → `-b` sur un chemin inexistant/illisible → rc 2 + `Could not open baseline report` |
+| `BanditCLIMainTests::test_main_config_unopenable` | `test_main_config_unopenable` | porté | binaire `bandit -c bandit.yaml test` sans fichier → rc 2 (`Could not read config file.`) |
+| `BanditCLIMainTests::test_main_exit_with_no_results` | `test_main_exit_with_no_results` | porté (adapté) | cible `examples/okay.py` → rc 0 |
+| `BanditCLIMainTests::test_main_exit_with_results` | `test_main_exit_with_results` | porté (adapté) | mock `results_count` → cible réelle avec issue (ex. `examples/os_system.py`) → rc 1 |
+| `BanditCLIMainTests::test_main_exit_with_results_and_with_exit_zero_flag` | `test_main_exit_with_results_and_with_exit_zero_flag` | porté (adapté) | `--exit-zero` sur cible avec issue → rc 0 |
+| `BanditCLIMainTests::test_main_handle_ini_options` | `test_main_handle_ini_options` | porté (adapté) | mock `_get_options_from_ini` → vrai `.bandit` (`--ini`) avec `tests = some_test`/`skips = skip_test` → rc 2 + `No tests would be run, please check the profile.` sur stderr |
+| `BanditCLIMainTests::test_main_invalid_config` | `test_main_invalid_config` | porté | YAML invalide dans `bandit.yaml` → rc 2 (`Error parsing file.`) |
+| `BanditCLIMainTests::test_main_invalid_output_format` | `test_main_invalid_output_format` | porté |  |
+| `BanditCLIMainTests::test_main_profile_not_found` | `test_main_profile_not_found` | porté |  |
 
 ## `tests/unit/core/test_blacklisting.py` → `tests/unit_core_blacklisting.rs` ([WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md))
 

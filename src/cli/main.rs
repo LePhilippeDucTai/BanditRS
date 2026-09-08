@@ -114,11 +114,21 @@ fn find_dot_bandit_files(target: &str, out: &mut Vec<String>) {
     }
 }
 
-/// `_get_options_from_ini(ini_path, targets)`.
-fn get_options_from_ini(
+/// Raised in place of Python's `sys.exit(2)` inside `_get_options_from_ini` when `ini_path` is
+/// absent and more than one `.bandit` file is discovered under `targets` (`os.walk`). Carries the
+/// full list of paths found so the caller can log and exit exactly as `main` does.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MultipleIniFiles(pub Vec<String>);
+
+/// `_get_options_from_ini(ini_path, target)`. `Ok(None)` when nothing applies — no `ini_path` and
+/// no `.bandit` file under `targets`, or the resolved file has no `[bandit]` section / can't be
+/// read (`utils.parse_ini_file` swallows those and returns `None` after a warning).
+/// `Err(MultipleIniFiles(paths))` when `ini_path` is absent and more than one `.bandit` file is
+/// found; the caller is responsible for the log message and `exit(2)`.
+pub fn get_options_from_ini(
     ini_path: Option<&str>,
     targets: &[String],
-) -> Option<indexmap::IndexMap<String, String>> {
+) -> Result<Option<indexmap::IndexMap<String, String>>, MultipleIniFiles> {
     let ini_file = if let Some(p) = ini_path {
         Some(p.to_string())
     } else {
@@ -127,12 +137,7 @@ fn get_options_from_ini(
             find_dot_bandit_files(t, &mut found);
         }
         if found.len() > 1 {
-            crate::log_error!(
-                "main",
-                "Multiple .bandit files found - scan separately or choose one with --ini\n\t{}",
-                found.join(", ")
-            );
-            std::process::exit(2);
+            return Err(MultipleIniFiles(found));
         }
         if found.len() == 1 {
             crate::log_info!("main", "Found project level .bandit file: {}", found[0]);
@@ -141,57 +146,50 @@ fn get_options_from_ini(
             None
         }
     };
-    ini_file.and_then(|f| configparser::parse_ini_file(&f))
+    Ok(ini_file.and_then(|f| configparser::parse_ini_file(&f)))
 }
 
-/// `_log_option_source(default_val, arg_val, ini_val, option_name)`.
-fn log_option_source(
-    default_is_none: bool,
-    default_eq_arg: bool,
-    arg_val: &str,
+/// `_log_option_source(default_val, arg_val, ini_val, option_name)`. Python truthiness applies to
+/// every optional value here: `Some("")` counts as false, same as `if arg_val:` on an empty string.
+pub fn log_option_source(
+    default_val: Option<&str>,
+    arg_val: Option<&str>,
     ini_val: Option<&str>,
-    name: &str,
+    option_name: &str,
 ) -> Option<String> {
-    if default_is_none {
-        if !arg_val.is_empty() {
-            crate::log_info!("main", "Using command line arg for {}", name);
-            return Some(arg_val.to_string());
-        } else if let Some(v) = ini_val.filter(|v| !v.is_empty()) {
-            crate::log_info!("main", "Using ini file for {}", name);
+    fn truthy(v: Option<&str>) -> Option<&str> {
+        v.filter(|s| !s.is_empty())
+    }
+    if default_val.is_none() {
+        if let Some(v) = truthy(arg_val) {
+            crate::log_info!("main", "Using command line arg for {}", option_name);
+            return Some(v.to_string());
+        }
+        if let Some(v) = truthy(ini_val) {
+            crate::log_info!("main", "Using ini file for {}", option_name);
             return Some(v.to_string());
         }
         return None;
     }
-    if default_eq_arg {
-        return Some(
-            ini_val
-                .filter(|v| !v.is_empty())
-                .unwrap_or(arg_val)
-                .to_string(),
-        );
+    if default_val == arg_val {
+        return Some(truthy(ini_val).or(arg_val).unwrap_or_default().to_string());
     }
-    Some(arg_val.to_string())
+    arg_val.map(str::to_string)
 }
 
 fn apply_ini_options(args: &mut Args, ini: &indexmap::IndexMap<String, String>) {
     let defaults = Args::default();
 
-    if let Some(v) = log_option_source(
-        args.config_file.is_none() && defaults.config_file.is_none(),
-        args.config_file == defaults.config_file,
-        args.config_file.as_deref().unwrap_or(""),
+    args.config_file = log_option_source(
+        None,
+        args.config_file.as_deref(),
         ini.get("configfile").map(String::as_str),
         "config file",
-    ) {
-        args.config_file = Some(v);
-    } else {
-        args.config_file = None;
-    }
+    );
 
     if let Some(v) = log_option_source(
-        false,
-        args.excluded_paths == defaults.excluded_paths,
-        &args.excluded_paths,
+        Some(defaults.excluded_paths.as_str()),
+        Some(args.excluded_paths.as_str()),
         ini.get("exclude").map(String::as_str),
         "excluded paths",
     ) {
@@ -199,16 +197,14 @@ fn apply_ini_options(args: &mut Args, ini: &indexmap::IndexMap<String, String>) 
     }
 
     args.skips = log_option_source(
-        args.skips.is_none(),
-        args.skips == defaults.skips,
-        args.skips.as_deref().unwrap_or(""),
+        None,
+        args.skips.as_deref(),
         ini.get("skips").map(String::as_str),
         "skipped tests",
     );
     args.tests = log_option_source(
-        args.tests.is_none(),
-        args.tests == defaults.tests,
-        args.tests.as_deref().unwrap_or(""),
+        None,
+        args.tests.as_deref(),
         ini.get("tests").map(String::as_str),
         "selected tests",
     );
@@ -228,9 +224,8 @@ fn apply_ini_options(args: &mut Args, ini: &indexmap::IndexMap<String, String>) 
         args.recursive = matches!(v.to_ascii_lowercase().as_str(), "1" | "true" | "yes" | "on");
     }
     if let Some(v) = log_option_source(
-        false,
-        args.agg_type == defaults.agg_type,
-        &args.agg_type,
+        Some(defaults.agg_type.as_str()),
+        Some(args.agg_type.as_str()),
         ini.get("aggregate").map(String::as_str),
         "aggregate output type",
     ) {
@@ -244,11 +239,12 @@ fn apply_ini_options(args: &mut Args, ini: &indexmap::IndexMap<String, String>) 
     {
         args.context_lines = n;
     }
-    if let Some(v) = ini.get("profile").filter(|v| !v.is_empty())
-        && args.profile.is_none()
-    {
-        args.profile = Some(v.clone());
-    }
+    args.profile = log_option_source(
+        None,
+        args.profile.as_deref(),
+        ini.get("profile").map(String::as_str),
+        "profile",
+    );
     if let Some(n) = ini.get("level").and_then(|v| v.parse::<u32>().ok())
         && args.severity == defaults.severity
     {
@@ -259,16 +255,23 @@ fn apply_ini_options(args: &mut Args, ini: &indexmap::IndexMap<String, String>) 
     {
         args.confidence = n;
     }
-    if let Some(v) = ini.get("format").filter(|v| !v.is_empty())
-        && args.output_format.is_none()
-    {
-        args.output_format = Some(v.clone());
-    }
-    if let Some(v) = ini.get("msg-template").filter(|v| !v.is_empty())
-        && args.msg_template.is_none()
-    {
-        args.msg_template = Some(v.clone());
-    }
+    let default_output_format = formatters::default_format();
+    let current_output_format = args
+        .output_format
+        .clone()
+        .unwrap_or_else(|| default_output_format.to_string());
+    args.output_format = log_option_source(
+        Some(default_output_format),
+        Some(current_output_format.as_str()),
+        ini.get("format").map(String::as_str),
+        "output format",
+    );
+    args.msg_template = log_option_source(
+        None,
+        args.msg_template.as_deref(),
+        ini.get("msg-template").map(String::as_str),
+        "output message template",
+    );
     if let Some(v) = ini.get("output").filter(|v| !v.is_empty())
         && args.output_file == OutputTarget::Stdout
     {
@@ -294,23 +297,35 @@ fn apply_ini_options(args: &mut Args, ini: &indexmap::IndexMap<String, String>) 
     {
         args.ignore_nosec = matches!(v.to_ascii_lowercase().as_str(), "1" | "true" | "yes" | "on");
     }
-    if let Some(v) = ini.get("baseline").filter(|v| !v.is_empty())
-        && args.baseline.is_none()
-    {
-        args.baseline = Some(v.clone());
-    }
+    args.baseline = log_option_source(
+        None,
+        args.baseline.as_deref(),
+        ini.get("baseline").map(String::as_str),
+        "path of a baseline report",
+    );
+}
+
+/// `_init_logger(log_level=logging.INFO, log_format=None)`: resets the logger's threshold and
+/// output format, falling back to `constants::LOG_FORMAT_STRING` when `log_format` is absent
+/// (Python's default argument value).
+pub fn init_logger(level: Level, log_format: Option<&str>) {
+    crate::log::set_level(level);
+    crate::log::set_format(log_format.unwrap_or(crate::constants::LOG_FORMAT_STRING));
+    crate::log_debug!("main", "logging initialized");
 }
 
 /// Run the `bandit` command with the given arguments (without the program
 /// name) and return the process exit code.
 pub fn main(argv: Vec<String>) -> i32 {
     let debug_early = argv.iter().any(|a| a == "-d" || a == "--debug");
-    crate::log::set_level(if debug_early {
-        Level::Debug
-    } else {
-        Level::Info
-    });
-    crate::log_debug!("main", "logging initialized");
+    init_logger(
+        if debug_early {
+            Level::Debug
+        } else {
+            Level::Info
+        },
+        None,
+    );
 
     let mut args = match argparse::parse(&argv) {
         ParseOutcome::Run(a) => *a,
@@ -331,7 +346,18 @@ pub fn main(argv: Vec<String>) -> i32 {
         return 2;
     }
 
-    if let Some(ini) = get_options_from_ini(args.ini_path.as_deref(), &args.targets) {
+    let ini_options = match get_options_from_ini(args.ini_path.as_deref(), &args.targets) {
+        Ok(opt) => opt,
+        Err(MultipleIniFiles(paths)) => {
+            crate::log_error!(
+                "main",
+                "Multiple .bandit files found - scan separately or choose one with --ini\n\t{}",
+                paths.join(", ")
+            );
+            return 2;
+        }
+    };
+    if let Some(ini) = ini_options {
         apply_ini_options(&mut args, &ini);
     }
 
@@ -349,11 +375,10 @@ pub fn main(argv: Vec<String>) -> i32 {
     }
 
     if let Some(fmt) = b_conf.get_option("log_format").and_then(|v| v.as_str()) {
-        crate::log::set_level(Level::Debug);
-        crate::log::set_format(fmt);
+        init_logger(Level::Debug, Some(fmt));
     }
     if args.quiet {
-        crate::log::set_level(Level::Warning);
+        init_logger(Level::Warning, None);
     }
 
     let mut profile = if let Some(name) = &args.profile {
