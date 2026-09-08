@@ -47,8 +47,7 @@ fn test_report() {
         ]
     );
     let row = split_row(lines.next().unwrap());
-    let data: std::collections::HashMap<&str, &str> =
-        header.into_iter().zip(row).collect();
+    let data: std::collections::HashMap<&str, &str> = header.into_iter().zip(row).collect();
 
     assert_eq!(data["filename"], fname);
     assert_eq!(data["issue_severity"], "MEDIUM");
