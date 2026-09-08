@@ -6,7 +6,15 @@
 
 mod common;
 
-use common::{check_example, check_metrics};
+use indexmap::IndexSet;
+
+use banditrs::constants::Rank;
+use banditrs::core::config::{BanditConfig, Profile};
+
+use common::{
+    check_example, check_example_with, check_metrics, config_map, config_str_list,
+    config_with_section, example_path, manager_with,
+};
 
 macro_rules! example_test {
     ($name:ident, $file:literal, $sev:expr, $conf:expr) => {
@@ -419,20 +427,24 @@ fn test_code_line_numbers() {
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_django_xss_insecure`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_django_xss_insecure() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_django_xss_insecure"
-    );
+    let profile = Profile {
+        exclude: IndexSet::from(["B308".to_string()]),
+        ..Default::default()
+    };
+    let mut mgr = manager_with(BanditConfig::default(), profile);
+    check_example_with(&mut mgr, "mark_safe_insecure.py", [0, 0, 29, 0], [0, 0, 0, 29]);
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_django_xss_secure`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_django_xss_secure() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_django_xss_secure"
-    );
+    let profile = Profile {
+        exclude: IndexSet::from(["B308".to_string()]),
+        ..Default::default()
+    };
+    let mut mgr = manager_with(BanditConfig::default(), profile);
+    check_example_with(&mut mgr, "mark_safe_secure.py", [0, 0, 0, 0], [0, 0, 0, 0]);
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_allowed_calls`.
@@ -464,11 +476,14 @@ fn test_multiline_code() {
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_nonsense`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_nonsense() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_nonsense"
-    );
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let mut mgr = manager_with(config, profile);
+    let path = example_path("nonsense.py").to_string_lossy().into_owned();
+    mgr.discover_files(&[path], true, None);
+    mgr.run_tests();
+    assert_eq!(1, mgr.skipped.len());
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_try_except_continue`.
