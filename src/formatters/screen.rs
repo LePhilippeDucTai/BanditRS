@@ -10,19 +10,32 @@ use crate::core::issue::Issue;
 use crate::core::manager::{IssueList, Manager};
 use crate::pycompat::datetime::UtcDateTime;
 
-const DEFAULT: &str = "\x1b[0m";
-const HEADER: &str = "\x1b[95m";
+/// `COLOR["DEFAULT"]`.
+pub const DEFAULT: &str = "\x1b[0m";
+/// `COLOR["HEADER"]`.
+pub const HEADER: &str = "\x1b[95m";
+/// `COLOR["LOW"]`.
+pub const LOW: &str = "\x1b[94m";
+/// `COLOR["MEDIUM"]`.
+pub const MEDIUM: &str = "\x1b[93m";
+/// `COLOR["HIGH"]`.
+pub const HIGH: &str = "\x1b[91m";
 
-fn color_for(rank: Rank) -> &'static str {
+/// `COLOR[issue.severity]`: the ANSI colour for a given rank (`UNDEFINED`
+/// maps to `COLOR["DEFAULT"]`, as `bandit.formatters.screen.COLOR` has no
+/// `UNDEFINED` entry but `Rank::UNDEFINED` issues never reach this path in
+/// upstream bandit).
+pub fn color_for(rank: Rank) -> &'static str {
     match rank {
         Rank::Undefined => DEFAULT,
-        Rank::Low => "\x1b[94m",
-        Rank::Medium => "\x1b[93m",
-        Rank::High => "\x1b[91m",
+        Rank::Low => LOW,
+        Rank::Medium => MEDIUM,
+        Rank::High => HIGH,
     }
 }
 
-fn header(text: &str) -> String {
+/// `header(text)` = `COLOR["HEADER"] + text + COLOR["DEFAULT"]`.
+pub fn header(text: &str) -> String {
     format!("{HEADER}{text}{DEFAULT}")
 }
 
@@ -75,7 +88,8 @@ fn capitalize(s: &str) -> String {
     }
 }
 
-fn output_issue_str(
+/// `_output_issue_str(issue, indent, show_lineno=True, show_code=True, lines=-1)`.
+pub fn output_issue_str(
     issue: &Issue,
     indent: &str,
     show_lineno: bool,
@@ -153,15 +167,15 @@ pub fn get_results(manager: &Manager, sev_level: Rank, conf_level: Rank, lines: 
     bits.join("\n")
 }
 
-/// `report(manager, out, sev_level, conf_level, lines, out_name)`. `out_name`
-/// is the `-o` file name (if any); screen always writes ANSI text to real
-/// stdout and only logs a hint when `-o` was given.
-pub fn report(
+/// `report(manager, fileobj, sev_level, conf_level, lines)`, with `do_print`
+/// rendered into `out` instead of the real stdout so the formatter is
+/// testable (`do_print(bits)` = `print("\n".join(bits))`).
+pub fn report_to(
     manager: &Manager,
+    out: &mut dyn Write,
     sev_level: Rank,
     conf_level: Rank,
     lines: i64,
-    out_name: Option<&str>,
 ) -> io::Result<()> {
     if !manager.quiet || manager.results_count(sev_level, conf_level) > 0 {
         let mut bits = Vec::new();
@@ -191,9 +205,24 @@ pub fn report(
         for (fname, reason) in &manager.skipped {
             bits.push(format!("\t{fname} ({reason})"));
         }
-        let mut stdout = io::stdout().lock();
-        writeln!(stdout, "{}", bits.join("\n"))?;
+        writeln!(out, "{}", bits.join("\n"))?;
     }
+    Ok(())
+}
+
+/// `report(manager, out, sev_level, conf_level, lines, out_name)`. `out_name`
+/// is the `-o` file name (if any); screen always writes ANSI text to real
+/// stdout (via [`report_to`]) and only logs a hint when `-o` was given.
+pub fn report(
+    manager: &Manager,
+    sev_level: Rank,
+    conf_level: Rank,
+    lines: i64,
+    out_name: Option<&str>,
+) -> io::Result<()> {
+    let mut stdout = io::stdout().lock();
+    report_to(manager, &mut stdout, sev_level, conf_level, lines)?;
+    drop(stdout);
     if let Some(name) = out_name {
         crate::log_info!(
             "screen",
