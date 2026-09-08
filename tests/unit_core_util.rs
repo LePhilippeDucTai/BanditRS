@@ -5,7 +5,6 @@
 //! `docs/plan/test-inventory.md` stays the single source of truth.
 //! Python reference: `/home/user/bandit/tests/unit/core/test_util.py`.
 
-use std::collections::HashMap;
 use std::fs;
 
 use banditrs::ast::PyCompat;
@@ -303,9 +302,12 @@ fn test_parse_ini_file() {
     let path = dir.path().join("bandit.ini");
 
     fs::write(&path, "[bandit]\nexclude=/abc,/def").unwrap();
-    let expected = HashMap::from([("exclude".to_string(), "/abc,/def".to_string())]);
-    let got = parse_ini_file(path.to_str().unwrap()).unwrap();
-    assert_eq!(got.get("exclude"), expected.get("exclude"));
+    let expected: indexmap::IndexMap<String, String> =
+        [("exclude".to_string(), "/abc,/def".to_string())]
+            .into_iter()
+            .collect();
+    let got = parse_ini_file(path.to_str().unwrap());
+    assert_eq!(got, Some(expected));
 
     fs::write(&path, "[Blabla]\nsomething=something").unwrap();
     assert_eq!(parse_ini_file(path.to_str().unwrap()), None);
