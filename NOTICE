@@ -1,0 +1,7 @@
+BanditRS — Copyright (c) 2026 the BanditRS authors.
+
+This project is a reimplementation of bandit (https://github.com/PyCQA/bandit),
+Copyright 2014 Hewlett-Packard Development Company, L.P. and the PyCQA
+contributors, licensed under the Apache License, Version 2.0.
+The example files under examples/ and the behaviour specifications under
+docs/spec/ are derived from the bandit project.

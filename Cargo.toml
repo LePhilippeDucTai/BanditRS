@@ -1,0 +1,56 @@
+[package]
+name = "banditrs"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+description = "Pure-Rust reimplementation of bandit, the Python security linter"
+license = "Apache-2.0"
+repository = "https://github.com/LePhilippeDucTai/BanditRS"
+readme = "README.md"
+keywords = ["security", "linter", "python", "bandit", "static-analysis"]
+categories = ["command-line-utilities", "development-tools"]
+
+[lib]
+name = "banditrs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "bandit"
+path = "src/bin/bandit.rs"
+
+[[bin]]
+name = "bandit-baseline"
+path = "src/bin/bandit_baseline.rs"
+
+[[bin]]
+name = "bandit-config-generator"
+path = "src/bin/bandit_config_generator.rs"
+
+[dependencies]
+ruff_python_parser = "0.0.12"
+ruff_python_ast = "0.0.12"
+ruff_text_size = "0.0.12"
+ruff_source_file = "0.0.12"
+rayon = "1.12"
+regex = "1.13"
+rustc-hash = "2.1"
+indexmap = "2.14"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+toml = "0.9"
+saphyr-parser = "0.0.12"
+encoding_rs = "0.8"
+typed-arena = "2"
+
+[dev-dependencies]
+tempfile = "3"
+pretty_assertions = "1"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+opt-level = 3
+panic = "unwind"
+
+[profile.dev]
+opt-level = 1
