@@ -5,29 +5,34 @@
 //! `docs/plan/test-inventory.md` stays the single source of truth.
 //! Python reference: `/home/user/bandit/tests/unit/core/test_docs_util.py`.
 
+use banditrs::core::docs_utils::{base_url, get_url};
+
 /// Port of `tests/unit/core/test_docs_util.py::DocsUtilTests::test_import_call_bib`.
 #[test]
-#[ignore = "WP-11: not ported yet — see docs/plan/wp/WP-11-unit-core-issue-blacklisting-docs.md"]
 fn test_import_call_bib() {
-    unimplemented!(
-        "WP-11: port tests/unit/core/test_docs_util.py::DocsUtilTests::test_import_call_bib"
+    let expected_url = format!(
+        "{}{}",
+        base_url(),
+        "blacklists/blacklist_imports.html#b413-import-pycrypto"
     );
+    assert_eq!(expected_url, get_url("B413"));
 }
 
 /// Port of `tests/unit/core/test_docs_util.py::DocsUtilTests::test_overwrite_bib_info`.
 #[test]
-#[ignore = "WP-11: not ported yet — see docs/plan/wp/WP-11-unit-core-issue-blacklisting-docs.md"]
 fn test_overwrite_bib_info() {
-    unimplemented!(
-        "WP-11: port tests/unit/core/test_docs_util.py::DocsUtilTests::test_overwrite_bib_info"
+    let expected_url = format!(
+        "{}{}",
+        base_url(),
+        "blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes"
     );
+    assert_eq!(get_url("B304"), get_url("B305"));
+    assert_eq!(expected_url, get_url("B304"));
 }
 
 /// Port of `tests/unit/core/test_docs_util.py::DocsUtilTests::test_plugin_call_bib`.
 #[test]
-#[ignore = "WP-11: not ported yet — see docs/plan/wp/WP-11-unit-core-issue-blacklisting-docs.md"]
 fn test_plugin_call_bib() {
-    unimplemented!(
-        "WP-11: port tests/unit/core/test_docs_util.py::DocsUtilTests::test_plugin_call_bib"
-    );
+    let expected_url = format!("{}{}", base_url(), "plugins/b101_assert_used.html");
+    assert_eq!(expected_url, get_url("B101"));
 }
