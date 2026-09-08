@@ -9,7 +9,7 @@ mod common;
 use indexmap::IndexSet;
 
 use banditrs::constants::Rank;
-use banditrs::core::config::{BanditConfig, Profile};
+use banditrs::core::config::{BanditConfig, ConfigValue, Profile};
 
 use common::{
     check_example, check_example_with, check_metrics, config_map, config_str_list,
@@ -399,12 +399,35 @@ fn test_multiline_sql_statements_metrics() {
 // --- Ports pending (WP-01, docs/plan/wp/WP-01-functional-config-profiles.md) ---
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_asserts`.
+///
+/// Adapted: Python mutates `test._config` on the already-built `assert_used`
+/// plugin instance directly; we get the same effect by building a fresh
+/// manager from a config carrying the `assert_used` section, since
+/// `TestSet::new` reads it through `PluginConfigs::from_config` — same
+/// input, same output.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_asserts() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_asserts"
+    let profile = BanditConfig::default().default_profile();
+
+    let config = config_with_section(
+        "assert_used",
+        config_map(vec![("skips", config_str_list(&[]))]),
     );
+    let mut mgr = manager_with(config, profile.clone());
+    check_example_with(&mut mgr, "assert.py", [0, 1, 0, 0], [0, 0, 0, 1]);
+
+    let config = config_with_section(
+        "assert_used",
+        config_map(vec![("skips", config_str_list(&["*assert.py"]))]),
+    );
+    let mut mgr = manager_with(config, profile.clone());
+    check_example_with(&mut mgr, "assert.py", [0, 0, 0, 0], [0, 0, 0, 0]);
+
+    // Section present but empty: `config.get("skips", [])` still defaults to
+    // `[]`, same result as the first case.
+    let config = config_with_section("assert_used", config_map(vec![]));
+    let mut mgr = manager_with(config, profile);
+    check_example_with(&mut mgr, "assert.py", [0, 1, 0, 0], [0, 0, 0, 1]);
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_baseline_filter`.
@@ -449,19 +472,38 @@ fn test_django_xss_secure() {
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_allowed_calls`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_markupsafe_markup_xss_allowed_calls() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_allowed_calls"
+    let profile = BanditConfig::default().default_profile();
+    let config = config_with_section(
+        "markupsafe_xss",
+        config_map(vec![("allowed_calls", config_str_list(&["bleach.clean"]))]),
+    );
+    let mut mgr = manager_with(config, profile);
+    check_example_with(
+        &mut mgr,
+        "markupsafe_markup_xss_allowed_calls.py",
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
     );
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_extend_markup_names`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_markupsafe_markup_xss_extend_markup_names() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_markupsafe_markup_xss_extend_markup_names"
+    let profile = BanditConfig::default().default_profile();
+    let config = config_with_section(
+        "markupsafe_xss",
+        config_map(vec![(
+            "extend_markup_names",
+            config_str_list(&["webhelpers.html.literal"]),
+        )]),
+    );
+    let mut mgr = manager_with(config, profile);
+    check_example_with(
+        &mut mgr,
+        "markupsafe_markup_xss_extend_markup_names.py",
+        [0, 0, 2, 0],
+        [0, 0, 0, 2],
     );
 }
 
@@ -487,19 +529,43 @@ fn test_nonsense() {
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_try_except_continue`.
+///
+/// Adapted like `test_asserts`: config sections instead of poking `_config`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_try_except_continue() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_try_except_continue"
+    let profile = BanditConfig::default().default_profile();
+
+    let config = config_with_section(
+        "try_except_continue",
+        config_map(vec![("check_typed_exception", ConfigValue::Bool(true))]),
     );
+    let mut mgr = manager_with(config, profile.clone());
+    check_example_with(&mut mgr, "try_except_continue.py", [0, 3, 0, 0], [0, 0, 0, 3]);
+
+    let config = config_with_section(
+        "try_except_continue",
+        config_map(vec![("check_typed_exception", ConfigValue::Bool(false))]),
+    );
+    let mut mgr = manager_with(config, profile);
+    check_example_with(&mut mgr, "try_except_continue.py", [0, 2, 0, 0], [0, 0, 0, 2]);
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_try_except_pass`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_try_except_pass() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_try_except_pass"
+    let profile = BanditConfig::default().default_profile();
+
+    let config = config_with_section(
+        "try_except_pass",
+        config_map(vec![("check_typed_exception", ConfigValue::Bool(true))]),
     );
+    let mut mgr = manager_with(config, profile.clone());
+    check_example_with(&mut mgr, "try_except_pass.py", [0, 3, 0, 0], [0, 0, 0, 3]);
+
+    let config = config_with_section(
+        "try_except_pass",
+        config_map(vec![("check_typed_exception", ConfigValue::Bool(false))]),
+    );
+    let mut mgr = manager_with(config, profile);
+    check_example_with(&mut mgr, "try_except_pass.py", [0, 2, 0, 0], [0, 0, 0, 2]);
 }
