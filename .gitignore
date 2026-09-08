@@ -1,3 +1,4 @@
 /target
 /.venv
 *.swp
+/.claude/worktrees/
