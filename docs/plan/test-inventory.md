@@ -48,13 +48,13 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `BaselineFunctionalTests::test_existing_and_new_candidates` | `test_existing_and_new_candidates` | à porter |  |
-| `BaselineFunctionalTests::test_new_candidates_include_nosec_new_nosecs` | `test_new_candidates_include_nosec_new_nosecs` | à porter |  |
-| `BaselineFunctionalTests::test_new_candidates_include_nosec_only_nosecs` | `test_new_candidates_include_nosec_only_nosecs` | à porter |  |
-| `BaselineFunctionalTests::test_no_existing_no_new_candidates` | `test_no_existing_no_new_candidates` | à porter |  |
-| `BaselineFunctionalTests::test_no_existing_with_new_candidates` | `test_no_existing_with_new_candidates` | à porter |  |
-| `BaselineFunctionalTests::test_no_new_candidates` | `test_no_new_candidates` | à porter |  |
-| `BaselineFunctionalTests::test_no_new_candidates_include_nosec` | `test_no_new_candidates_include_nosec` | à porter |  |
+| `BaselineFunctionalTests::test_existing_and_new_candidates` | `test_existing_and_new_candidates` | porté |  |
+| `BaselineFunctionalTests::test_new_candidates_include_nosec_new_nosecs` | `test_new_candidates_include_nosec_new_nosecs` | porté |  |
+| `BaselineFunctionalTests::test_new_candidates_include_nosec_only_nosecs` | `test_new_candidates_include_nosec_only_nosecs` | porté |  |
+| `BaselineFunctionalTests::test_no_existing_no_new_candidates` | `test_no_existing_no_new_candidates` | porté |  |
+| `BaselineFunctionalTests::test_no_existing_with_new_candidates` | `test_no_existing_with_new_candidates` | porté |  |
+| `BaselineFunctionalTests::test_no_new_candidates` | `test_no_new_candidates` | porté |  |
+| `BaselineFunctionalTests::test_no_new_candidates_include_nosec` | `test_no_new_candidates_include_nosec` | porté |  |
 
 ## `tests/functional/test_functional.py` → `tests/functional.rs` ([WP-01](wp/WP-01-functional-config-profiles.md))
 
