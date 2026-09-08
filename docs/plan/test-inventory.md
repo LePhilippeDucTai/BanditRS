@@ -22,11 +22,11 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/cli/test_baseline.py` | `tests/unit_cli_baseline.rs` | [WP-04](wp/WP-04-unit-cli-baseline.md) | 12 | 0 | 0 | 8 | 4 | 0 |
 | `tests/unit/cli/test_config_generator.py` | `tests/unit_cli_config_generator.rs` | [WP-05](wp/WP-05-unit-cli-config-generator.md) | 6 | 0 | 0 | 6 | 0 | 0 |
 | `tests/unit/cli/test_main.py` | `tests/unit_cli_main.rs` | [WP-03](wp/WP-03-unit-cli-main.md) | 20 | 0 | 0 | 14 | 5 | 1 |
-| `tests/unit/core/test_blacklisting.py` | `tests/unit_core_blacklisting.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 0 | 0 | 2 | 0 | 0 |
+| `tests/unit/core/test_blacklisting.py` | `tests/unit_core_blacklisting.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 2 | 0 | 0 | 0 | 0 |
 | `tests/unit/core/test_config.py` | `tests/unit_core_config.rs` | [WP-08](wp/WP-08-unit-core-config.md) | 26 | 0 | 0 | 26 | 0 | 0 |
 | `tests/unit/core/test_context.py` | `tests/unit_core_context.rs` | [WP-09](wp/WP-09-unit-core-context.md) | 19 | 0 | 0 | 0 | 17 | 2 |
-| `tests/unit/core/test_docs_util.py` | `tests/unit_core_docs_util.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 3 | 0 | 0 | 3 | 0 | 0 |
-| `tests/unit/core/test_issue.py` | `tests/unit_core_issue.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 7 | 0 | 0 | 6 | 1 | 0 |
+| `tests/unit/core/test_docs_util.py` | `tests/unit_core_docs_util.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 3 | 3 | 0 | 0 | 0 | 0 |
+| `tests/unit/core/test_issue.py` | `tests/unit_core_issue.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 7 | 6 | 0 | 0 | 1 | 0 |
 | `tests/unit/core/test_manager.py` | `tests/unit_core_manager.rs` | [WP-06](wp/WP-06-unit-core-manager.md) | 21 | 0 | 0 | 13 | 7 | 1 |
 | `tests/unit/core/test_meta_ast.py` | `—` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 0 | 0 | 0 | 0 | 2 |
 | `tests/unit/core/test_test_set.py` | `tests/unit_core_test_set.rs` | [WP-10](wp/WP-10-unit-core-test-set.md) | 13 | 0 | 0 | 0 | 13 | 0 |
@@ -211,8 +211,8 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `BlacklistingTests::test_report_issue` | `test_report_issue` | à porter |  |
-| `BlacklistingTests::test_report_issue_defaults` | `test_report_issue_defaults` | à porter |  |
+| `BlacklistingTests::test_report_issue` | `test_report_issue` | porté |  |
+| `BlacklistingTests::test_report_issue_defaults` | `test_report_issue_defaults` | porté |  |
 
 ## `tests/unit/core/test_config.py` → `tests/unit_core_config.rs` ([WP-08](wp/WP-08-unit-core-config.md))
 
@@ -273,21 +273,21 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `DocsUtilTests::test_import_call_bib` | `test_import_call_bib` | à porter |  |
-| `DocsUtilTests::test_overwrite_bib_info` | `test_overwrite_bib_info` | à porter |  |
-| `DocsUtilTests::test_plugin_call_bib` | `test_plugin_call_bib` | à porter |  |
+| `DocsUtilTests::test_import_call_bib` | `test_import_call_bib` | porté |  |
+| `DocsUtilTests::test_overwrite_bib_info` | `test_overwrite_bib_info` | porté |  |
+| `DocsUtilTests::test_plugin_call_bib` | `test_plugin_call_bib` | porté |  |
 
 ## `tests/unit/core/test_issue.py` → `tests/unit_core_issue.rs` ([WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md))
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `IssueTests::test_get_code` | `test_get_code` | à porter (adapté) | mock `linecache` → `SourceFile` avec octets de contrôle (couvert par `issue.rs::get_code_with_control_chars`) |
-| `IssueTests::test_issue_as_dict` | `test_issue_as_dict` | à porter |  |
-| `IssueTests::test_issue_create` | `test_issue_create` | à porter |  |
-| `IssueTests::test_issue_filter_confidence` | `test_issue_filter_confidence` | à porter |  |
-| `IssueTests::test_issue_filter_severity` | `test_issue_filter_severity` | à porter |  |
-| `IssueTests::test_issue_str` | `test_issue_str` | à porter |  |
-| `IssueTests::test_matches_issue` | `test_matches_issue` | à porter |  |
+| `IssueTests::test_get_code` | `test_get_code` | adapté | mock `linecache` → `SourceFile` avec octets de contrôle (couvert par `issue.rs::get_code_with_control_chars`) |
+| `IssueTests::test_issue_as_dict` | `test_issue_as_dict` | porté |  |
+| `IssueTests::test_issue_create` | `test_issue_create` | porté |  |
+| `IssueTests::test_issue_filter_confidence` | `test_issue_filter_confidence` | porté |  |
+| `IssueTests::test_issue_filter_severity` | `test_issue_filter_severity` | porté |  |
+| `IssueTests::test_issue_str` | `test_issue_str` | porté |  |
+| `IssueTests::test_matches_issue` | `test_matches_issue` | porté |  |
 
 ## `tests/unit/core/test_manager.py` → `tests/unit_core_manager.rs` ([WP-06](wp/WP-06-unit-core-manager.md))
 
