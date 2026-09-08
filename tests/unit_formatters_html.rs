@@ -131,6 +131,7 @@ fn test_report_contents() {
     assert!(issue0_text.contains("BBBBBBB"));
     assert!(issue0_text.contains("abc.py"));
     assert!(issue0_text.contains("Line number: 1"));
+    assert!(issue0_text.contains("MEDIUM"));
 }
 
 /// Port of `tests/unit/formatters/test_html.py::HtmlFormatterTests::test_escaping`:
