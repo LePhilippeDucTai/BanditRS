@@ -48,6 +48,16 @@ impl Level {
 /// Python's root logger defaults to WARNING until `_init_logger` runs.
 static LEVEL: AtomicU8 = AtomicU8::new(Level::Warning as u8);
 static FORMAT: OnceLock<Mutex<String>> = OnceLock::new();
+/// `bandit` logs to stderr; `bandit-baseline`/`bandit-config-generator` set
+/// up a `StreamHandler(sys.stdout)` instead.
+static USE_STDOUT: AtomicU8 = AtomicU8::new(0);
+
+/// Direct log output to stdout instead of the default stderr (used by the
+/// `bandit-baseline`/`bandit-config-generator` binaries, which configure
+/// their own stdout handler).
+pub fn set_stdout(use_stdout: bool) {
+    USE_STDOUT.store(use_stdout as u8, Ordering::Relaxed);
+}
 
 /// A buffered log entry: `(module, level, message)`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -94,10 +104,34 @@ fn format_entry(module: &str, level: Level, message: &str) -> String {
     if fmt == default {
         return format!("[{module}]\t{}\t{message}", level.name());
     }
-    fmt.replace("%(module)s", module)
-        .replace("%(name)s", if module == "main" { "root" } else { module })
-        .replace("%(levelname)s", level.name())
-        .replace("%(message)s", message)
+    substitute_log_format(fmt, module, level, message)
+}
+
+/// `"%(name)s"` / `"%(name)5s"` (right-justified, width 5) style
+/// substitution for `module`, `name`, `levelname`, `message`.
+fn substitute_log_format(fmt: &str, module: &str, level: Level, message: &str) -> String {
+    static RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+    let re = RE.get_or_init(|| regex::Regex::new(r"%\((\w+)\)(\d*)s").unwrap());
+    re.replace_all(fmt, |caps: &regex::Captures| {
+        let value = match &caps[1] {
+            "module" => module,
+            "name" => {
+                if module == "main" {
+                    "root"
+                } else {
+                    module
+                }
+            }
+            "levelname" => level.name(),
+            "message" => message,
+            _ => "",
+        };
+        match caps[2].parse::<usize>() {
+            Ok(width) => format!("{value:>width$}"),
+            Err(_) => value.to_string(),
+        }
+    })
+    .into_owned()
 }
 
 /// Emit a log record. When a thread-local buffer is active (see
@@ -120,12 +154,18 @@ pub fn log(module: &'static str, level: Level, args: fmt::Arguments<'_>) {
     }
 }
 
-/// Write a record directly to stderr.
+/// Write a record directly to stderr (or stdout, see [`set_stdout`]).
 pub fn write_entry(module: &str, level: Level, message: &str) {
     let line = format_entry(module, level, message);
-    let stderr = std::io::stderr();
-    let mut lock = stderr.lock();
-    let _ = writeln!(lock, "{line}");
+    if USE_STDOUT.load(Ordering::Relaxed) != 0 {
+        let stdout = std::io::stdout();
+        let mut lock = stdout.lock();
+        let _ = writeln!(lock, "{line}");
+    } else {
+        let stderr = std::io::stderr();
+        let mut lock = stderr.lock();
+        let _ = writeln!(lock, "{line}");
+    }
 }
 
 /// Run `f` with a thread-local buffer collecting every record emitted on this

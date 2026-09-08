@@ -9,6 +9,7 @@ use std::fmt;
 use indexmap::{IndexMap, IndexSet};
 
 use crate::core::blacklist::BlacklistEntry;
+use crate::core::registry;
 
 /// A loaded configuration value (YAML 1.1 / TOML), insertion ordered.
 #[derive(Debug, Clone, PartialEq)]
@@ -157,10 +158,42 @@ impl BanditConfig {
     /// `_init_settings()`. Note: a loaded file replaces the defaults entirely
     /// (no `include` default merged in).
     pub fn new(config_file: Option<&str>) -> Result<BanditConfig, ConfigError> {
-        match config_file {
-            None => Ok(BanditConfig::default()),
-            Some(_) => todo!("M3: BanditConfig::new — load YAML/TOML, validate, convert legacy config"),
+        let Some(path) = config_file else {
+            return Ok(BanditConfig::default());
+        };
+        let text = std::fs::read_to_string(path).map_err(|_| ConfigError::new("Could not read config file.", path))?;
+
+        let raw = if path.ends_with(".toml") {
+            let table: toml::Table = text.parse().map_err(|e| {
+                crate::log_error!("config", "{}", e);
+                ConfigError::new("Error parsing file.", path)
+            })?;
+            let bandit = table.get("tool").and_then(|t| t.get("bandit")).cloned().unwrap_or(toml::Value::Table(toml::Table::new()));
+            toml_to_config_value(&bandit)
+        } else {
+            crate::pycompat::yaml_load::safe_load(&text).map_err(|e| {
+                crate::log_error!("config", "{}", e);
+                ConfigError::new("Error parsing file.", path)
+            })?
+        };
+
+        if !matches!(raw, ConfigValue::Map(_)) {
+            return Err(ConfigError::new("Error parsing file.", path));
         }
+        let mut config = BanditConfig { path: Some(path.to_string()), raw, plugin_name_pattern: String::new() };
+
+        if config.get_option("profiles").is_some() {
+            crate::log_warning!(
+                "config",
+                "Config file '{}' contains deprecated legacy config data. Please consider upgrading to the new config format. The tool 'bandit-config-generator' can help you with this. Support for legacy configs will be removed in a future bandit version.",
+                path
+            );
+        }
+
+        config.plugin_name_pattern =
+            config.get_option("plugin_name_pattern").and_then(ConfigValue::as_str).map(str::to_string).unwrap_or_else(|| "*.py".to_string());
+
+        Ok(config)
     }
 
     /// `get_option("a.b.c")`: walk the tree; `None` when a level is missing
@@ -185,12 +218,23 @@ impl BanditConfig {
         }
     }
 
-    /// `config["profiles"][name]` as converted by `convert_legacy_config`.
-    /// TODO(M3): implement `convert_names_to_ids` / `convert_legacy_blacklist_*`
-    /// (keep the upstream argument swap between `bad_calls` and
-    /// `bad_imports`: `tests/unit/core/test_config.py` depends on it).
-    pub fn profile(&self, _name: &str) -> Option<Profile> {
-        todo!("M3: legacy profiles")
+    /// `config["profiles"][name]` as converted by `convert_names_to_ids`
+    /// (test names in `include`/`exclude` resolved to ids, unknown names
+    /// left unchanged). Legacy `blacklist_calls`/`blacklist_imports` data
+    /// (`convert_legacy_blacklist_*`) is not yet converted — TODO(M7+):
+    /// keep the upstream argument swap between `bad_calls` and
+    /// `bad_imports`, `tests/unit/core/test_config.py` depends on it.
+    pub fn profile(&self, name: &str) -> Option<Profile> {
+        let profiles = self.get_option("profiles")?;
+        let prof = profiles.as_map()?.get(name)?;
+        let to_ids = |key: &str| -> IndexSet<String> {
+            prof.as_map()
+                .and_then(|m| m.get(key))
+                .and_then(ConfigValue::as_list)
+                .map(|l| l.iter().map(ConfigValue::py_str).map(|n| registry::get_test_id(&n).map(str::to_string).unwrap_or(n)).collect())
+                .unwrap_or_default()
+        };
+        Some(Profile { include: to_ids("include"), exclude: to_ids("exclude"), blacklist: None })
     }
 
     /// Profile built from the `tests` / `skips` options (`_get_profile`
@@ -202,6 +246,20 @@ impl BanditConfig {
                 .unwrap_or_default()
         };
         Profile { include: to_set(self.get_option("tests")), exclude: to_set(self.get_option("skips")), blacklist: None }
+    }
+}
+
+/// `tomllib.load(f).get("tool", {}).get("bandit", {})`, converted to a
+/// `ConfigValue` tree (map key order preserved).
+fn toml_to_config_value(v: &toml::Value) -> ConfigValue {
+    match v {
+        toml::Value::String(s) => ConfigValue::Str(s.clone()),
+        toml::Value::Integer(i) => ConfigValue::Int(*i),
+        toml::Value::Float(f) => ConfigValue::Float(*f),
+        toml::Value::Boolean(b) => ConfigValue::Bool(*b),
+        toml::Value::Datetime(d) => ConfigValue::Str(d.to_string()),
+        toml::Value::Array(items) => ConfigValue::List(items.iter().map(toml_to_config_value).collect()),
+        toml::Value::Table(map) => ConfigValue::Map(map.iter().map(|(k, v)| (k.clone(), toml_to_config_value(v))).collect()),
     }
 }
 
@@ -224,5 +282,38 @@ mod tests {
         let c = BanditConfig { path: None, raw: ConfigValue::Map(m), plugin_name_pattern: "*.py".into() };
         assert_eq!(c.get_option("a.b"), Some(&ConfigValue::Int(3)));
         assert!(c.get_option("a.c").is_none());
+    }
+
+    #[test]
+    fn missing_file_errors() {
+        let e = BanditConfig::new(Some("/nonexistent/nonexistent.yml")).unwrap_err();
+        assert_eq!(e.message, "/nonexistent/nonexistent.yml : Could not read config file.");
+    }
+
+    #[test]
+    fn loads_yaml_and_toml_and_profile() {
+        let dir = tempfile::tempdir().unwrap();
+        let yml = dir.path().join("bandit.yaml");
+        std::fs::write(&yml, "assert_used:\n  skips: ['*_test.py']\nprofiles:\n  test:\n    include: [start_process_with_a_shell]\n    exclude: []\n").unwrap();
+        let c = BanditConfig::new(Some(yml.to_str().unwrap())).unwrap();
+        assert_eq!(c.get_option("assert_used.skips").unwrap().as_list().unwrap().len(), 1);
+        let p = c.profile("test").unwrap();
+        assert!(p.include.contains("B605"));
+        assert!(c.profile("missing").is_none());
+
+        let toml_path = dir.path().join("bandit.toml");
+        std::fs::write(&toml_path, "[tool.bandit]\nexclude_dirs = [\"tests\"]\n").unwrap();
+        let c = BanditConfig::new(Some(toml_path.to_str().unwrap())).unwrap();
+        let list = c.get_option("exclude_dirs").unwrap().as_list().unwrap();
+        assert_eq!(list[0].as_str(), Some("tests"));
+    }
+
+    #[test]
+    fn invalid_yaml_errors() {
+        let dir = tempfile::tempdir().unwrap();
+        let yml = dir.path().join("bad.yaml");
+        std::fs::write(&yml, "a: [\n").unwrap();
+        let e = BanditConfig::new(Some(yml.to_str().unwrap())).unwrap_err();
+        assert!(e.message.ends_with("Error parsing file."));
     }
 }

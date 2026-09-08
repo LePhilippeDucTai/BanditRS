@@ -92,6 +92,21 @@ pub fn abspath(p: &str) -> String {
     if isabs(p) { normpath(p) } else { normpath(&join(&getcwd(), p)) }
 }
 
+/// `pathlib.PurePosixPath(p).as_posix()`: drop `.` components and redundant
+/// slashes, drop a trailing slash, but — unlike `normpath` — never resolve
+/// `..` segments or collapse an all-`.` path to anything but `.`.
+pub fn posix_normalize(p: &str) -> String {
+    let absolute = p.starts_with('/');
+    let parts: Vec<&str> = p.split('/').filter(|s| !s.is_empty() && *s != ".").collect();
+    let joined = parts.join("/");
+    match (absolute, joined.is_empty()) {
+        (true, true) => "/".to_string(),
+        (true, false) => format!("/{joined}"),
+        (false, true) => ".".to_string(),
+        (false, false) => joined,
+    }
+}
+
 /// `os.path.relpath(p, start=os.curdir)`.
 pub fn relpath(p: &str, start: Option<&str>) -> String {
     let start = start.map(str::to_string).unwrap_or_else(getcwd);

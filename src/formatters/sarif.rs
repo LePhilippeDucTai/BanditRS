@@ -13,17 +13,19 @@ use crate::core::issue::Issue;
 use crate::core::manager::Manager;
 use crate::pycompat::datetime::UtcDateTime;
 use crate::pycompat::json::dumps_indent2_preserve_order;
-use crate::pycompat::path::isabs;
+use crate::pycompat::path::{isabs, posix_normalize};
 use crate::pycompat::urlquote::{as_file_uri, quote};
 
 const SCHEMA_URI: &str = "https://json.schemastore.org/sarif-2.1.0.json";
 const SCHEMA_VER: &str = "2.1.0";
 
+/// `pathlib.PurePath(file_path)`; absolute → `as_uri()`, relative →
+/// `urllib.parse.quote(as_posix())` (`PurePath` drops a leading `./`).
 fn to_uri(file_path: &str) -> String {
     if isabs(file_path) {
         as_file_uri(file_path)
     } else {
-        quote(file_path, "/")
+        quote(&posix_normalize(file_path), "/")
     }
 }
 
@@ -67,17 +69,29 @@ fn artifact_location(uri: &str) -> Value {
 }
 
 fn region_and_context_region(issue: &Issue) -> (Value, Option<Value>) {
-    let code = issue.get_code(-1, false);
+    // `issue.as_dict()` in the Python formatter is called without `max_lines`,
+    // so it always uses the default (3) — the `-n/--number` CLI flag has no
+    // effect on the SARIF formatter's code snippet, a bandit quirk we replicate.
+    let code = issue.get_code(3, false);
     let line_range = issue.linerange;
     let start_line = line_range.start;
-    let end_line = if line_range.len() > 1 { line_range.end } else { line_range.start };
+    // `line_range[1] if len(line_range) > 1 else line_range[0]`: index 1 of
+    // the Python list, i.e. `start + 1` for our contiguous range — NOT the
+    // true last line. A bandit quirk (SARIF's region always looks 1 line
+    // past the start for multi-line issues) that we replicate verbatim.
+    let end_line = if line_range.len() > 1 { line_range.start + 1 } else { line_range.start };
 
     let mut region = Map::new();
     let mut context_region = None;
     if !code.is_empty() {
         let (first_line_number, snippet_lines) = parse_code(&code);
-        let idx = (start_line as i64 - first_line_number as i64) as usize;
-        if let Some(snippet_line) = snippet_lines.get(idx) {
+        // `snippet_lines[line_range[0] - first_line_number]`: Python list
+        // indexing, so a negative index (the issue's own `lineno` — used to
+        // window `get_code` — differs from `line_range[0]`) wraps from the
+        // end rather than erroring. Replicated verbatim.
+        let idx = start_line as i64 - first_line_number as i64;
+        let wrapped = if idx < 0 { idx + snippet_lines.len() as i64 } else { idx };
+        if let Some(snippet_line) = usize::try_from(wrapped).ok().and_then(|i| snippet_lines.get(i)) {
             let mut snippet = Map::new();
             snippet.insert("text".into(), Value::from(snippet_line.as_str()));
             region.insert("snippet".into(), Value::Object(snippet));

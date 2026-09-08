@@ -2,9 +2,13 @@
 //! `setup.cfg` entry points). The table is complete; plugin bodies live in
 //! `crate::plugins` (stubs until M3/M4).
 //!
-//! Order matters: it is the `setup.cfg` entry-point order, which fixes the
-//! order of issues reported for a single node. The builtin `B001` blacklist
-//! test is always appended last by `TestSet`.
+//! Order matters: it fixes the order of issues reported for a single node.
+//! Verified empirically against `extension_loader.MANAGER.plugins` (a
+//! `stevedore.ExtensionManager`, which — despite `setup.cfg`'s own entry
+//! order — iterates `importlib.metadata` entry points sorted alphabetically
+//! by name): the array below is in that alphabetical order, not `setup.cfg`
+//! declaration order. The builtin `B001` blacklist test is always appended
+//! last by `TestSet`.
 
 use crate::ast::NodeKind;
 use crate::core::blacklist;
@@ -36,48 +40,48 @@ macro_rules! plugin {
 
 /// All plugins in `setup.cfg` order.
 pub static PLUGINS: &[PluginDef] = &[
-    plugin!("B201", "flask_debug_true", "flask_debug_true", [Call], None, crate::plugins::app_debug::flask_debug_true),
+    plugin!("B604", "any_other_function_with_shell_equals_true", "any_other_function_with_shell_equals_true", [Call], Some("shell_injection"), crate::plugins::injection_shell::any_other_function_with_shell_equals_true),
     plugin!("B101", "assert_used", "assert_used", [Assert], Some("assert_used"), crate::plugins::asserts::assert_used),
+    plugin!("B610", "django_extra_used", "django_extra_used", [Call], None, crate::plugins::django_sql_injection::django_extra_used),
+    plugin!("B703", "django_mark_safe", "django_mark_safe", [Call], None, crate::plugins::django_xss::django_mark_safe),
+    plugin!("B611", "django_rawsql_used", "django_rawsql_used", [Call], None, crate::plugins::django_sql_injection::django_rawsql_used),
+    plugin!("B102", "exec_used", "exec_used", [Call], None, crate::plugins::exec::exec_used),
+    plugin!("B201", "flask_debug_true", "flask_debug_true", [Call], None, crate::plugins::app_debug::flask_debug_true),
+    plugin!("B104", "hardcoded_bind_all_interfaces", "hardcoded_bind_all_interfaces", [Str], None, crate::plugins::general_bind_all_interfaces::hardcoded_bind_all_interfaces),
+    plugin!("B107", "hardcoded_password_default", "hardcoded_password_default", [FunctionDef], None, crate::plugins::general_hardcoded_password::hardcoded_password_default),
+    plugin!("B106", "hardcoded_password_funcarg", "hardcoded_password_funcarg", [Call], None, crate::plugins::general_hardcoded_password::hardcoded_password_funcarg),
+    plugin!("B105", "hardcoded_password_string", "hardcoded_password_string", [Str], None, crate::plugins::general_hardcoded_password::hardcoded_password_string),
+    plugin!("B608", "hardcoded_sql_expressions", "hardcoded_sql_expressions", [Str], None, crate::plugins::injection_sql::hardcoded_sql_expressions),
+    plugin!("B108", "hardcoded_tmp_directory", "hardcoded_tmp_directory", [Str], Some("hardcoded_tmp_directory"), crate::plugins::general_hardcoded_tmp::hardcoded_tmp_directory),
+    plugin!("B324", "hashlib_insecure_functions", "hashlib", [Call], None, crate::plugins::hashlib_insecure_functions::hashlib),
+    plugin!("B615", "huggingface_unsafe_download", "huggingface_unsafe_download", [Call], None, crate::plugins::huggingface_unsafe_download::huggingface_unsafe_download),
+    plugin!("B701", "jinja2_autoescape_false", "jinja2_autoescape_false", [Call], None, crate::plugins::jinja2_templates::jinja2_autoescape_false),
+    plugin!("B609", "linux_commands_wildcard_injection", "linux_commands_wildcard_injection", [Call], Some("shell_injection"), crate::plugins::injection_wildcard::linux_commands_wildcard_injection),
+    plugin!("B612", "logging_config_insecure_listen", "logging_config_insecure_listen", [Call], None, crate::plugins::logging_config_insecure_listen::logging_config_insecure_listen),
+    plugin!("B704", "markupsafe_markup_xss", "markupsafe_markup_xss", [Call], Some("markupsafe_xss"), crate::plugins::markupsafe_markup_xss::markupsafe_markup_xss),
+    plugin!("B601", "paramiko_calls", "paramiko_calls", [Call], None, crate::plugins::injection_paramiko::paramiko_calls),
+    plugin!("B614", "pytorch_load", "pytorch_load", [Call], None, crate::plugins::pytorch_load::pytorch_load),
     plugin!("B501", "request_with_no_cert_validation", "request_with_no_cert_validation", [Call], None, crate::plugins::crypto_request_no_cert_validation::request_with_no_cert_validation),
     plugin!("B113", "request_without_timeout", "request_without_timeout", [Call], None, crate::plugins::request_without_timeout::request_without_timeout),
-    plugin!("B102", "exec_used", "exec_used", [Call], None, crate::plugins::exec::exec_used),
     plugin!("B103", "set_bad_file_permissions", "set_bad_file_permissions", [Call], None, crate::plugins::general_bad_file_permissions::set_bad_file_permissions),
-    plugin!("B104", "hardcoded_bind_all_interfaces", "hardcoded_bind_all_interfaces", [Str], None, crate::plugins::general_bind_all_interfaces::hardcoded_bind_all_interfaces),
-    plugin!("B105", "hardcoded_password_string", "hardcoded_password_string", [Str], None, crate::plugins::general_hardcoded_password::hardcoded_password_string),
-    plugin!("B106", "hardcoded_password_funcarg", "hardcoded_password_funcarg", [Call], None, crate::plugins::general_hardcoded_password::hardcoded_password_funcarg),
-    plugin!("B107", "hardcoded_password_default", "hardcoded_password_default", [FunctionDef], None, crate::plugins::general_hardcoded_password::hardcoded_password_default),
-    plugin!("B108", "hardcoded_tmp_directory", "hardcoded_tmp_directory", [Str], Some("hardcoded_tmp_directory"), crate::plugins::general_hardcoded_tmp::hardcoded_tmp_directory),
-    plugin!("B601", "paramiko_calls", "paramiko_calls", [Call], None, crate::plugins::injection_paramiko::paramiko_calls),
-    plugin!("B602", "subprocess_popen_with_shell_equals_true", "subprocess_popen_with_shell_equals_true", [Call], Some("shell_injection"), crate::plugins::injection_shell::subprocess_popen_with_shell_equals_true),
-    plugin!("B603", "subprocess_without_shell_equals_true", "subprocess_without_shell_equals_true", [Call], Some("shell_injection"), crate::plugins::injection_shell::subprocess_without_shell_equals_true),
-    plugin!("B604", "any_other_function_with_shell_equals_true", "any_other_function_with_shell_equals_true", [Call], Some("shell_injection"), crate::plugins::injection_shell::any_other_function_with_shell_equals_true),
+    plugin!("B508", "snmp_insecure_version", "snmp_insecure_version_check", [Call], None, crate::plugins::snmp_security_check::snmp_insecure_version_check),
+    plugin!("B509", "snmp_weak_cryptography", "snmp_crypto_check", [Call], None, crate::plugins::snmp_security_check::snmp_crypto_check),
+    plugin!("B507", "ssh_no_host_key_verification", "ssh_no_host_key_verification", [Call], None, crate::plugins::ssh_no_host_key_verification::ssh_no_host_key_verification),
+    plugin!("B503", "ssl_with_bad_defaults", "ssl_with_bad_defaults", [FunctionDef], Some("ssl_with_bad_version"), crate::plugins::insecure_ssl_tls::ssl_with_bad_defaults),
+    plugin!("B502", "ssl_with_bad_version", "ssl_with_bad_version", [Call], Some("ssl_with_bad_version"), crate::plugins::insecure_ssl_tls::ssl_with_bad_version),
+    plugin!("B504", "ssl_with_no_version", "ssl_with_no_version", [Call], None, crate::plugins::insecure_ssl_tls::ssl_with_no_version),
     plugin!("B605", "start_process_with_a_shell", "start_process_with_a_shell", [Call], Some("shell_injection"), crate::plugins::injection_shell::start_process_with_a_shell),
     plugin!("B606", "start_process_with_no_shell", "start_process_with_no_shell", [Call], Some("shell_injection"), crate::plugins::injection_shell::start_process_with_no_shell),
     plugin!("B607", "start_process_with_partial_path", "start_process_with_partial_path", [Call], Some("shell_injection"), crate::plugins::injection_shell::start_process_with_partial_path),
-    plugin!("B608", "hardcoded_sql_expressions", "hardcoded_sql_expressions", [Str], None, crate::plugins::injection_sql::hardcoded_sql_expressions),
-    plugin!("B324", "hashlib_insecure_functions", "hashlib", [Call], None, crate::plugins::hashlib_insecure_functions::hashlib),
-    plugin!("B609", "linux_commands_wildcard_injection", "linux_commands_wildcard_injection", [Call], Some("shell_injection"), crate::plugins::injection_wildcard::linux_commands_wildcard_injection),
-    plugin!("B610", "django_extra_used", "django_extra_used", [Call], None, crate::plugins::django_sql_injection::django_extra_used),
-    plugin!("B611", "django_rawsql_used", "django_rawsql_used", [Call], None, crate::plugins::django_sql_injection::django_rawsql_used),
-    plugin!("B502", "ssl_with_bad_version", "ssl_with_bad_version", [Call], Some("ssl_with_bad_version"), crate::plugins::insecure_ssl_tls::ssl_with_bad_version),
-    plugin!("B503", "ssl_with_bad_defaults", "ssl_with_bad_defaults", [FunctionDef], Some("ssl_with_bad_version"), crate::plugins::insecure_ssl_tls::ssl_with_bad_defaults),
-    plugin!("B504", "ssl_with_no_version", "ssl_with_no_version", [Call], None, crate::plugins::insecure_ssl_tls::ssl_with_no_version),
-    plugin!("B701", "jinja2_autoescape_false", "jinja2_autoescape_false", [Call], None, crate::plugins::jinja2_templates::jinja2_autoescape_false),
-    plugin!("B702", "use_of_mako_templates", "use_of_mako_templates", [Call], None, crate::plugins::mako_templates::use_of_mako_templates),
-    plugin!("B703", "django_mark_safe", "django_mark_safe", [Call], None, crate::plugins::django_xss::django_mark_safe),
+    plugin!("B602", "subprocess_popen_with_shell_equals_true", "subprocess_popen_with_shell_equals_true", [Call], Some("shell_injection"), crate::plugins::injection_shell::subprocess_popen_with_shell_equals_true),
+    plugin!("B603", "subprocess_without_shell_equals_true", "subprocess_without_shell_equals_true", [Call], Some("shell_injection"), crate::plugins::injection_shell::subprocess_without_shell_equals_true),
+    plugin!("B202", "tarfile_unsafe_members", "tarfile_unsafe_members", [Call], None, crate::plugins::tarfile_unsafe_members::tarfile_unsafe_members),
+    plugin!("B613", "trojansource", "trojansource", [File], None, crate::plugins::trojansource::trojansource),
     plugin!("B112", "try_except_continue", "try_except_continue", [ExceptHandler], Some("try_except_continue"), crate::plugins::try_except_continue::try_except_continue),
     plugin!("B110", "try_except_pass", "try_except_pass", [ExceptHandler], Some("try_except_pass"), crate::plugins::try_except_pass::try_except_pass),
+    plugin!("B702", "use_of_mako_templates", "use_of_mako_templates", [Call], None, crate::plugins::mako_templates::use_of_mako_templates),
     plugin!("B505", "weak_cryptographic_key", "weak_cryptographic_key", [Call], Some("weak_cryptographic_key"), crate::plugins::weak_cryptographic_key::weak_cryptographic_key),
     plugin!("B506", "yaml_load", "yaml_load", [Call], None, crate::plugins::yaml_load::yaml_load),
-    plugin!("B507", "ssh_no_host_key_verification", "ssh_no_host_key_verification", [Call], None, crate::plugins::ssh_no_host_key_verification::ssh_no_host_key_verification),
-    plugin!("B508", "snmp_insecure_version", "snmp_insecure_version_check", [Call], None, crate::plugins::snmp_security_check::snmp_insecure_version_check),
-    plugin!("B509", "snmp_weak_cryptography", "snmp_crypto_check", [Call], None, crate::plugins::snmp_security_check::snmp_crypto_check),
-    plugin!("B612", "logging_config_insecure_listen", "logging_config_insecure_listen", [Call], None, crate::plugins::logging_config_insecure_listen::logging_config_insecure_listen),
-    plugin!("B202", "tarfile_unsafe_members", "tarfile_unsafe_members", [Call], None, crate::plugins::tarfile_unsafe_members::tarfile_unsafe_members),
-    plugin!("B614", "pytorch_load", "pytorch_load", [Call], None, crate::plugins::pytorch_load::pytorch_load),
-    plugin!("B613", "trojansource", "trojansource", [File], None, crate::plugins::trojansource::trojansource),
-    plugin!("B704", "markupsafe_markup_xss", "markupsafe_markup_xss", [Call], Some("markupsafe_xss"), crate::plugins::markupsafe_markup_xss::markupsafe_markup_xss),
-    plugin!("B615", "huggingface_unsafe_download", "huggingface_unsafe_download", [Call], None, crate::plugins::huggingface_unsafe_download::huggingface_unsafe_download),
 ];
 
 /// The builtin test ids (`Manager.builtin`).

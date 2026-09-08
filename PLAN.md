@@ -50,15 +50,14 @@ correspond bit à bit à bandit Python.
 | M3 | `src/core/blacklist.rs` (données + test B001), `src/core/registry.rs` (table des 42 plugins), `src/core/plugin_config.rs` (défauts + `from_config`), `src/core/nosec.rs`, `src/core/docs_utils.rs`, `src/core/test_set.rs` (`TestSet::new`), `src/core/tester.rs` (`Tester::run_tests`), `src/core/config.rs` (défauts + `get_option` ; **chargement fichier YAML/TOML et profils legacy restent stub**) | **Fait** (sauf chargement de fichier de config, voir M7) |
 | M4 | `src/plugins/*.rs` — **42/42 plugins implémentés** (voir docs/spec/plugins.md) ; `django_mark_safe` (B703) a une limitation connue sur `DeepAssignation` (DEVIATIONS.md #9), sans impact sur la suite de base | **Fait** |
 | M5 | `src/core/discover.rs::discover_files`, `src/core/scan.rs::scan_file` (`catch_unwind`, nosec depuis les tokens), `src/core/manager.rs::run_tests` (parallèle via `rayon`) | **Fait** ; `tests/common/mod.rs::check_example`/`check_metrics` implémentés, **78 tests fonctionnels au vert** |
-| M6 | `src/formatters/*.rs` (csv/custom/html/json/sarif/screen/text/xml/yaml + `mod.rs::output_results`), `src/pycompat/{pyformat,csv,json,yaml_emit,html,xml,urlquote}.rs` | **Fait** (sauf `pycompat::yaml_load`/`configparser`, nécessaires pour M7) ; **11 tests fonctionnels** (`tests/formatters.rs`, §C.7) au vert |
-| M7 | `src/cli/{argparse,main}.rs` (**stubs**) ; chargement de `BanditConfig` depuis un fichier YAML/TOML (reste de M3) ; `src/pycompat/{yaml_load,configparser}.rs` (**stubs**) | À faire (prochaine étape) |
-| M8 | `src/cli/{baseline,config_generator}.rs` (**stubs**) | À faire |
-| M9 | `scripts/diff_against_python.sh` (écrit, à exécuter quand la CLI existe) | À faire |
-| M10 | perf, README, clippy, push | À faire |
+| M6 | `src/formatters/*.rs` (csv/custom/html/json/sarif/screen/text/xml/yaml + `mod.rs::output_results`), `src/pycompat/{pyformat,csv,json,yaml_emit,html,xml,urlquote}.rs` | **Fait** ; **11 tests fonctionnels** (`tests/formatters.rs`, §C.7) au vert |
+| M7 | `src/cli/{argparse,main}.rs` (parseur maison + flux §A.11), `BanditConfig::new` (YAML via `pycompat::yaml_load` + TOML via `toml`), `BanditConfig::profile()` (conversion nom→id, pas la conversion legacy `blacklist_calls`/`blacklist_imports`), `src/pycompat/{yaml_load,configparser}.rs` | **Fait** ; **9 tests fonctionnels** (`tests/runtime.rs`) au vert |
+| M8 | `src/cli/{baseline,config_generator}.rs` | **Fait** ; testé manuellement (dépôt git jetable) et via différentiel contre Python — voir §5. `tests/baseline_functional.rs`/`tests/cli_tools.rs` restent des placeholders (§C.3/C.4/C.5/C.6 pas portés en tests automatisés) |
+| M9 | Harnais différentiel exécuté ad hoc (voir §5) sur `examples/` (tous formats) : diffs restants tous expliqués par DEVIATIONS.md. `scripts/diff_against_python.sh` (script fichier) pas encore mis à jour/exécuté sur la stdlib | Essentiellement fait, script à finaliser |
+| M10 | perf, README, clippy | À faire (prochaine étape) |
 
-Chaque stub porte un commentaire de module décrivant précisément ce qu'il doit faire et renvoie au paragraphe
-de spec correspondant. Chercher `todo!(` et `TODO(M` pour la liste exhaustive (restant : formatters M6, CLI M7,
-baseline/config-generator M8, chargement de fichier de config M7).
+Chaque stub restant porte un commentaire de module. Chercher `todo!(` pour la liste exhaustive (restant : la
+conversion legacy `blacklist_calls`/`blacklist_imports` de `convert_legacy_config`, cf. §5).
 
 ## 4. Architecture (rappel) et invariants à respecter
 
@@ -96,35 +95,46 @@ Invariants clés (tous validés par la trace de parcours) :
 
 ## 5. Prochaines étapes détaillées (dans l'ordre)
 
-M3, M4 et M5 sont **faits** (moteur de tests, 42 plugins, discover/scan/manager) — voir §3 pour le détail et
-DEVIATIONS.md #9 pour la seule limitation connue (`django_mark_safe`/`DeepAssignation`). Restent explicitement
-hors de la suite de base (M4, config spécifique) : `test_asserts`, `test_try_except_*`, `test_markupsafe_*`,
-`test_django_xss_*` (profil `exclude B308`) — nécessitent le chargement de config personnalisée (M7) pour être
-exercés avec des valeurs non-défaut ; `mark_safe_secure.py`/`mark_safe_insecure.py` dépendent en plus de la
-limitation DeepAssignation ci-dessus.
+M0–M9 sont **faits** dans les grandes lignes (moteur de tests, 42 plugins, formatters, CLI complet — `bandit`,
+`bandit-baseline`, `bandit-config-generator`). Limitations connues restantes (aucune ne bloque la suite de base) :
 
-Note pour la suite : le chargement de `BanditConfig` depuis un fichier (YAML/TOML) et `profile(name)` (legacy)
-sont encore des stubs dans `core/config.rs` (`BanditConfig::new(Some(path))`, `todo!()`) ; nécessaires pour M7
-(`-c`/`-p`) et pour les tests M4 ci-dessus. À faire : YAML via `pycompat::yaml_load` (à écrire : `saphyr-parser`
-+ résolveurs PyYAML 1.1) ou TOML (`toml` crate, `[tool.bandit]`) ; `validate()` ; `convert_legacy_config()`
-(garder l'inversion `bad_calls`/`bad_imports`, testée) ; `profile(name)`. Tests : `tests/unit/core/test_config.py`.
+- DEVIATIONS.md #9 : `django_mark_safe`/`DeepAssignation` (limitation connue, sans impact sur la suite de base).
+- `test_asserts`, `test_try_except_*`, `test_markupsafe_*`, `test_django_xss_*` (profil `exclude B308`) : hors de
+  la suite fonctionnelle de base (`tests/functional.rs`), nécessiteraient un `BanditTestSet` construit avec un
+  profil/config spécifique plutôt que `manager_for_default()` — pas encore portés en tests Rust.
+- `BanditConfig::profile()` fait la conversion nom→id (`registry::get_test_id`) mais pas encore
+  `convert_legacy_blacklist_data`/`convert_legacy_blacklist_tests` (l'ancien format `blacklist_calls`/
+  `blacklist_imports` avec inversion `bad_calls`/`bad_imports` — DEVIATIONS.md note l'inversion à garder telle
+  quelle) : `todo!()` implicite (pas de config de test l'exerçant pour l'instant). Tests de référence :
+  `tests/unit/core/test_config.py`.
+- `tests/baseline_functional.rs`, `tests/cli_tools.rs` : encore des placeholders `#[ignore]` — §C.3 (7 scénarios
+  baseline), §C.4 (`_get_options_from_ini`/`_log_option_source`/exit codes), §C.5 (`bandit-baseline` avec un vrai
+  dépôt git temporaire), §C.6 (`bandit-config-generator`) pas portés en tests automatisés, seulement vérifiés
+  manuellement (dépôt git jetable dans `/tmp`, cf. session de développement) et par différentiel contre Python.
 
-### M6 — formatters (`docs/spec/cli_formatters_tests.md` partie B) : json/txt/screen d'abord (tests runtime), puis
-custom (`pycompat::pyformat`), csv, xml, html (templates verbatim à recopier depuis `bandit/formatters/html.py:171-323`),
-yaml (`pycompat::yaml_emit`), sarif. Tests : `tests/formatters.rs` (§C.7).
+### Harnais différentiel — méthode et résultat (fait ad hoc, à refaire via `scripts/diff_against_python.sh`)
 
-### M7 — CLI : `cli/argparse.rs` (doc de module), `cli/main.rs` (flux §A.11 ; `fn run(argv) -> i32` testable ;
-`.bandit` INI via `pycompat::configparser`), `--dump-walk` conservé comme option cachée. Tests : `tests/runtime.rs`,
-`tests/cli_tools.rs` (§C.4).
+Venv de référence recréé (`python3 -m venv /home/user/.pyenv-bandit && .../pip install -e "/home/user/bandit[toml,yaml,sarif]"`,
++ `pip install sarif_om jschema-to-python`, absents de `bandit[sarif]` sur cet environnement). Comparaison
+`bandit <file> -f <fmt>` (tous formats) Python vs `BANDITRS_PYTHON_COMPAT=3.11 bandit <file> -f <fmt>` Rust sur
+les 96 fichiers de `examples/` (hors `nonsense2.py`, binaire) : **zéro diff** hors déviations documentées
+(#5 adresses mémoire, #9 DeepAssignation, #10 pliage double-quoted, #11 ancres/alias YAML — voir DEVIATIONS.md).
+Bugs réels trouvés et corrigés pendant cette passe :
+- `registry::PLUGINS` était trié dans l'ordre `setup.cfg`, alors que `stevedore`/`importlib.metadata` charge les
+  entry points **triés alphabétiquement par nom** (vérifié empiriquement sur `extension_loader.MANAGER.plugins`) —
+  affecte l'ordre des issues d'un même nœud quand plusieurs plugins matchent (ex. B602/B607 sur un même `Call`).
+- `sarif.rs` : `get_code` doit toujours utiliser `max_lines=3` (le formatter Python appelle `issue.as_dict()` sans
+  argument, donc `-n/--number` n'a aucun effet sur le SARIF) ; `region.endLine` reproduit le bug Python
+  `line_range[1]` (index 1 de la liste, pas la vraie dernière ligne) ; `region.snippet` reproduit l'indexation
+  négative Python (`snippet_lines[idx]` avec `idx < 0` → depuis la fin) quand `lineno` du plugin diffère de
+  `linerange[0]` ; `to_uri` doit normaliser via `PurePath.as_posix()` (`pycompat::path::posix_normalize`, retire
+  un `./` initial) avant de percent-encoder.
 
-### M8 — `bandit-baseline` (git CLI) et `bandit-config-generator` ; tests §C.3, §C.5, §C.6.
+À refaire avant de clore M9 : mettre à jour `scripts/diff_against_python.sh` pour automatiser cette comparaison
+(actuellement faite via une boucle shell ad hoc) et l'exécuter aussi sur `/usr/lib/python3.11` (`BANDITRS_PYTHON_COMPAT=3.11`).
 
-### M9 — harnais différentiel : `scripts/diff_against_python.sh` (walk traces + JSON + tous formats sur
-`examples/` puis `/usr/lib/python3.11`) ; objectif zéro diff sur `examples/` (normalisation `generated_at` et
-version de doc) ; les écarts restants doivent être expliqués par `DEVIATIONS.md` ou la grammaire (ruff accepte du 3.12+).
-
-### M10 — `cargo clippy --all-targets -- -D warnings`, `cargo fmt`, benchmark
-(`time bandit -r /usr/lib/python3.11` Python vs Rust `--release`, objectif ≥ 20×), README, commit/push.
+### M10 — `cargo clippy --all-targets -- -D warnings` (63 avertissements à nettoyer, aucun bloquant), `cargo fmt`,
+benchmark (`time bandit -r /usr/lib/python3.11` Python vs Rust `--release`, objectif ≥ 20×), README, commit/push.
 
 ## 6. Pièges connus (déjà rencontrés ou anticipés)
 
@@ -143,15 +153,24 @@ version de doc) ; les écarts restants doivent être expliqués par `DEVIATIONS.
 - Un fichier en erreur de syntaxe garde ses métriques `loc` (sans `SEVERITY.*`) et est retiré de `files_list`.
 - `get_code` : `lmax` exclusif ; lignes `linecache` terminées par `\n` (newlines universelles) sauf `<stdin>` (brut).
 - JSON : `sort_keys`, indent 2, `ensure_ascii` (échapper ≥ 0x7f), pas de newline final ; SARIF : ordre d'insertion.
-- Ordre des issues d'un même nœud = ordre `setup.cfg` du registre, B001 en dernier.
-- clippy : 10 avertissements mineurs restants (`if` imbriqués, doc list indentation) à nettoyer en M10.
+- Ordre des issues d'un même nœud = ordre **alphabétique du nom d'entry-point** (`stevedore`/`importlib.metadata`,
+  PAS l'ordre `setup.cfg` — vérifié empiriquement, cf. §5), B001 en dernier.
+- YAML (`pycompat::yaml_emit`) : pliage à 80 colonnes vérifié octet à octet contre PyYAML 6.0.1 (algorithme de
+  `write_plain`/`write_single_quoted` dans `emitter.py`, cf. commentaires du module) ; ancres/alias PyYAML basées
+  sur l'identité d'objet Python non reproduites (DEVIATIONS.md #11) ; double-quoted non replié (#10).
+- SARIF : `get_code` toujours avec `max_lines=3` (indépendant de `-n`) ; `region.endLine` = `line_range[1]`
+  (bug Python, pas la vraie fin) ; indexation négative Python reproduite pour `region.snippet` ; `to_uri` via
+  `PurePath.as_posix()` (`pycompat::path::posix_normalize`).
+- clippy : 63 avertissements mineurs restants (`if` imbriqués, doc list indentation, lifetimes explicites) à
+  nettoyer en M10 ; aucun n'est bloquant (`#[deny(clippy::approx_constant)]` est le seul deny actif, déjà propre).
 
 ## 7. Commandes utiles
 
 ```bash
-cargo build --release && cargo test                       # unités + 78 fonctionnels (tests/functional.rs)
+cargo build --release && cargo test --all-targets         # unités + 78 fonctionnels + 11 formatters + 9 runtime
 BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit --dump-walk examples/nosec.py   # trace Rust
 /home/user/.pyenv-bandit/bin/python scripts/dump_walk.py examples/nosec.py           # trace Python
-scripts/diff_against_python.sh examples                   # harnais différentiel complet (après M7)
-/home/user/.pyenv-bandit/bin/bandit -r examples -f json   # référence Python
+scripts/diff_against_python.sh examples                   # harnais différentiel (script à finaliser, cf. §5)
+BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit -r examples -f json   # équivalent Rust
+/home/user/.pyenv-bandit/bin/bandit -r examples -f json   # référence Python (venv à recréer si absent, cf. §2)
 ```

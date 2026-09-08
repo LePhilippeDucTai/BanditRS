@@ -29,3 +29,9 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
     en style double-quoted (texte avec caractères non-ASCII/de contrôle, rare dans les données de bandit) ne sont
     **pas** repliés — une seule ligne physique, sans le découpage `\`-continué de PyYAML. Sans impact sur la suite
     de tests (`tests/formatters.rs` §C.7, valeurs relues, pas de comparaison octet à octet).
+11. Formatter YAML : PyYAML déduplique par **identité d'objet Python** (`id()`) — quand deux `Issue` du même nœud
+    partagent la même liste `linerange` par référence (observé quand plusieurs plugins déclenchent sur le même
+    nœud), il émet une ancre/alias YAML (`&id001` / `*id001`) au lieu de répéter la valeur. BanditRS n'a pas de
+    notion d'identité d'objet partagée (`LineRange` est `Copy`) et répète toujours la valeur littérale — le contenu
+    relu est identique, seule la représentation texte diffère (visible dans `scripts/diff_against_python.sh` sur
+    `wildcard-injection.py`/`partial_path_process.py`/`nosec.py`, jamais dans un test unitaire).

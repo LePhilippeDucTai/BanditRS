@@ -333,10 +333,60 @@ impl PluginConfigs {
         }
     }
 
-    /// `gen_config(name)` defaults rendered as JSON-like values, in the
-    /// order `bandit-config-generator` prints them (sorted keys).
-    /// TODO(M8): used by `bandit-config-generator --show-defaults`.
+    /// `get_config_settings()`: `{plugin.name: gen_config(plugin.config_key)}`
+    /// for every plugin that takes config (`plugin.name` is the entry-point
+    /// name, so plugins sharing a config alias like `shell_injection` each
+    /// get their own top-level key with the same nested defaults),
+    /// `yaml.safe_dump(default_flow_style=False)`.
     pub fn defaults_yaml() -> String {
-        todo!("M8: render gen_config defaults with the PyYAML-compatible emitter")
+        use serde_json::Map;
+        let mut config = Map::new();
+        for plugin in crate::core::registry::PLUGINS {
+            if let Some(key) = plugin.config_key {
+                config.insert(plugin.name.to_string(), gen_config_value(key));
+            }
+        }
+        crate::pycompat::yaml_emit::safe_dump_block(&serde_json::Value::Object(config))
+    }
+}
+
+/// `gen_config(name)` verbatim, as a JSON-like value (mirrors the `Default`
+/// impls above; kept separate since `bandit-config-generator` needs the
+/// value shape, not the typed config structs).
+fn gen_config_value(key: &str) -> serde_json::Value {
+    use serde_json::json;
+    match key {
+        "assert_used" => json!({"skips": []}),
+        "hardcoded_tmp_directory" => json!({"tmp_dirs": ["/tmp", "/var/tmp", "/dev/shm"]}),
+        "shell_injection" => json!({
+            "subprocess": ["subprocess.Popen", "subprocess.call", "subprocess.check_call", "subprocess.check_output", "subprocess.run"],
+            "shell": [
+                "os.system", "os.popen", "os.popen2", "os.popen3", "os.popen4",
+                "popen2.popen2", "popen2.popen3", "popen2.popen4", "popen2.Popen3", "popen2.Popen4",
+                "commands.getoutput", "commands.getstatusoutput", "subprocess.getoutput", "subprocess.getstatusoutput"
+            ],
+            "no_shell": [
+                "os.execl", "os.execle", "os.execlp", "os.execlpe", "os.execv", "os.execve", "os.execvp", "os.execvpe",
+                "os.spawnl", "os.spawnle", "os.spawnlp", "os.spawnlpe", "os.spawnv", "os.spawnve", "os.spawnvp", "os.spawnvpe",
+                "os.startfile"
+            ]
+        }),
+        "try_except_pass" | "try_except_continue" => json!({"check_typed_exception": false}),
+        "ssl_with_bad_version" => json!({
+            "bad_protocol_versions": [
+                "PROTOCOL_SSLv2", "SSLv2_METHOD", "SSLv23_METHOD", "PROTOCOL_SSLv3", "PROTOCOL_TLSv1",
+                "SSLv3_METHOD", "TLSv1_METHOD", "PROTOCOL_TLSv1_1", "TLSv1_1_METHOD"
+            ]
+        }),
+        "weak_cryptographic_key" => json!({
+            "weak_key_size_dsa_high": 1024,
+            "weak_key_size_dsa_medium": 2048,
+            "weak_key_size_rsa_high": 1024,
+            "weak_key_size_rsa_medium": 2048,
+            "weak_key_size_ec_high": 160,
+            "weak_key_size_ec_medium": 224
+        }),
+        "markupsafe_xss" => json!({"extend_markup_names": [], "allowed_calls": []}),
+        _ => serde_json::Value::Null,
     }
 }

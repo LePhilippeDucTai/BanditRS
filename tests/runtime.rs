@@ -28,7 +28,6 @@ fn example(name: &str) -> String {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_no_arguments() {
     let (rc, out) = run(&[], None);
     assert_eq!(rc, 2);
@@ -36,7 +35,6 @@ fn test_no_arguments() {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_piped_input() {
     let (rc, out) = run(&["-"], Some("imports.py"));
     assert_eq!(rc, 1);
@@ -46,7 +44,6 @@ fn test_piped_input() {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_nonexistent_config() {
     let (rc, out) = run(&["-c", "nonexistent.yml", "xx.py"], None);
     assert_eq!(rc, 2);
@@ -54,7 +51,6 @@ fn test_nonexistent_config() {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_help_arg() {
     let (rc, out) = run(&["-h"], None);
     assert_eq!(rc, 0);
@@ -64,7 +60,6 @@ fn test_help_arg() {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_example_nonexistent() {
     let (rc, out) = run(&[&example("nonexistent.py")], None);
     assert_eq!(rc, 0);
@@ -73,7 +68,6 @@ fn test_example_nonexistent() {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_example_okay() {
     let (rc, out) = run(&[&example("okay.py")], None);
     assert_eq!(rc, 0);
@@ -83,7 +77,6 @@ fn test_example_okay() {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_example_nonsense() {
     let (rc, out) = run(&[&example("nonsense.py")], None);
     assert_eq!(rc, 0);
@@ -92,7 +85,6 @@ fn test_example_nonsense() {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_example_nonsense2() {
     let (rc, out) = run(&[&example("nonsense2.py")], None);
     assert_eq!(rc, 0);
@@ -101,7 +93,6 @@ fn test_example_nonsense2() {
 }
 
 #[test]
-#[ignore = "CLI not implemented yet (PLAN.md M7)"]
 fn test_example_imports() {
     let (rc, out) = run(&[&example("imports.py")], None);
     assert_eq!(rc, 1);
