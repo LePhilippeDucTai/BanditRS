@@ -31,18 +31,18 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/core/test_meta_ast.py` | `—` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 0 | 0 | 0 | 0 | 2 |
 | `tests/unit/core/test_test_set.py` | `tests/unit_core_test_set.rs` | [WP-10](wp/WP-10-unit-core-test-set.md) | 13 | 0 | 0 | 0 | 13 | 0 |
 | `tests/unit/core/test_util.py` | `tests/unit_core_util.rs` | [WP-07](wp/WP-07-unit-core-util.md) | 30 | 0 | 0 | 22 | 4 | 4 |
-| `tests/unit/formatters/test_csv.py` | `tests/unit_formatters_csv.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 0 | 1 | 0 | 0 | 0 |
+| `tests/unit/formatters/test_csv.py` | `tests/unit_formatters_csv.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_custom.py` | `tests/unit_formatters_custom.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
-| `tests/unit/formatters/test_html.py` | `tests/unit_formatters_html.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 3 | 1 | 1 | 1 | 0 | 0 |
+| `tests/unit/formatters/test_html.py` | `tests/unit_formatters_html.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 3 | 3 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_json.py` | `tests/unit_formatters_json.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_sarif.py` | `tests/unit_formatters_sarif.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_screen.py` | `tests/unit_formatters_screen.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 0 | 0 | 4 | 0 | 0 |
 | `tests/unit/formatters/test_text.py` | `tests/unit_formatters_text.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 1 | 1 | 2 | 0 | 0 |
-| `tests/unit/formatters/test_xml.py` | `tests/unit_formatters_xml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 0 | 1 | 0 | 0 | 0 |
-| `tests/unit/formatters/test_yaml.py` | `tests/unit_formatters_yaml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 0 | 1 | 0 | 0 | 0 |
-| **Total** | | | **273** | **82** | **5** | **125** | **51** | **10** |
+| `tests/unit/formatters/test_xml.py` | `tests/unit_formatters_xml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
+| `tests/unit/formatters/test_yaml.py` | `tests/unit_formatters_yaml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
+| **Total** | | | **273** | **87** | **1** | **124** | **51** | **10** |
 
-Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests partiels) ; 10 tests non portables ; 82 déjà au vert.
+Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partiel) ; 10 tests non portables ; 87 déjà au vert.
 
 ## `tests/functional/test_baseline.py` → `tests/functional_baseline.rs` ([WP-02](wp/WP-02-functional-baseline.md))
 
@@ -379,7 +379,7 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `CsvFormatterTests::test_report` | `test_report` | partiel | ex-`csv_report_has_expected_columns` : lire via un parseur CSV (DictReader) et vérifier chaque champ |
+| `CsvFormatterTests::test_report` | `test_report` | porté | ex-`csv_report_has_expected_columns` : relu via un mini-parseur CSV (`DictReader`) et chaque champ vérifié |
 
 ## `tests/unit/formatters/test_custom.py` → `tests/unit_formatters_custom.rs` ([WP-13](wp/WP-13-unit-formatters-structured.md))
 
@@ -392,8 +392,8 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
 | `HtmlFormatterTests::test_escaping` | `test_escaping` | porté | ex-`html_report_escapes_code_only` |
-| `HtmlFormatterTests::test_report_contents` | `test_report_contents` | à porter | `span#loc/#nosec`, `div#issue-0/1/2`, classes `issue-sev-*`, `.candidates`/`.candidate`/`.code` (parser HTML `scraper`) |
-| `HtmlFormatterTests::test_report_with_skipped` | `test_report_with_skipped` | partiel | ex-`html_report_contains_issue_block` : un seul `div#skipped`, contenu |
+| `HtmlFormatterTests::test_report_contents` | `test_report_contents` | porté | `span#loc/#nosec`, `div#issue-0/1/2`, classes `issue-sev-*`, `.candidates`/`.candidate`/`.code` via `scraper` ; fixture construite comme `IssueList::Baseline` directement (nouvelles fonctions `html::render_issues`/`render_document`) |
+| `HtmlFormatterTests::test_report_with_skipped` | `test_report_with_skipped` | porté | ex-`html_report_contains_issue_block` : un seul `div#skipped` (via `scraper`), contenu vérifié |
 
 ## `tests/unit/formatters/test_json.py` → `tests/unit_formatters_json.rs` ([WP-13](wp/WP-13-unit-formatters-structured.md))
 
@@ -429,11 +429,11 @@ Reste à porter/renforcer : **181** tests (176 stubs `#[ignore]` + 5 tests parti
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `XmlFormatterTests::test_report` | `test_report` | partiel | ex-`xml_report_has_testcase_and_error` : parser le XML (`roxmltree`) au lieu de sous-chaînes |
+| `XmlFormatterTests::test_report` | `test_report` | porté | ex-`xml_report_has_testcase_and_error` : XML parsé avec `roxmltree` au lieu de sous-chaînes |
 
 ## `tests/unit/formatters/test_yaml.py` → `tests/unit_formatters_yaml.rs` ([WP-13](wp/WP-13-unit-formatters-structured.md))
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `YamlFormatterTests::test_report` | `test_report` | partiel | ex-`yaml_report_roundtrips_same_fields` : relire le YAML (`pycompat::yaml_load`) et vérifier `candidates`/`more_info` comme en JSON |
+| `YamlFormatterTests::test_report` | `test_report` | porté | ex-`yaml_report_roundtrips_same_fields` : YAML relu avec `pycompat::yaml_load::safe_load` ; `candidates` non vérifié (adaptation documentée : la vraie formatter YAML n'a pas de branche baseline, contrairement au test Python qui appelle en fait `json::report`) |
 
