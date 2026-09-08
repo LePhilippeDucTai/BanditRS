@@ -249,25 +249,25 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `ContextTests::test__get_literal_value` | `test_get_literal_value` | à porter (adapté) | renommé (double underscore refusé par `non_snake_case`) ; `ast::literal::get_literal_value` sur constantes/list/tuple/set/dict/name/bytes (couvert par `literal.rs::literal_values`) |
-| `ContextTests::test_call_args` | `test_call_args` | à porter (adapté) | mocks → contexte réel obtenu en parcourant `f(x.spam, 'eggs')` (helper `context_for_call`) |
-| `ContextTests::test_call_args_count` | `test_call_args_count` | à porter (adapté) | `None` hors `Call` |
-| `ContextTests::test_call_function_name` | `test_call_function_name` | à porter (adapté) |  |
-| `ContextTests::test_call_function_name_qual` | `test_call_function_name_qual` | à porter (adapté) |  |
-| `ContextTests::test_call_keywords` | `test_call_keywords` | à porter (adapté) | `f(arg1=x.spam, arg2='eggs')` |
-| `ContextTests::test_check_call_arg_value` | `test_check_call_arg_value` | à porter (adapté) | `f(spam='eggs')` ; hors `Call` → `None` |
+| `ContextTests::test__get_literal_value` | `test_get_literal_value` | adapté | renommé (double underscore refusé par `non_snake_case`) ; `ast::literal::get_literal_value` sur constantes/list/tuple/set/dict/name/bytes (pas de walker, sur des expressions parsées directement) |
+| `ContextTests::test_call_args` | `test_call_args` | adapté | mocks → contexte réel obtenu en parcourant `f(x.spam, 'eggs')` (helper `with_contexts`/`first_context`) |
+| `ContextTests::test_call_args_count` | `test_call_args_count` | adapté | `None` hors `Call` |
+| `ContextTests::test_call_function_name` | `test_call_function_name` | adapté |  |
+| `ContextTests::test_call_function_name_qual` | `test_call_function_name_qual` | adapté |  |
+| `ContextTests::test_call_keywords` | `test_call_keywords` | adapté | `f(arg1=x.spam, arg2='eggs')` |
+| `ContextTests::test_check_call_arg_value` | `test_check_call_arg_value` | adapté | `f(spam='eggs')` ; hors `Call` → `None` ; argument absent → `None` précis (Python confond avec `False`) |
 | `ContextTests::test_context_create` | — | non portable | `Context(context_object=Mock)` — le contexte Rust est typé, pas de dict |
-| `ContextTests::test_filename` | `test_filename` | à porter (adapté) |  |
-| `ContextTests::test_function_def_defaults_qual` | `test_function_def_defaults_qual` | à porter (adapté) | `def f(a=spam.x): ...` |
-| `ContextTests::test_get_call_arg_at_position` | `test_get_call_arg_at_position` | à porter (adapté) |  |
-| `ContextTests::test_get_lineno_for_call_arg` | `test_get_lineno_for_call_arg` | à porter (adapté) |  |
-| `ContextTests::test_is_module_being_imported` | `test_is_module_being_imported` | à porter (adapté) | `import spam` |
-| `ContextTests::test_is_module_imported_exact` | `test_is_module_imported_exact` | à porter (adapté) |  |
-| `ContextTests::test_is_module_imported_like` | `test_is_module_imported_like` | à porter (adapté) |  |
-| `ContextTests::test_node` | `test_node` | à porter (adapté) | `VNode` du contexte |
+| `ContextTests::test_filename` | `test_filename` | adapté |  |
+| `ContextTests::test_function_def_defaults_qual` | `test_function_def_defaults_qual` | adapté | `def f(a=spam.x): ...` |
+| `ContextTests::test_get_call_arg_at_position` | `test_get_call_arg_at_position` | adapté |  |
+| `ContextTests::test_get_lineno_for_call_arg` | `test_get_lineno_for_call_arg` | adapté |  |
+| `ContextTests::test_is_module_being_imported` | `test_is_module_being_imported` | adapté | `import spam` |
+| `ContextTests::test_is_module_imported_exact` | `test_is_module_imported_exact` | adapté |  |
+| `ContextTests::test_is_module_imported_like` | `test_is_module_imported_like` | adapté |  |
+| `ContextTests::test_node` | `test_node` | adapté | `VNode` du contexte |
 | `ContextTests::test_repr` | — | non portable | `repr(Context)` non exposé |
-| `ContextTests::test_statement` | `test_statement` | à porter (adapté) |  |
-| `ContextTests::test_string_val` | `test_string_val` | à porter (adapté) |  |
+| `ContextTests::test_statement` | `test_statement` | adapté | `Context::statement()` implémenté pour de vrai (DEVIATIONS #13 : toujours `None` en Python de production) |
+| `ContextTests::test_string_val` | `test_string_val` | adapté |  |
 
 ## `tests/unit/core/test_docs_util.py` → `tests/unit_core_docs_util.rs` ([WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md))
 

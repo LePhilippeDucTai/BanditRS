@@ -42,3 +42,10 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
     pointer une version figée périmerait les liens. Visible sur toute sortie contenant `more_info` (json, csv,
     xml, yaml, html, txt, sarif) ; le harnais différentiel normalise ce champ. Aucun test de la suite ne
     dépend du numéro de version dans l'URL.
+13. `Context::statement()` (`src/core/context.rs`) : en Python, `Context.statement` lit
+    `self._context.get("statement")`, une clé que `node_visitor.py` n'écrit jamais — la propriété vaut donc
+    toujours `None` en production (aucun plugin ne la lit non plus) ; le test Python ne fait que vérifier le
+    getter du dict avec une valeur simulée. Le `Context` Rust n'a pas de dict non typé à simuler ; WP-09
+    (`docs/plan/wp/WP-09-unit-core-context.md`) donne donc à `statement()` une vraie implémentation — le plus
+    proche ancêtre de type `Stmt` — pour que la propriété soit testable avec un extrait réel. Sans impact
+    observable : `statement()` n'est utilisé par aucun plugin ni aucune sortie.
