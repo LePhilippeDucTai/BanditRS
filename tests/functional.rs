@@ -441,11 +441,24 @@ fn test_baseline_filter() {
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_code_line_numbers`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_code_line_numbers() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_code_line_numbers"
-    );
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let mut mgr = manager_with(config, profile);
+    let path = example_path("binding.py").to_string_lossy().into_owned();
+    mgr.discover_files(&[path], true, None);
+    mgr.run_tests();
+
+    let issues = mgr.get_issue_list(Rank::Low, Rank::Low);
+    let issues: Vec<_> = issues.issues().collect();
+    // `issues[0].get_code()`: Python's default `max_lines` is 3.
+    let code = issues[0].get_code(3, false);
+    let code_lines: Vec<&str> = code.lines().collect();
+    let lineno = issues[0].lineno;
+    // Python compares the first two characters of `"%i " % n`.
+    assert_eq!(&format!("{} ", lineno - 1)[..2], &code_lines[0][..2]);
+    assert_eq!(&format!("{lineno} ")[..2], &code_lines[1][..2]);
+    assert_eq!(&format!("{} ", lineno + 1)[..2], &code_lines[2][..2]);
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_django_xss_insecure`.
@@ -509,11 +522,33 @@ fn test_markupsafe_markup_xss_extend_markup_names() {
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_multiline_code`.
 #[test]
-#[ignore = "WP-01: not ported yet — see docs/plan/wp/WP-01-functional-config-profiles.md"]
 fn test_multiline_code() {
-    unimplemented!(
-        "WP-01: port tests/functional/test_functional.py::FunctionalTests::test_multiline_code"
-    );
+    let config = BanditConfig::default();
+    let profile = config.default_profile();
+    let mut mgr = manager_with(config, profile);
+    let path = example_path("multiline_statement.py")
+        .to_string_lossy()
+        .into_owned();
+    mgr.discover_files(&[path], true, None);
+    mgr.run_tests();
+    assert_eq!(0, mgr.skipped.len());
+    assert_eq!(1, mgr.files_list.len());
+    assert!(mgr.files_list[0].ends_with("multiline_statement.py"));
+
+    let issues = mgr.get_issue_list(Rank::Low, Rank::Low);
+    assert_eq!(3, issues.len());
+    let issues: Vec<_> = issues.issues().collect();
+    assert!(issues[0].fname.ends_with("examples/multiline_statement.py"));
+    assert_eq!(1, issues[0].lineno);
+    assert_eq!(vec![1], issues[0].linerange.to_vec());
+    // `issues[N].get_code()`: Python's default `max_lines` is 3.
+    assert!(issues[0].get_code(3, false).contains("subprocess"));
+    assert_eq!(5, issues[1].lineno);
+    assert_eq!(vec![3, 4, 5, 6], issues[1].linerange.to_vec());
+    assert!(issues[1].get_code(3, false).contains("shell=True"));
+    assert_eq!(11, issues[2].lineno);
+    assert_eq!(vec![8, 9, 10, 11, 12, 13], issues[2].linerange.to_vec());
+    assert!(issues[2].get_code(3, false).contains("shell=True"));
 }
 
 /// Port of `tests/functional/test_functional.py::FunctionalTests::test_nonsense`.
