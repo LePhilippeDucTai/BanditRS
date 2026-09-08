@@ -15,7 +15,12 @@ pub fn matches_glob_list(filename: &str, globs: &[String]) -> bool {
 /// `_is_file_included(path, included_globs, excluded_path_strings, enforce_glob)`:
 /// included iff (matches an include glob or `!enforce_glob`) and matches no
 /// exclude glob and contains no exclude string as a substring.
-pub fn is_file_included(p: &str, included: &[String], excluded: &[String], enforce_glob: bool) -> bool {
+pub fn is_file_included(
+    p: &str,
+    included: &[String],
+    excluded: &[String],
+    enforce_glob: bool,
+) -> bool {
     (matches_glob_list(p, included) || !enforce_glob)
         && !matches_glob_list(p, excluded)
         && !excluded.iter().any(|x| p.contains(x.as_str()))
@@ -33,11 +38,23 @@ pub struct Discovered {
 
 /// `_get_files_from_dir(files_dir, included_globs, excluded_path_strings)`:
 /// walk recursively (`os.walk`), classify every file with `enforce_glob=true`.
-pub fn get_files_from_dir(dir: &str, included: &[String], excluded: &[String]) -> (Vec<String>, Vec<String>) {
+pub fn get_files_from_dir(
+    dir: &str,
+    included: &[String],
+    excluded: &[String],
+) -> (Vec<String>, Vec<String>) {
     let mut inc = Vec::new();
     let mut exc = Vec::new();
-    fn walk(dir: &Path, included: &[String], excluded: &[String], inc: &mut Vec<String>, exc: &mut Vec<String>) {
-        let Ok(entries) = std::fs::read_dir(dir) else { return };
+    fn walk(
+        dir: &Path,
+        included: &[String],
+        excluded: &[String],
+        inc: &mut Vec<String>,
+        exc: &mut Vec<String>,
+    ) {
+        let Ok(entries) = std::fs::read_dir(dir) else {
+            return;
+        };
         let mut dirs = Vec::new();
         for entry in entries.flatten() {
             let p = entry.path();
@@ -66,7 +83,8 @@ pub fn discover_files(
     config: &crate::core::config::BanditConfig,
 ) -> Discovered {
     let as_str_list = |v: Option<&ConfigValue>| -> Option<Vec<String>> {
-        v.and_then(ConfigValue::as_list).map(|l| l.iter().map(ConfigValue::py_str).collect())
+        v.and_then(ConfigValue::as_list)
+            .map(|l| l.iter().map(ConfigValue::py_str).collect())
     };
 
     let mut excluded_globs = as_str_list(config.get_option("exclude_dirs")).unwrap_or_default();
@@ -79,7 +97,8 @@ pub fn discover_files(
             }
         }
     }
-    let included = as_str_list(config.get_option("include")).unwrap_or_else(|| vec!["*.py".to_string()]);
+    let included =
+        as_str_list(config.get_option("include")).unwrap_or_else(|| vec!["*.py".to_string()]);
 
     let mut files = Vec::new();
     let mut excluded = Vec::new();
@@ -90,10 +109,18 @@ pub fn discover_files(
                 files.extend(inc);
                 excluded.extend(exc);
             } else {
-                crate::log_warning!("manager", "Skipping directory ({}), use -r flag to scan contents", t);
+                crate::log_warning!(
+                    "manager",
+                    "Skipping directory ({}), use -r flag to scan contents",
+                    t
+                );
             }
         } else if is_file_included(t, &included, &excluded_globs, false) {
-            files.push(if t == "-" { t.clone() } else { path::join(".", t) });
+            files.push(if t == "-" {
+                t.clone()
+            } else {
+                path::join(".", t)
+            });
         } else {
             excluded.push(t.clone());
         }
@@ -124,11 +151,31 @@ mod tests {
         assert!(!matches_glob_list("test", &v(&["*fes*"])));
         assert!(is_file_included("a.py", &v(&["*.py"]), &[], true));
         assert!(is_file_included("a.dd", &v(&["*.py"]), &[], false));
-        assert!(!is_file_included("a.py", &v(&["*.py"]), &v(&["a.py"]), true));
+        assert!(!is_file_included(
+            "a.py",
+            &v(&["*.py"]),
+            &v(&["a.py"]),
+            true
+        ));
         assert!(!is_file_included("a.dd", &v(&["*.py"]), &[], true));
-        assert!(!is_file_included("x_a.py", &v(&["*.py"]), &v(&["x_*.py"]), true));
-        assert!(is_file_included("x.py", &v(&["*.py"]), &v(&["x_*.py"]), true));
+        assert!(!is_file_included(
+            "x_a.py",
+            &v(&["*.py"]),
+            &v(&["x_*.py"]),
+            true
+        ));
+        assert!(is_file_included(
+            "x.py",
+            &v(&["*.py"]),
+            &v(&["x_*.py"]),
+            true
+        ));
         // substring exclusion
-        assert!(!is_file_included("./x/y/z.py", &v(&["*.py"]), &v(&["y"]), false));
+        assert!(!is_file_included(
+            "./x/y/z.py",
+            &v(&["*.py"]),
+            &v(&["y"]),
+            false
+        ));
     }
 }

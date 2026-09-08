@@ -15,7 +15,12 @@ use indexmap::IndexMap;
 
 fn bool_re() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
-    RE.get_or_init(|| Regex::new(r"^(?:yes|Yes|YES|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)$").unwrap())
+    RE.get_or_init(|| {
+        Regex::new(
+            r"^(?:yes|Yes|YES|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)$",
+        )
+        .unwrap()
+    })
 }
 
 fn null_re() -> &'static Regex {
@@ -25,7 +30,12 @@ fn null_re() -> &'static Regex {
 
 fn int_re() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
-    RE.get_or_init(|| Regex::new(r"^(?:[-+]?0b[0-1_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+)$").unwrap())
+    RE.get_or_init(|| {
+        Regex::new(
+            r"^(?:[-+]?0b[0-1_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+)$",
+        )
+        .unwrap()
+    })
 }
 
 fn float_re() -> &'static Regex {
@@ -56,7 +66,11 @@ fn parse_int(s: &str) -> Option<i64> {
 fn parse_float(s: &str) -> Option<f64> {
     let s2 = s.replace('_', "");
     if s2.ends_with("inf") || s2.ends_with("Inf") || s2.ends_with("INF") {
-        return Some(if s2.starts_with('-') { f64::NEG_INFINITY } else { f64::INFINITY });
+        return Some(if s2.starts_with('-') {
+            f64::NEG_INFINITY
+        } else {
+            f64::INFINITY
+        });
     }
     if s2.ends_with("nan") || s2.ends_with("NaN") || s2.ends_with("NAN") {
         return Some(f64::NAN);
@@ -69,17 +83,20 @@ fn resolve_plain_scalar(s: &str) -> ConfigValue {
         return ConfigValue::Null;
     }
     if bool_re().is_match(s) {
-        return ConfigValue::Bool(matches!(s.to_ascii_lowercase().as_str(), "yes" | "true" | "on"));
+        return ConfigValue::Bool(matches!(
+            s.to_ascii_lowercase().as_str(),
+            "yes" | "true" | "on"
+        ));
     }
-    if int_re().is_match(s) {
-        if let Some(v) = parse_int(s) {
-            return ConfigValue::Int(v);
-        }
+    if int_re().is_match(s)
+        && let Some(v) = parse_int(s)
+    {
+        return ConfigValue::Int(v);
     }
-    if float_re().is_match(s) {
-        if let Some(v) = parse_float(s) {
-            return ConfigValue::Float(v);
-        }
+    if float_re().is_match(s)
+        && let Some(v) = parse_float(s)
+    {
+        return ConfigValue::Float(v);
     }
     ConfigValue::Str(s.to_string())
 }
@@ -103,16 +120,24 @@ pub fn safe_load(text: &str) -> Result<ConfigValue, String> {
     }
     let mut iter = events.into_iter().peekable();
     // Skip StreamStart / DocumentStart.
-    while matches!(iter.peek(), Some(Event::StreamStart) | Some(Event::DocumentStart(_))) {
+    while matches!(
+        iter.peek(),
+        Some(Event::StreamStart) | Some(Event::DocumentStart(_))
+    ) {
         iter.next();
     }
-    if matches!(iter.peek(), Some(Event::StreamEnd) | Some(Event::DocumentEnd) | None) {
+    if matches!(
+        iter.peek(),
+        Some(Event::StreamEnd) | Some(Event::DocumentEnd) | None
+    ) {
         return Ok(ConfigValue::Null);
     }
     build_node(&mut iter)
 }
 
-fn build_node(iter: &mut std::iter::Peekable<std::vec::IntoIter<Event<'_>>>) -> Result<ConfigValue, String> {
+fn build_node(
+    iter: &mut std::iter::Peekable<std::vec::IntoIter<Event<'_>>>,
+) -> Result<ConfigValue, String> {
     match iter.next() {
         Some(Event::Scalar(value, style, _, _)) => Ok(match style {
             ScalarStyle::Plain => resolve_plain_scalar(&value),
@@ -161,7 +186,10 @@ mod tests {
         assert_eq!(safe_load("1_000").unwrap(), ConfigValue::Int(1000));
         assert_eq!(safe_load("3.5").unwrap(), ConfigValue::Float(3.5));
         assert_eq!(safe_load("'123'").unwrap(), ConfigValue::Str("123".into()));
-        assert_eq!(safe_load("hello").unwrap(), ConfigValue::Str("hello".into()));
+        assert_eq!(
+            safe_load("hello").unwrap(),
+            ConfigValue::Str("hello".into())
+        );
     }
 
     #[test]
@@ -170,7 +198,10 @@ mod tests {
         let m = v.as_map().unwrap();
         assert_eq!(m.get("a"), Some(&ConfigValue::Int(1)));
         assert_eq!(m.get("b").unwrap().as_list().unwrap().len(), 2);
-        assert_eq!(m.get("c").unwrap().as_map().unwrap().get("d"), Some(&ConfigValue::Bool(true)));
+        assert_eq!(
+            m.get("c").unwrap().as_map().unwrap().get("d"),
+            Some(&ConfigValue::Bool(true))
+        );
     }
 
     #[test]

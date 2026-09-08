@@ -50,7 +50,9 @@ impl Output {
 }
 
 /// Formatter names in `setup.cfg` order.
-pub const FORMATTER_NAMES: &[&str] = &["csv", "json", "txt", "xml", "html", "sarif", "screen", "yaml", "custom"];
+pub const FORMATTER_NAMES: &[&str] = &[
+    "csv", "json", "txt", "xml", "html", "sarif", "screen", "yaml", "custom",
+];
 
 /// Formatters that accept a baseline (`@accepts_baseline`), in registration order.
 pub const BASELINE_FORMATTERS: &[&str] = &["json", "txt", "html", "screen", "custom"];
@@ -67,20 +69,78 @@ pub fn output_results(
     format: &str,
     template: Option<&str>,
 ) -> Result<(), String> {
-    let format = if FORMATTER_NAMES.contains(&format) { format } else { default_format() };
+    let format = if FORMATTER_NAMES.contains(&format) {
+        format
+    } else {
+        default_format()
+    };
     let name = output.name().to_string();
     let is_stdout = output.is_stdout();
 
     let result: io::Result<()> = match format {
-        "csv" => csv::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
-        "json" => json::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
-        "txt" => text::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
-        "xml" => xml::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
-        "html" => html::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
-        "sarif" => sarif::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
-        "yaml" => yaml::report(manager, output.writer().as_mut(), sev_level, conf_level, lines),
-        "custom" => custom::report(manager, output.writer().as_mut(), sev_level, conf_level, template),
-        "screen" => screen::report(manager, sev_level, conf_level, lines, if is_stdout { None } else { Some(&name) }),
+        "csv" => csv::report(
+            manager,
+            output.writer().as_mut(),
+            sev_level,
+            conf_level,
+            lines,
+        ),
+        "json" => json::report(
+            manager,
+            output.writer().as_mut(),
+            sev_level,
+            conf_level,
+            lines,
+        ),
+        "txt" => text::report(
+            manager,
+            output.writer().as_mut(),
+            sev_level,
+            conf_level,
+            lines,
+        ),
+        "xml" => xml::report(
+            manager,
+            output.writer().as_mut(),
+            sev_level,
+            conf_level,
+            lines,
+        ),
+        "html" => html::report(
+            manager,
+            output.writer().as_mut(),
+            sev_level,
+            conf_level,
+            lines,
+        ),
+        "sarif" => sarif::report(
+            manager,
+            output.writer().as_mut(),
+            sev_level,
+            conf_level,
+            lines,
+        ),
+        "yaml" => yaml::report(
+            manager,
+            output.writer().as_mut(),
+            sev_level,
+            conf_level,
+            lines,
+        ),
+        "custom" => custom::report(
+            manager,
+            output.writer().as_mut(),
+            sev_level,
+            conf_level,
+            template,
+        ),
+        "screen" => screen::report(
+            manager,
+            sev_level,
+            conf_level,
+            lines,
+            if is_stdout { None } else { Some(&name) },
+        ),
         _ => unreachable!("format validated against FORMATTER_NAMES/default_format above"),
     };
     result.map_err(|e| format!("Unable to output report using '{format}' formatter: {e}"))?;
@@ -105,7 +165,10 @@ pub fn output_results(
 /// `"screen"` when stdout is a tty, `NO_COLOR` is unset and `TERM != "dumb"`, else `"txt"`.
 pub fn default_format() -> &'static str {
     use std::io::IsTerminal;
-    if io::stdout().is_terminal() && std::env::var_os("NO_COLOR").is_none() && std::env::var("TERM").as_deref() != Ok("dumb") {
+    if io::stdout().is_terminal()
+        && std::env::var_os("NO_COLOR").is_none()
+        && std::env::var("TERM").as_deref() != Ok("dumb")
+    {
         "screen"
     } else {
         "txt"

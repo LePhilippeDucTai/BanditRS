@@ -7,8 +7,13 @@ use crate::core::issue::{Cwe, IssueDraft};
 use crate::core::plugin_config::PluginConfigs;
 use crate::plugins::PluginResult;
 
-fn bad_versions<'a>(cfg: &'a PluginConfigs) -> Result<Vec<PyValue<'a>>, crate::ast::literal::PyErr> {
-    let items = cfg.ssl_with_bad_version.bad_protocol_versions.items("bad_protocol_versions")?;
+fn bad_versions<'a>(
+    cfg: &'a PluginConfigs,
+) -> Result<Vec<PyValue<'a>>, crate::ast::literal::PyErr> {
+    let items = cfg
+        .ssl_with_bad_version
+        .bad_protocol_versions
+        .items("bad_protocol_versions")?;
     Ok(items.iter().map(|s| PyValue::str(s.as_str())).collect())
 }
 
@@ -44,7 +49,9 @@ pub fn ssl_with_bad_version(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> Plugi
         let m1 = ctx.check_call_arg_value("method", &bad)? == Some(true);
         let m2 = ctx.check_call_arg_value("ssl_version", &bad)? == Some(true);
         if m1 || m2 {
-            let lineno = ctx.get_lineno_for_call_arg("method").or_else(|| ctx.get_lineno_for_call_arg("ssl_version"));
+            let lineno = ctx
+                .get_lineno_for_call_arg("method")
+                .or_else(|| ctx.get_lineno_for_call_arg("ssl_version"));
             return Ok(Some(
                 IssueDraft::new(
                     Rank::Medium,
@@ -61,7 +68,10 @@ pub fn ssl_with_bad_version(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> Plugi
 
 /// `ssl_with_bad_defaults` (B503).
 pub fn ssl_with_bad_defaults(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
-    let bad = cfg.ssl_with_bad_version.bad_protocol_versions.items("bad_protocol_versions")?;
+    let bad = cfg
+        .ssl_with_bad_version
+        .bad_protocol_versions
+        .items("bad_protocol_versions")?;
     for default in ctx.function_def_defaults_qual() {
         let val = default.rsplit('.').next().unwrap_or(&default);
         if bad.iter().any(|b| b == val) {
@@ -78,7 +88,9 @@ pub fn ssl_with_bad_defaults(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> Plug
 
 /// `ssl_with_no_version` (B504).
 pub fn ssl_with_no_version(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginResult {
-    if ctx.call_function_name_qual() == Some("ssl.wrap_socket") && ctx.check_call_arg_value("ssl_version", &[])?.is_none() {
+    if ctx.call_function_name_qual() == Some("ssl.wrap_socket")
+        && ctx.check_call_arg_value("ssl_version", &[])?.is_none()
+    {
         return Ok(Some(
             IssueDraft::new(
                 Rank::Low,

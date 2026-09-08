@@ -11,7 +11,9 @@ use banditrs::core::test_set::TestSet;
 
 /// Absolute path of `examples/<name>` (the fixtures copied from upstream).
 pub fn example_path(name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("examples").join(name)
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("examples")
+        .join(name)
 }
 
 /// Expected counts per rank, in `RANKING` order (UNDEFINED, LOW, MEDIUM, HIGH).
@@ -40,8 +42,16 @@ pub fn check_example(name: &str, severity: Counts, confidence: Counts, ignore_no
         total.add(s);
     }
     let counts = total.issue_counts();
-    assert_eq!(counts[0], severity, "severity mismatch for {name}: skipped={:?}", mgr.skipped);
-    assert_eq!(counts[1], confidence, "confidence mismatch for {name}: skipped={:?}", mgr.skipped);
+    assert_eq!(
+        counts[0], severity,
+        "severity mismatch for {name}: skipped={:?}",
+        mgr.skipped
+    );
+    assert_eq!(
+        counts[1], confidence,
+        "confidence mismatch for {name}: skipped={:?}",
+        mgr.skipped
+    );
 }
 
 /// `check_metrics`: compare `_totals` entries (`loc`, `nosec`, `skipped_tests`
@@ -52,6 +62,10 @@ pub fn check_metrics(name: &str, expect: &[(&str, u64)]) {
     mgr.discover_files(&[path], true, None);
     mgr.run_tests();
     for (label, value) in expect {
-        assert_eq!(mgr.metrics.totals.get(label), Some(*value), "metric {label} mismatch for {name}");
+        assert_eq!(
+            mgr.metrics.totals.get(label),
+            Some(*value),
+            "metric {label} mismatch for {name}"
+        );
     }
 }

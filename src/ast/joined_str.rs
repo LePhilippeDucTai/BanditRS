@@ -26,7 +26,11 @@ pub enum JoinedPart<'a> {
     /// Merged literal segments.
     Constant { text: Box<str>, range: TextRange },
     /// `FormattedValue` / `Interpolation`.
-    Formatted { element: &'a ast::InterpolatedElement, range: TextRange, spec: Option<&'a JoinedStrView<'a>> },
+    Formatted {
+        element: &'a ast::InterpolatedElement,
+        range: TextRange,
+        spec: Option<&'a JoinedStrView<'a>>,
+    },
 }
 
 impl JoinedPart<'_> {
@@ -69,7 +73,13 @@ struct Builder<'a, 'b> {
 
 impl<'a, 'b> Builder<'a, 'b> {
     fn new(arena: &'a ViewArena<'a>, source: &'b str, compat: PyCompat) -> Self {
-        Builder { arena, source, compat, values: Vec::new(), pending: None }
+        Builder {
+            arena,
+            source,
+            compat,
+            values: Vec::new(),
+            pending: None,
+        }
     }
 
     fn literal(&mut self, text: &str, range: TextRange) {
@@ -87,7 +97,10 @@ impl<'a, 'b> Builder<'a, 'b> {
 
     fn flush(&mut self) {
         if let Some((text, range)) = self.pending.take() {
-            self.values.push(JoinedPart::Constant { text: text.into_boxed_str(), range });
+            self.values.push(JoinedPart::Constant {
+                text: text.into_boxed_str(),
+                range,
+            });
         }
     }
 
@@ -96,12 +109,20 @@ impl<'a, 'b> Builder<'a, 'b> {
     fn elements(&mut self, elements: &'a ast::InterpolatedStringElements, part_range: TextRange) {
         for element in elements {
             match element {
-                ast::InterpolatedStringElement::Literal(lit) => self.literal(&lit.value, lit.range()),
+                ast::InterpolatedStringElement::Literal(lit) => {
+                    self.literal(&lit.value, lit.range())
+                }
                 ast::InterpolatedStringElement::Interpolation(e) => {
                     if let Some(debug) = &e.debug_text {
                         // `f"{x=}"`: CPython emits the debug text as a constant.
-                        let range = TextRange::new(e.start() + TextSize::from(1), e.expression.end());
-                        let text = format!("{}{}{}", debug.leading(), debug.expression(), debug.trailing());
+                        let range =
+                            TextRange::new(e.start() + TextSize::from(1), e.expression.end());
+                        let text = format!(
+                            "{}{}{}",
+                            debug.leading(),
+                            debug.expression(),
+                            debug.trailing()
+                        );
                         self.literal(&text, range);
                     }
                     self.flush();
@@ -113,10 +134,18 @@ impl<'a, 'b> Builder<'a, 'b> {
                         let mut b = Builder::new(self.arena, self.source, self.compat);
                         b.elements(&spec.elements, part_range);
                         b.flush();
-                        let view = JoinedStrView { owner: JoinedOwner::Spec(spec), range: spec_range, values: b.values };
+                        let view = JoinedStrView {
+                            owner: JoinedOwner::Spec(spec),
+                            range: spec_range,
+                            values: b.values,
+                        };
                         &*self.arena.alloc(finish(view, self.compat, spec_range))
                     });
-                    self.values.push(JoinedPart::Formatted { element: e, range: e.range(), spec });
+                    self.values.push(JoinedPart::Formatted {
+                        element: e,
+                        range: e.range(),
+                        spec,
+                    });
                 }
             }
         }
@@ -125,11 +154,17 @@ impl<'a, 'b> Builder<'a, 'b> {
 
 /// Apply the position policy: under the 3.11 policy every value takes the
 /// range of the joined string.
-fn finish<'a>(mut view: JoinedStrView<'a>, compat: PyCompat, whole: TextRange) -> JoinedStrView<'a> {
+fn finish<'a>(
+    mut view: JoinedStrView<'a>,
+    compat: PyCompat,
+    whole: TextRange,
+) -> JoinedStrView<'a> {
     if compat == PyCompat::Py311 {
         for v in &mut view.values {
             match v {
-                JoinedPart::Constant { range, .. } | JoinedPart::Formatted { range, .. } => *range = whole,
+                JoinedPart::Constant { range, .. } | JoinedPart::Formatted { range, .. } => {
+                    *range = whole
+                }
             }
         }
     }
@@ -152,7 +187,11 @@ impl<'a> JoinedStrView<'a> {
             }
         }
         b.flush();
-        let view = JoinedStrView { owner: JoinedOwner::FString(expr), range: expr.range(), values: b.values };
+        let view = JoinedStrView {
+            owner: JoinedOwner::FString(expr),
+            range: expr.range(),
+            values: b.values,
+        };
         arena.alloc(finish(view, compat, expr.range()))
     }
 
@@ -168,12 +207,21 @@ impl<'a> JoinedStrView<'a> {
             b.elements(&t.elements, t.range());
         }
         b.flush();
-        let view = JoinedStrView { owner: JoinedOwner::TString(expr), range: expr.range(), values: b.values };
+        let view = JoinedStrView {
+            owner: JoinedOwner::TString(expr),
+            range: expr.range(),
+            values: b.values,
+        };
         arena.alloc(finish(view, compat, expr.range()))
     }
 
     /// Build the view for an f-string or t-string expression.
-    pub fn build(expr: &'a Expr, arena: &'a ViewArena<'a>, source: &str, compat: PyCompat) -> Option<&'a JoinedStrView<'a>> {
+    pub fn build(
+        expr: &'a Expr,
+        arena: &'a ViewArena<'a>,
+        source: &str,
+        compat: PyCompat,
+    ) -> Option<&'a JoinedStrView<'a>> {
         match expr {
             Expr::FString(f) => Some(JoinedStrView::build_fstring(f, arena, source, compat)),
             Expr::TString(t) => Some(JoinedStrView::build_tstring(t, arena, source, compat)),
@@ -187,7 +235,10 @@ impl<'a> JoinedStrView<'a> {
 
     /// Index of the first constant value, if any.
     pub fn first_constant_index(&self) -> Option<u32> {
-        self.values.iter().position(JoinedPart::is_constant).map(|i| i as u32)
+        self.values
+            .iter()
+            .position(JoinedPart::is_constant)
+            .map(|i| i as u32)
     }
 
     /// Concatenation of all constant values (`"".join(str(c.value) for c in substrings)`).

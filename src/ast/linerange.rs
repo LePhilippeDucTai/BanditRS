@@ -2,7 +2,7 @@
 
 use ruff_python_ast::{Expr, Stmt};
 
-use super::children::{push_children, WalkCtx};
+use super::children::{WalkCtx, push_children};
 use super::positions;
 use super::vnode::VNode;
 use crate::core::issue::LineRange;
@@ -32,7 +32,12 @@ fn stripped_children<'a>(node: VNode<'a>, ctx: &WalkCtx<'a, '_>) -> Vec<VNode<'a
 
 /// `calc_linerange(node)`: min/max of the start lines of the node and all
 /// its descendants (`(9999999999, -1)` sentinels when none has a position).
-pub fn calc_linerange<'a>(node: VNode<'a>, parent: Option<VNode<'a>>, file: &SourceFile, ctx: &WalkCtx<'a, '_>) -> (i64, i64) {
+pub fn calc_linerange<'a>(
+    node: VNode<'a>,
+    parent: Option<VNode<'a>>,
+    file: &SourceFile,
+    ctx: &WalkCtx<'a, '_>,
+) -> (i64, i64) {
     let mut lines_min: i64 = 9_999_999_999;
     let mut lines_max: i64 = -1;
     let mut stack: Vec<(VNode<'a>, Option<VNode<'a>>)> = vec![(node, parent)];
@@ -76,13 +81,13 @@ pub fn linerange<'a>(
     }
     // Work around CPython issue #16806 (multi-line strings): clamp to the
     // line before the next sibling.
-    if let Some(sib) = sibling {
-        if let Some(sib_line) = positions::lineno(sib, parent, file) {
-            let start = lines_min;
-            let delta = sib_line as i64 - start;
-            if delta > 1 {
-                return LineRange::new(start as u32, sib_line - 1);
-            }
+    if let Some(sib) = sibling
+        && let Some(sib_line) = positions::lineno(sib, parent, file)
+    {
+        let start = lines_min;
+        let delta = sib_line as i64 - start;
+        if delta > 1 {
+            return LineRange::new(start as u32, sib_line - 1);
         }
     }
     LineRange::new(lines_min as u32, lines_max as u32)

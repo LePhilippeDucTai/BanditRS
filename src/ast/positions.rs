@@ -41,7 +41,11 @@ fn keyword_start_after(text: &str, from: usize) -> usize {
 
 /// The CPython range of `node` (`None` for position-less nodes). `parent` is
 /// needed for the generator-argument special case.
-pub fn cpython_range(node: VNode<'_>, parent: Option<VNode<'_>>, source: &str) -> Option<TextRange> {
+pub fn cpython_range(
+    node: VNode<'_>,
+    parent: Option<VNode<'_>>,
+    source: &str,
+) -> Option<TextRange> {
     if !node.has_position() {
         return None;
     }
@@ -65,7 +69,10 @@ pub fn cpython_range(node: VNode<'_>, parent: Option<VNode<'_>>, source: &str) -
                 while b.get(s) == Some(&b'*') {
                     s += 1;
                 }
-                while matches!(b.get(s), Some(b' ' | b'\t' | b'\x0c' | b'\\' | b'\n' | b'\r')) {
+                while matches!(
+                    b.get(s),
+                    Some(b' ' | b'\t' | b'\x0c' | b'\\' | b'\n' | b'\r')
+                ) {
                     s += 1;
                 }
             }
@@ -73,14 +80,13 @@ pub fn cpython_range(node: VNode<'_>, parent: Option<VNode<'_>>, source: &str) -
         }
         VNode::Expr(Expr::Generator(g)) if !g.parenthesized => {
             // `f(x for x in y)`: CPython includes the call parentheses.
-            if let Some(VNode::Expr(Expr::Call(call))) = parent {
-                if call.arguments.keywords.is_empty() && call.arguments.args.len() == 1 {
-                    if let Some(Expr::Generator(first)) = call.arguments.args.first() {
-                        if std::ptr::eq(first, g) {
-                            return Some(call.arguments.range());
-                        }
-                    }
-                }
+            if let Some(VNode::Expr(Expr::Call(call))) = parent
+                && call.arguments.keywords.is_empty()
+                && call.arguments.args.len() == 1
+                && let Some(Expr::Generator(first)) = call.arguments.args.first()
+                && std::ptr::eq(first, g)
+            {
+                return Some(call.arguments.range());
             }
             Some(raw)
         }
@@ -93,7 +99,12 @@ pub fn position(node: VNode<'_>, parent: Option<VNode<'_>>, file: &SourceFile) -
     let range = cpython_range(node, parent, &file.text)?;
     let (lineno, col_offset) = file.line_col(range.start().to_u32());
     let (end_lineno, end_col_offset) = file.line_col(range.end().to_u32());
-    Some(Pos { lineno, col_offset, end_lineno, end_col_offset })
+    Some(Pos {
+        lineno,
+        col_offset,
+        end_lineno,
+        end_col_offset,
+    })
 }
 
 /// Start line of `node` (CPython `lineno`).

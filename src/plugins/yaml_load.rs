@@ -8,7 +8,10 @@ use crate::core::plugin_config::PluginConfigs;
 use crate::plugins::PluginResult;
 
 fn pos_matches(ctx: &Context<'_, '_>, pos: usize, val: &str) -> Result<bool, PyErr> {
-    Ok(ctx.get_call_arg_at_position(pos)?.map(|v| v.py_eq(&PyValue::str(val))).unwrap_or(false))
+    Ok(ctx
+        .get_call_arg_at_position(pos)?
+        .map(|v| v.py_eq(&PyValue::str(val)))
+        .unwrap_or(false))
 }
 
 /// `yaml_load` (B506).

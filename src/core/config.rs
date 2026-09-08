@@ -62,7 +62,13 @@ impl ConfigValue {
     pub fn py_str(&self) -> String {
         match self {
             ConfigValue::Null => "None".into(),
-            ConfigValue::Bool(b) => if *b { "True".into() } else { "False".into() },
+            ConfigValue::Bool(b) => {
+                if *b {
+                    "True".into()
+                } else {
+                    "False".into()
+                }
+            }
             ConfigValue::Int(i) => i.to_string(),
             ConfigValue::Float(f) => crate::ast::literal::repr_float(*f),
             ConfigValue::Str(s) => s.clone(),
@@ -80,7 +86,10 @@ pub struct ConfigError {
 
 impl ConfigError {
     pub fn new(message: &str, config_file: &str) -> ConfigError {
-        ConfigError { config_file: config_file.to_string(), message: format!("{config_file} : {message}") }
+        ConfigError {
+            config_file: config_file.to_string(),
+            message: format!("{config_file} : {message}"),
+        }
     }
 }
 
@@ -101,7 +110,11 @@ pub struct ProfileNotFound {
 
 impl fmt::Display for ProfileNotFound {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Unable to find profile ({}) in config file: {}", self.profile, self.config_file)
+        write!(
+            f,
+            "Unable to find profile ({}) in config file: {}",
+            self.profile, self.config_file
+        )
     }
 }
 
@@ -130,12 +143,22 @@ impl Default for BanditConfig {
     /// `BanditConfig()` without a file: `{"plugin_name_pattern": "*.py", "include": ["*.py", "*.pyw"]}`.
     fn default() -> BanditConfig {
         let mut m = IndexMap::new();
-        m.insert("plugin_name_pattern".to_string(), ConfigValue::Str("*.py".into()));
+        m.insert(
+            "plugin_name_pattern".to_string(),
+            ConfigValue::Str("*.py".into()),
+        );
         m.insert(
             "include".to_string(),
-            ConfigValue::List(vec![ConfigValue::Str("*.py".into()), ConfigValue::Str("*.pyw".into())]),
+            ConfigValue::List(vec![
+                ConfigValue::Str("*.py".into()),
+                ConfigValue::Str("*.pyw".into()),
+            ]),
         );
-        BanditConfig { path: None, raw: ConfigValue::Map(m), plugin_name_pattern: "*.py".into() }
+        BanditConfig {
+            path: None,
+            raw: ConfigValue::Map(m),
+            plugin_name_pattern: "*.py".into(),
+        }
     }
 }
 
@@ -161,14 +184,19 @@ impl BanditConfig {
         let Some(path) = config_file else {
             return Ok(BanditConfig::default());
         };
-        let text = std::fs::read_to_string(path).map_err(|_| ConfigError::new("Could not read config file.", path))?;
+        let text = std::fs::read_to_string(path)
+            .map_err(|_| ConfigError::new("Could not read config file.", path))?;
 
         let raw = if path.ends_with(".toml") {
             let table: toml::Table = text.parse().map_err(|e| {
                 crate::log_error!("config", "{}", e);
                 ConfigError::new("Error parsing file.", path)
             })?;
-            let bandit = table.get("tool").and_then(|t| t.get("bandit")).cloned().unwrap_or(toml::Value::Table(toml::Table::new()));
+            let bandit = table
+                .get("tool")
+                .and_then(|t| t.get("bandit"))
+                .cloned()
+                .unwrap_or(toml::Value::Table(toml::Table::new()));
             toml_to_config_value(&bandit)
         } else {
             crate::pycompat::yaml_load::safe_load(&text).map_err(|e| {
@@ -180,7 +208,11 @@ impl BanditConfig {
         if !matches!(raw, ConfigValue::Map(_)) {
             return Err(ConfigError::new("Error parsing file.", path));
         }
-        let mut config = BanditConfig { path: Some(path.to_string()), raw, plugin_name_pattern: String::new() };
+        let mut config = BanditConfig {
+            path: Some(path.to_string()),
+            raw,
+            plugin_name_pattern: String::new(),
+        };
 
         if config.get_option("profiles").is_some() {
             crate::log_warning!(
@@ -190,8 +222,11 @@ impl BanditConfig {
             );
         }
 
-        config.plugin_name_pattern =
-            config.get_option("plugin_name_pattern").and_then(ConfigValue::as_str).map(str::to_string).unwrap_or_else(|| "*.py".to_string());
+        config.plugin_name_pattern = config
+            .get_option("plugin_name_pattern")
+            .and_then(ConfigValue::as_str)
+            .map(str::to_string)
+            .unwrap_or_else(|| "*.py".to_string());
 
         Ok(config)
     }
@@ -231,10 +266,19 @@ impl BanditConfig {
             prof.as_map()
                 .and_then(|m| m.get(key))
                 .and_then(ConfigValue::as_list)
-                .map(|l| l.iter().map(ConfigValue::py_str).map(|n| registry::get_test_id(&n).map(str::to_string).unwrap_or(n)).collect())
+                .map(|l| {
+                    l.iter()
+                        .map(ConfigValue::py_str)
+                        .map(|n| registry::get_test_id(&n).map(str::to_string).unwrap_or(n))
+                        .collect()
+                })
                 .unwrap_or_default()
         };
-        Some(Profile { include: to_ids("include"), exclude: to_ids("exclude"), blacklist: None })
+        Some(Profile {
+            include: to_ids("include"),
+            exclude: to_ids("exclude"),
+            blacklist: None,
+        })
     }
 
     /// Profile built from the `tests` / `skips` options (`_get_profile`
@@ -245,7 +289,11 @@ impl BanditConfig {
                 .map(|l| l.iter().map(ConfigValue::py_str).collect())
                 .unwrap_or_default()
         };
-        Profile { include: to_set(self.get_option("tests")), exclude: to_set(self.get_option("skips")), blacklist: None }
+        Profile {
+            include: to_set(self.get_option("tests")),
+            exclude: to_set(self.get_option("skips")),
+            blacklist: None,
+        }
     }
 }
 
@@ -258,8 +306,14 @@ fn toml_to_config_value(v: &toml::Value) -> ConfigValue {
         toml::Value::Float(f) => ConfigValue::Float(*f),
         toml::Value::Boolean(b) => ConfigValue::Bool(*b),
         toml::Value::Datetime(d) => ConfigValue::Str(d.to_string()),
-        toml::Value::Array(items) => ConfigValue::List(items.iter().map(toml_to_config_value).collect()),
-        toml::Value::Table(map) => ConfigValue::Map(map.iter().map(|(k, v)| (k.clone(), toml_to_config_value(v))).collect()),
+        toml::Value::Array(items) => {
+            ConfigValue::List(items.iter().map(toml_to_config_value).collect())
+        }
+        toml::Value::Table(map) => ConfigValue::Map(
+            map.iter()
+                .map(|(k, v)| (k.clone(), toml_to_config_value(v)))
+                .collect(),
+        ),
     }
 }
 
@@ -279,7 +333,11 @@ mod tests {
         let mut inner = IndexMap::new();
         inner.insert("b".to_string(), ConfigValue::Int(3));
         m.insert("a".to_string(), ConfigValue::Map(inner));
-        let c = BanditConfig { path: None, raw: ConfigValue::Map(m), plugin_name_pattern: "*.py".into() };
+        let c = BanditConfig {
+            path: None,
+            raw: ConfigValue::Map(m),
+            plugin_name_pattern: "*.py".into(),
+        };
         assert_eq!(c.get_option("a.b"), Some(&ConfigValue::Int(3)));
         assert!(c.get_option("a.c").is_none());
     }
@@ -287,7 +345,10 @@ mod tests {
     #[test]
     fn missing_file_errors() {
         let e = BanditConfig::new(Some("/nonexistent/nonexistent.yml")).unwrap_err();
-        assert_eq!(e.message, "/nonexistent/nonexistent.yml : Could not read config file.");
+        assert_eq!(
+            e.message,
+            "/nonexistent/nonexistent.yml : Could not read config file."
+        );
     }
 
     #[test]
@@ -296,7 +357,14 @@ mod tests {
         let yml = dir.path().join("bandit.yaml");
         std::fs::write(&yml, "assert_used:\n  skips: ['*_test.py']\nprofiles:\n  test:\n    include: [start_process_with_a_shell]\n    exclude: []\n").unwrap();
         let c = BanditConfig::new(Some(yml.to_str().unwrap())).unwrap();
-        assert_eq!(c.get_option("assert_used.skips").unwrap().as_list().unwrap().len(), 1);
+        assert_eq!(
+            c.get_option("assert_used.skips")
+                .unwrap()
+                .as_list()
+                .unwrap()
+                .len(),
+            1
+        );
         let p = c.profile("test").unwrap();
         assert!(p.include.contains("B605"));
         assert!(c.profile("missing").is_none());

@@ -25,7 +25,11 @@ impl<'a> Iterator for BytesLines<'a> {
             }
             if b == b'\r' {
                 end = i;
-                next = if rest.get(i + 1) == Some(&b'\n') { i + 2 } else { i + 1 };
+                next = if rest.get(i + 1) == Some(&b'\n') {
+                    i + 2
+                } else {
+                    i + 1
+                };
                 break;
             }
         }
@@ -43,7 +47,15 @@ pub fn bytes_splitlines(data: &[u8]) -> BytesLines<'_> {
 pub fn is_str_line_break(c: char) -> bool {
     matches!(
         c,
-        '\n' | '\r' | '\x0b' | '\x0c' | '\x1c' | '\x1d' | '\x1e' | '\u{85}' | '\u{2028}' | '\u{2029}'
+        '\n' | '\r'
+            | '\x0b'
+            | '\x0c'
+            | '\x1c'
+            | '\x1d'
+            | '\x1e'
+            | '\u{85}'
+            | '\u{2028}'
+            | '\u{2029}'
     )
 }
 
@@ -73,7 +85,10 @@ pub fn str_splitlines(text: &str) -> Vec<&str> {
 pub fn bytes_strip(data: &[u8]) -> &[u8] {
     let is_ws = |b: &u8| matches!(b, b' ' | b'\t' | b'\n' | b'\r' | b'\x0b' | b'\x0c');
     let start = data.iter().position(|b| !is_ws(b)).unwrap_or(data.len());
-    let end = data.iter().rposition(|b| !is_ws(b)).map_or(start, |p| p + 1);
+    let end = data
+        .iter()
+        .rposition(|b| !is_ws(b))
+        .map_or(start, |p| p + 1);
     &data[start..end.max(start)]
 }
 
@@ -96,7 +111,10 @@ mod tests {
 
     #[test]
     fn str_lines() {
-        assert_eq!(str_splitlines("a\nb\r\nc\x0cd\u{2028}e"), vec!["a", "b", "c", "d", "e"]);
+        assert_eq!(
+            str_splitlines("a\nb\r\nc\x0cd\u{2028}e"),
+            vec!["a", "b", "c", "d", "e"]
+        );
         assert_eq!(str_splitlines("x\n"), vec!["x"]);
         assert_eq!(str_splitlines(""), Vec::<&str>::new());
     }

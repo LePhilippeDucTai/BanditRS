@@ -168,7 +168,10 @@ mod tests {
     #[test]
     fn sorts_keys_and_indents() {
         let v = json!({"b": 1, "a": [1, 2], "c": {}, "d": []});
-        assert_eq!(dumps_sorted_indent2(&v), "{\n  \"a\": [\n    1,\n    2\n  ],\n  \"b\": 1,\n  \"c\": {},\n  \"d\": []\n}");
+        assert_eq!(
+            dumps_sorted_indent2(&v),
+            "{\n  \"a\": [\n    1,\n    2\n  ],\n  \"b\": 1,\n  \"c\": {},\n  \"d\": []\n}"
+        );
     }
 
     #[test]

@@ -13,7 +13,9 @@ use crate::pycompat::html::escape;
 const HEADER_BLOCK: &str = "\n<!DOCTYPE html>\n<html>\n<head>\n\n<meta charset=\"UTF-8\">\n\n<title>\n    Bandit Report\n</title>\n\n<style>\n\nhtml * {\n    font-family: \"Arial\", sans-serif;\n}\n\npre {\n    font-family: \"Monaco\", monospace;\n}\n\n.bordered-box {\n    border: 1px solid black;\n    padding-top:.5em;\n    padding-bottom:.5em;\n    padding-left:1em;\n}\n\n.metrics-box {\n    font-size: 1.1em;\n    line-height: 130%;\n}\n\n.metrics-title {\n    font-size: 1.5em;\n    font-weight: 500;\n    margin-bottom: .25em;\n}\n\n.issue-description {\n    font-size: 1.3em;\n    font-weight: 500;\n}\n\n.candidate-issues {\n    margin-left: 2em;\n    border-left: solid 1px; LightGray;\n    padding-left: 5%;\n    margin-top: .2em;\n    margin-bottom: .2em;\n}\n\n.issue-block {\n    border: 1px solid LightGray;\n    padding-left: .5em;\n    padding-top: .5em;\n    padding-bottom: .5em;\n    margin-bottom: .5em;\n}\n\n.issue-sev-high {\n    background-color: Pink;\n}\n\n.issue-sev-medium {\n    background-color: NavajoWhite;\n}\n\n.issue-sev-low {\n    background-color: LightCyan;\n}\n\n</style>\n</head>\n";
 
 fn report_block(metrics: &str, skipped: &str, results: &str) -> String {
-    format!("\n<body>\n{metrics}\n{skipped}\n\n<br>\n<div id=\"results\">\n    {results}\n</div>\n\n</body>\n</html>\n")
+    format!(
+        "\n<body>\n{metrics}\n{skipped}\n\n<br>\n<div id=\"results\">\n    {results}\n</div>\n\n</body>\n</html>\n"
+    )
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -47,11 +49,15 @@ fn candidate_block(candidate_list: &str) -> String {
 }
 
 fn candidate_issue(code: &str) -> String {
-    format!("\n<div class=\"candidate\">\n<div class=\"candidate-issues\">\n<pre>{code}</pre>\n</div>\n</div>\n")
+    format!(
+        "\n<div class=\"candidate\">\n<div class=\"candidate-issues\">\n<pre>{code}</pre>\n</div>\n</div>\n"
+    )
 }
 
 fn skipped_block(files_list: &str) -> String {
-    format!("\n<br>\n<div id=\"skipped\">\n<div class=\"bordered-box\">\n<b>Skipped files:</b><br><br>\n{files_list}\n</div>\n</div>\n")
+    format!(
+        "\n<br>\n<div id=\"skipped\">\n<div class=\"bordered-box\">\n<b>Skipped files:</b><br><br>\n{files_list}\n</div>\n</div>\n"
+    )
 }
 
 fn metrics_block(loc: u64, nosec: u64) -> String {
@@ -88,9 +94,23 @@ fn render_issue(index: usize, issue: &Issue, code: &str, candidates: &str) -> St
 }
 
 /// `report(manager, fileobj, sev_level, conf_level, lines)`.
-pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_level: Rank, lines: i64) -> io::Result<()> {
-    let skipped_str: String = manager.get_skipped().iter().map(|(fname, reason)| format!("{fname} <b>reason:</b> {reason}<br>")).collect();
-    let skipped_text = if skipped_str.is_empty() { String::new() } else { skipped_block(&skipped_str) };
+pub fn report(
+    manager: &Manager,
+    out: &mut dyn Write,
+    sev_level: Rank,
+    conf_level: Rank,
+    lines: i64,
+) -> io::Result<()> {
+    let skipped_str: String = manager
+        .get_skipped()
+        .iter()
+        .map(|(fname, reason)| format!("{fname} <b>reason:</b> {reason}<br>"))
+        .collect();
+    let skipped_text = if skipped_str.is_empty() {
+        String::new()
+    } else {
+        skipped_block(&skipped_str)
+    };
 
     let issue_list = manager.get_issue_list(sev_level, conf_level);
     let mut results_str = String::new();
@@ -107,7 +127,10 @@ pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_leve
                     let code = code_block(&safe_code(issue, lines));
                     results_str.push_str(&render_issue(index, issue, &code, ""));
                 } else {
-                    let candidates_str: String = candidates.iter().map(|c| candidate_issue(&safe_code(c, lines))).collect();
+                    let candidates_str: String = candidates
+                        .iter()
+                        .map(|c| candidate_issue(&safe_code(c, lines)))
+                        .collect();
                     let candidates_html = candidate_block(&candidates_str);
                     results_str.push_str(&render_issue(index, issue, "", &candidates_html));
                 }

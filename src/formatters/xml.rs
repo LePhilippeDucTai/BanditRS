@@ -10,15 +10,28 @@ use crate::core::manager::Manager;
 use crate::pycompat::xml::{escape_attrib, escape_cdata};
 
 /// `report(manager, fileobj, sev_level, conf_level, lines)`.
-pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_level: Rank, _lines: i64) -> io::Result<()> {
-    let issues: Vec<_> = manager.get_issue_list(sev_level, conf_level).issues().collect();
+pub fn report(
+    manager: &Manager,
+    out: &mut dyn Write,
+    sev_level: Rank,
+    conf_level: Rank,
+    _lines: i64,
+) -> io::Result<()> {
+    let issues: Vec<_> = manager
+        .get_issue_list(sev_level, conf_level)
+        .issues()
+        .collect();
 
     out.write_all(b"<?xml version='1.0' encoding='utf-8'?>\n")?;
     if issues.is_empty() {
         write!(out, "<testsuite name=\"bandit\" tests=\"0\" />")?;
         return Ok(());
     }
-    write!(out, "<testsuite name=\"bandit\" tests=\"{}\">", issues.len())?;
+    write!(
+        out,
+        "<testsuite name=\"bandit\" tests=\"{}\">",
+        issues.len()
+    )?;
     for issue in &issues {
         write!(
             out,
@@ -28,7 +41,13 @@ pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_leve
         )?;
         let text = format!(
             "Test ID: {} Severity: {} Confidence: {}\nCWE: {}\n{}\nLocation {}:{}",
-            issue.test_id, issue.severity, issue.confidence, issue.cwe, issue.text, issue.fname, issue.lineno
+            issue.test_id,
+            issue.severity,
+            issue.confidence,
+            issue.cwe,
+            issue.text,
+            issue.fname,
+            issue.lineno
         );
         write!(
             out,

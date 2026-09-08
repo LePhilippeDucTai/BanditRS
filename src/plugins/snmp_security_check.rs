@@ -29,7 +29,9 @@ pub fn snmp_insecure_version_check(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) 
 
 /// `snmp_crypto_check` (B509).
 pub fn snmp_crypto_check(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginResult {
-    if ctx.call_function_name_qual() == Some("pysnmp.hlapi.UsmUserData") && ctx.call_args_count().unwrap_or(0) < 3 {
+    if ctx.call_function_name_qual() == Some("pysnmp.hlapi.UsmUserData")
+        && ctx.call_args_count().unwrap_or(0) < 3
+    {
         return Ok(Some(
             IssueDraft::new(
                 Rank::Medium,

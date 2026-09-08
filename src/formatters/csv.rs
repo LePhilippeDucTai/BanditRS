@@ -31,7 +31,13 @@ fn python_list_repr(values: impl Iterator<Item = u32>) -> String {
 }
 
 /// `report(manager, fileobj, sev_level, conf_level, lines)`.
-pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_level: Rank, _lines: i64) -> io::Result<()> {
+pub fn report(
+    manager: &Manager,
+    out: &mut dyn Write,
+    sev_level: Rank,
+    conf_level: Rank,
+    _lines: i64,
+) -> io::Result<()> {
     out.write_all(write_row(&FIELDNAMES).as_bytes())?;
     for issue in manager.get_issue_list(sev_level, conf_level).issues() {
         let row = [

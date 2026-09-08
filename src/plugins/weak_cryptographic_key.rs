@@ -39,9 +39,18 @@ fn truthy_or<'a>(a: Option<PyValue<'a>>, b: Option<PyValue<'a>>) -> Option<PyVal
 
 fn classify_key_size(cfg: &WeakKeyConfig, key_type: &str, key_size: i128) -> PluginResult {
     let (high, medium) = match key_type {
-        "DSA" => (cfg.weak_key_size_dsa_high.clone()?, cfg.weak_key_size_dsa_medium.clone()?),
-        "RSA" => (cfg.weak_key_size_rsa_high.clone()?, cfg.weak_key_size_rsa_medium.clone()?),
-        "EC" => (cfg.weak_key_size_ec_high.clone()?, cfg.weak_key_size_ec_medium.clone()?),
+        "DSA" => (
+            cfg.weak_key_size_dsa_high.clone()?,
+            cfg.weak_key_size_dsa_medium.clone()?,
+        ),
+        "RSA" => (
+            cfg.weak_key_size_rsa_high.clone()?,
+            cfg.weak_key_size_rsa_medium.clone()?,
+        ),
+        "EC" => (
+            cfg.weak_key_size_ec_high.clone()?,
+            cfg.weak_key_size_ec_medium.clone()?,
+        ),
         _ => unreachable!("key_type is one of DSA/RSA/EC"),
     };
     for (size, level) in [(high, Rank::High), (medium, Rank::Medium)] {
@@ -67,12 +76,18 @@ fn crypto_io(ctx: &Context<'_, '_>, cfg: &WeakKeyConfig) -> PluginResult {
     };
     if key_type == "DSA" || key_type == "RSA" {
         let pos = if key_type == "RSA" { 1 } else { 0 };
-        let key_size_val = truthy_or(ctx.get_call_arg_value("key_size")?, ctx.get_call_arg_at_position(pos)?);
-        let key_size_val = truthy_or(key_size_val, Some(PyValue::Int(2048))).expect("default provided");
+        let key_size_val = truthy_or(
+            ctx.get_call_arg_value("key_size")?,
+            ctx.get_call_arg_at_position(pos)?,
+        );
+        let key_size_val =
+            truthy_or(key_size_val, Some(PyValue::Int(2048))).expect("default provided");
         if key_size_val.is_str() {
             return Ok(None);
         }
-        let Some(key_size) = key_size_val.as_int() else { return Ok(None) };
+        let Some(key_size) = key_size_val.as_int() else {
+            return Ok(None);
+        };
         return classify_key_size(cfg, key_type, key_size);
     }
     // EC
@@ -85,7 +100,14 @@ fn crypto_io(ctx: &Context<'_, '_>, cfg: &WeakKeyConfig) -> PluginResult {
         }
     };
     let curve_name = curve_val.as_ref().and_then(PyValue::as_str);
-    let key_size = curve_name.and_then(|n| CURVE_KEY_SIZES.iter().find(|(k, _)| *k == n).map(|(_, v)| *v)).unwrap_or(224);
+    let key_size = curve_name
+        .and_then(|n| {
+            CURVE_KEY_SIZES
+                .iter()
+                .find(|(k, _)| *k == n)
+                .map(|(_, v)| *v)
+        })
+        .unwrap_or(224);
     classify_key_size(cfg, "EC", key_size)
 }
 
@@ -96,12 +118,17 @@ fn pycrypto(ctx: &Context<'_, '_>, cfg: &WeakKeyConfig) -> PluginResult {
         "Crypto.PublicKey.RSA.generate" | "Cryptodome.PublicKey.RSA.generate" => "RSA",
         _ => return Ok(None),
     };
-    let key_size_val = truthy_or(ctx.get_call_arg_value("bits")?, ctx.get_call_arg_at_position(0)?);
+    let key_size_val = truthy_or(
+        ctx.get_call_arg_value("bits")?,
+        ctx.get_call_arg_at_position(0)?,
+    );
     let key_size_val = truthy_or(key_size_val, Some(PyValue::Int(2048))).expect("default provided");
     if key_size_val.is_str() {
         return Ok(None);
     }
-    let Some(key_size) = key_size_val.as_int() else { return Ok(None) };
+    let Some(key_size) = key_size_val.as_int() else {
+        return Ok(None);
+    };
     classify_key_size(cfg, key_type, key_size)
 }
 

@@ -9,7 +9,12 @@ use crate::plugins::PluginResult;
 /// `exec_used` (B102).
 pub fn exec_used(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginResult {
     if ctx.call_function_name_qual() == Some("exec") {
-        return Ok(Some(IssueDraft::new(Rank::Medium, Rank::High, Cwe::OS_COMMAND_INJECTION, "Use of exec detected.")));
+        return Ok(Some(IssueDraft::new(
+            Rank::Medium,
+            Rank::High,
+            Cwe::OS_COMMAND_INJECTION,
+            "Use of exec detected.",
+        )));
     }
     Ok(None)
 }

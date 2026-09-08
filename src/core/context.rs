@@ -21,7 +21,11 @@ pub struct Keywords<'a>(pub Vec<(Option<&'a str>, PyValue<'a>)>);
 impl<'a> Keywords<'a> {
     /// Dict lookup (later duplicates win, like Python dict assignment).
     pub fn get(&self, name: &str) -> Option<&PyValue<'a>> {
-        self.0.iter().rev().find(|(k, _)| *k == Some(name)).map(|(_, v)| v)
+        self.0
+            .iter()
+            .rev()
+            .find(|(k, _)| *k == Some(name))
+            .map(|(_, v)| v)
     }
 
     /// `name in call_keywords`.
@@ -86,7 +90,11 @@ impl<'a, 'w> Context<'a, 'w> {
     /// `n`-th ancestor (1 = parent, 2 = grandparent, ...).
     pub fn ancestor(&self, n: usize) -> Option<VNode<'a>> {
         let len = self.ancestors.len();
-        if n == 0 || n > len { None } else { Some(self.ancestors[len - n]) }
+        if n == 0 || n > len {
+            None
+        } else {
+            Some(self.ancestors[len - n])
+        }
     }
 
     /// `call_args`: positional argument values (attribute name for
@@ -120,7 +128,10 @@ impl<'a, 'w> Context<'a, 'w> {
         };
         let mut out = Vec::with_capacity(call.arguments.keywords.len());
         for kw in &call.arguments.keywords {
-            out.push((kw.arg.as_ref().map(|a| a.as_str()), keyword_value(&kw.value)?));
+            out.push((
+                kw.arg.as_ref().map(|a| a.as_str()),
+                keyword_value(&kw.value)?,
+            ));
         }
         Ok(Some(Keywords(out)))
     }
@@ -133,7 +144,11 @@ impl<'a, 'w> Context<'a, 'w> {
     /// `check_call_arg_value(name, values)`: `None` when the argument is
     /// absent (or its value is Python `None`), otherwise whether it equals
     /// one of `values`.
-    pub fn check_call_arg_value(&self, name: &str, values: &[PyValue<'_>]) -> Result<Option<bool>, PyErr> {
+    pub fn check_call_arg_value(
+        &self,
+        name: &str,
+        values: &[PyValue<'_>],
+    ) -> Result<Option<bool>, PyErr> {
         match self.get_call_arg_value(name)? {
             Some(v) if !v.is_none() => Ok(Some(values.iter().any(|x| v.py_eq(x)))),
             _ => Ok(None),
@@ -141,7 +156,11 @@ impl<'a, 'w> Context<'a, 'w> {
     }
 
     /// `check_call_arg_value(name)` with a single value.
-    pub fn check_call_arg_is(&self, name: &str, value: &PyValue<'_>) -> Result<Option<bool>, PyErr> {
+    pub fn check_call_arg_is(
+        &self,
+        name: &str,
+        value: &PyValue<'_>,
+    ) -> Result<Option<bool>, PyErr> {
         self.check_call_arg_value(name, std::slice::from_ref(value))
     }
 
@@ -201,7 +220,9 @@ impl<'a, 'w> Context<'a, 'w> {
         if let Some(s) = self.str_val {
             return Some(unicode_escape::encode(s));
         }
-        self.bytes_val.as_deref().and_then(|b| escaped_bytes_representation(b).ok())
+        self.bytes_val
+            .as_deref()
+            .and_then(|b| escaped_bytes_representation(b).ok())
     }
 
     /// `function_def_defaults_qual`.

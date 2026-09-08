@@ -131,7 +131,13 @@ impl<'a> VNode<'a> {
         match self {
             VNode::Module(_) => "Module",
             VNode::Stmt(s) => match s {
-                Stmt::FunctionDef(f) => if f.is_async { "AsyncFunctionDef" } else { "FunctionDef" },
+                Stmt::FunctionDef(f) => {
+                    if f.is_async {
+                        "AsyncFunctionDef"
+                    } else {
+                        "FunctionDef"
+                    }
+                }
                 Stmt::ClassDef(_) => "ClassDef",
                 Stmt::Return(_) => "Return",
                 Stmt::Delete(_) => "Delete",
@@ -139,13 +145,31 @@ impl<'a> VNode<'a> {
                 Stmt::Assign(_) => "Assign",
                 Stmt::AugAssign(_) => "AugAssign",
                 Stmt::AnnAssign(_) => "AnnAssign",
-                Stmt::For(f) => if f.is_async { "AsyncFor" } else { "For" },
+                Stmt::For(f) => {
+                    if f.is_async {
+                        "AsyncFor"
+                    } else {
+                        "For"
+                    }
+                }
                 Stmt::While(_) => "While",
                 Stmt::If(_) => "If",
-                Stmt::With(w) => if w.is_async { "AsyncWith" } else { "With" },
+                Stmt::With(w) => {
+                    if w.is_async {
+                        "AsyncWith"
+                    } else {
+                        "With"
+                    }
+                }
                 Stmt::Match(_) => "Match",
                 Stmt::Raise(_) => "Raise",
-                Stmt::Try(t) => if t.is_star { "TryStar" } else { "Try" },
+                Stmt::Try(t) => {
+                    if t.is_star {
+                        "TryStar"
+                    } else {
+                        "Try"
+                    }
+                }
                 Stmt::Assert(_) => "Assert",
                 Stmt::Import(_) => "Import",
                 Stmt::ImportFrom(_) => "ImportFrom",
@@ -218,7 +242,11 @@ impl<'a> VNode<'a> {
             },
             VNode::JoinedConst(..) => "Constant",
             VNode::FormattedValue(view, _) => {
-                if view.is_template() { "Interpolation" } else { "FormattedValue" }
+                if view.is_template() {
+                    "Interpolation"
+                } else {
+                    "FormattedValue"
+                }
             }
             VNode::FormatSpec(_) => "JoinedStr",
         }
@@ -256,7 +284,9 @@ impl<'a> VNode<'a> {
             VNode::MatchCase(m) => m.range(),
             VNode::Pattern(p) => p.range(),
             VNode::TypeParam(t) => t.range(),
-            VNode::JoinedConst(view, i) | VNode::FormattedValue(view, i) => view.values[i as usize].range(),
+            VNode::JoinedConst(view, i) | VNode::FormattedValue(view, i) => {
+                view.values[i as usize].range()
+            }
             VNode::FormatSpec(view) => view.range,
         }
     }
@@ -280,7 +310,9 @@ impl<'a> VNode<'a> {
             VNode::Pattern(p) => p as *const _ as usize,
             VNode::TypeParam(t) => t as *const _ as usize,
             VNode::JoinedConst(view, i) => (view as *const _ as usize) ^ ((i as usize + 1) << 3),
-            VNode::FormattedValue(view, i) => (view as *const _ as usize) ^ ((i as usize + 1) << 3) ^ 1,
+            VNode::FormattedValue(view, i) => {
+                (view as *const _ as usize) ^ ((i as usize + 1) << 3) ^ 1
+            }
             VNode::FormatSpec(view) => (view as *const _ as usize) ^ 2,
         }
     }
@@ -334,7 +366,10 @@ impl<'a> VNode<'a> {
 
     /// Whether the node is a `Constant` whose value is a `str`.
     pub fn is_str_constant(self) -> bool {
-        matches!(self, VNode::Expr(Expr::StringLiteral(_)) | VNode::JoinedConst(..))
+        matches!(
+            self,
+            VNode::Expr(Expr::StringLiteral(_)) | VNode::JoinedConst(..)
+        )
     }
 }
 

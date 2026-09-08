@@ -96,8 +96,14 @@ impl Manager {
     }
 
     /// `discover_files(targets, recursive, excluded_paths)`.
-    pub fn discover_files(&mut self, targets: &[String], recursive: bool, excluded_paths: Option<&str>) {
-        let d = crate::core::discover::discover_files(targets, recursive, excluded_paths, &self.config);
+    pub fn discover_files(
+        &mut self,
+        targets: &[String],
+        recursive: bool,
+        excluded_paths: Option<&str>,
+    ) {
+        let d =
+            crate::core::discover::discover_files(targets, recursive, excluded_paths, &self.config);
         self.files_list = d.files;
         self.excluded_files = d.excluded;
     }
@@ -121,6 +127,7 @@ impl Manager {
             None
         };
 
+        #[allow(clippy::large_enum_variant)] // short-lived per-file result, not worth boxing
         enum Outcome {
             OsError(String),
             Scanned(crate::core::scan::FileOutcome),
@@ -137,7 +144,13 @@ impl Manager {
                         Err(e) => return (fname.clone(), Outcome::OsError(io_error_message(&e))),
                     }
                 };
-                let outcome = crate::core::scan::scan_file(fname, &bytes, &self.test_set, self.ignore_nosec, self.compat);
+                let outcome = crate::core::scan::scan_file(
+                    fname,
+                    &bytes,
+                    &self.test_set,
+                    self.ignore_nosec,
+                    self.compat,
+                );
                 (fname.clone(), Outcome::Scanned(outcome))
             })
             .collect();
@@ -175,8 +188,12 @@ impl Manager {
         let parsed: Result<Vec<BaselineIssue>, String> = (|| {
             let v: serde_json::Value = serde_json::from_str(data).map_err(|e| e.to_string())?;
             let results = v.get("results").ok_or_else(|| "'results'".to_string())?;
-            let arr = results.as_array().ok_or_else(|| "results is not a list".to_string())?;
-            arr.iter().map(|r| BaselineIssue::from_dict(r).map_err(|e| e.0)).collect()
+            let arr = results
+                .as_array()
+                .ok_or_else(|| "results is not a list".to_string())?;
+            arr.iter()
+                .map(|r| BaselineIssue::from_dict(r).map_err(|e| e.0))
+                .collect()
         })();
         match parsed {
             Ok(items) => self.baseline = items,
@@ -186,7 +203,11 @@ impl Manager {
 
     /// `filter_results(sev_filter, conf_filter)` / `get_issue_list`.
     pub fn get_issue_list(&self, sev: Rank, conf: Rank) -> IssueList<'_> {
-        let results: Vec<&Issue> = self.results.iter().filter(|i| i.filter(sev, conf)).collect();
+        let results: Vec<&Issue> = self
+            .results
+            .iter()
+            .filter(|i| i.filter(sev, conf))
+            .collect();
         if self.baseline.is_empty() {
             return IssueList::Plain(results);
         }
@@ -218,14 +239,30 @@ fn io_error_message(e: &std::io::Error) -> String {
 
 /// `_compare_baseline_results(baseline, results)`: results not in the baseline.
 pub fn compare_baseline_results<'m>(baseline: &[&Issue], results: &[&'m Issue]) -> Vec<&'m Issue> {
-    results.iter().copied().filter(|r| !baseline.iter().any(|b| r.same_signature(b))).collect()
+    results
+        .iter()
+        .copied()
+        .filter(|r| !baseline.iter().any(|b| r.same_signature(b)))
+        .collect()
 }
 
 /// `_find_candidate_matches(unmatched_issues, results_list)`.
-pub fn find_candidate_matches<'m>(unmatched: &[&'m Issue], results: &[&'m Issue]) -> Vec<(&'m Issue, Vec<&'m Issue>)> {
+pub fn find_candidate_matches<'m>(
+    unmatched: &[&'m Issue],
+    results: &[&'m Issue],
+) -> Vec<(&'m Issue, Vec<&'m Issue>)> {
     unmatched
         .iter()
-        .map(|u| (*u, results.iter().copied().filter(|r| u.same_signature(r)).collect()))
+        .map(|u| {
+            (
+                *u,
+                results
+                    .iter()
+                    .copied()
+                    .filter(|r| u.same_signature(r))
+                    .collect(),
+            )
+        })
         .collect()
 }
 
@@ -235,7 +272,16 @@ mod tests {
     use crate::core::issue::Cwe;
 
     fn issue(text: &str) -> Issue {
-        Issue::new(Rank::Low, Rank::Low, Cwe::NOTSET, text, "a.py", "t", "B1", 1)
+        Issue::new(
+            Rank::Low,
+            Rank::Low,
+            Cwe::NOTSET,
+            text,
+            "a.py",
+            "t",
+            "B1",
+            1,
+        )
     }
 
     #[test]

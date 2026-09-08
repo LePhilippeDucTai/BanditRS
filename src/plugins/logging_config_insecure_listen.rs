@@ -11,7 +11,12 @@ pub fn logging_config_insecure_listen(ctx: &Context<'_, '_>, _cfg: &PluginConfig
     if ctx.call_function_name_qual() == Some("logging.config.listen") {
         let has_verify = ctx.call_keywords()?.is_some_and(|k| k.contains("verify"));
         if !has_verify {
-            return Ok(Some(IssueDraft::new(Rank::Medium, Rank::High, Cwe::CODE_INJECTION, "Use of insecure logging.config.listen detected.")));
+            return Ok(Some(IssueDraft::new(
+                Rank::Medium,
+                Rank::High,
+                Cwe::CODE_INJECTION,
+                "Use of insecure logging.config.listen detected.",
+            )));
         }
     }
     Ok(None)

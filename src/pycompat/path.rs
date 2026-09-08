@@ -22,7 +22,11 @@ pub fn split(p: &str) -> (String, String) {
             let head = &p[..=i];
             let tail = &p[i + 1..];
             let trimmed = head.trim_end_matches('/');
-            let head = if trimmed.is_empty() { head.to_string() } else { trimmed.to_string() };
+            let head = if trimmed.is_empty() {
+                head.to_string()
+            } else {
+                trimmed.to_string()
+            };
             (head, tail.to_string())
         }
     }
@@ -57,7 +61,11 @@ pub fn normpath(p: &str) -> String {
         return ".".to_string();
     }
     let initial_slashes = if p.starts_with('/') {
-        if p.starts_with("//") && !p.starts_with("///") { 2 } else { 1 }
+        if p.starts_with("//") && !p.starts_with("///") {
+            2
+        } else {
+            1
+        }
     } else {
         0
     };
@@ -66,7 +74,8 @@ pub fn normpath(p: &str) -> String {
         if comp.is_empty() || comp == "." {
             continue;
         }
-        if comp != ".." || (initial_slashes == 0 && comps.is_empty()) || comps.last() == Some(&"..") {
+        if comp != ".." || (initial_slashes == 0 && comps.is_empty()) || comps.last() == Some(&"..")
+        {
             comps.push(comp);
         } else if !comps.is_empty() {
             comps.pop();
@@ -84,12 +93,18 @@ pub fn isabs(p: &str) -> bool {
 
 /// Current working directory as a string (lossy).
 pub fn getcwd() -> String {
-    std::env::current_dir().map(|p| p.to_string_lossy().into_owned()).unwrap_or_else(|_| ".".to_string())
+    std::env::current_dir()
+        .map(|p| p.to_string_lossy().into_owned())
+        .unwrap_or_else(|_| ".".to_string())
 }
 
 /// `os.path.abspath(p)`.
 pub fn abspath(p: &str) -> String {
-    if isabs(p) { normpath(p) } else { normpath(&join(&getcwd(), p)) }
+    if isabs(p) {
+        normpath(p)
+    } else {
+        normpath(&join(&getcwd(), p))
+    }
 }
 
 /// `pathlib.PurePosixPath(p).as_posix()`: drop `.` components and redundant
@@ -97,7 +112,10 @@ pub fn abspath(p: &str) -> String {
 /// `..` segments or collapse an all-`.` path to anything but `.`.
 pub fn posix_normalize(p: &str) -> String {
     let absolute = p.starts_with('/');
-    let parts: Vec<&str> = p.split('/').filter(|s| !s.is_empty() && *s != ".").collect();
+    let parts: Vec<&str> = p
+        .split('/')
+        .filter(|s| !s.is_empty() && *s != ".")
+        .collect();
     let joined = parts.join("/");
     match (absolute, joined.is_empty()) {
         (true, true) => "/".to_string(),
@@ -113,14 +131,22 @@ pub fn relpath(p: &str, start: Option<&str>) -> String {
     let start_abs = abspath(&start);
     let start_list: Vec<&str> = start_abs.split('/').filter(|s| !s.is_empty()).collect();
     let path_abs = abspath(p);
-    let path_list: Vec<&str> = path_abs.split('/').filter(|s| !s.is_empty()).collect::<Vec<_>>();
-    let common = start_list.iter().zip(path_list.iter()).take_while(|(a, b)| a == b).count();
-    let mut rel: Vec<&str> = Vec::new();
-    for _ in common..start_list.len() {
-        rel.push("..");
-    }
+    let path_list: Vec<&str> = path_abs
+        .split('/')
+        .filter(|s| !s.is_empty())
+        .collect::<Vec<_>>();
+    let common = start_list
+        .iter()
+        .zip(path_list.iter())
+        .take_while(|(a, b)| a == b)
+        .count();
+    let mut rel: Vec<&str> = vec![".."; start_list.len().saturating_sub(common)];
     rel.extend_from_slice(&path_list[common..]);
-    if rel.is_empty() { ".".to_string() } else { rel.join("/") }
+    if rel.is_empty() {
+        ".".to_string()
+    } else {
+        rel.join("/")
+    }
 }
 
 /// `os.path.isdir(p)`.
@@ -152,7 +178,10 @@ mod tests {
         assert_eq!(split("c.py"), (String::new(), "c.py".to_string()));
         assert_eq!(split("/tmp/"), ("/tmp".to_string(), String::new()));
         assert_eq!(split("/a"), ("/".to_string(), "a".to_string()));
-        assert_eq!(splitext("a/b.c/d.py"), ("a/b.c/d".to_string(), ".py".to_string()));
+        assert_eq!(
+            splitext("a/b.c/d.py"),
+            ("a/b.c/d".to_string(), ".py".to_string())
+        );
         assert_eq!(splitext(".bashrc"), (".bashrc".to_string(), String::new()));
         assert_eq!(splitext("a"), ("a".to_string(), String::new()));
         assert_eq!(normpath("/a/./b/../c"), "/a/c");

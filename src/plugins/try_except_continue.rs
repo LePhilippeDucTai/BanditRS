@@ -11,21 +11,26 @@ use crate::plugins::PluginResult;
 
 /// `try_except_continue` (B112).
 pub fn try_except_continue(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
-    let Some(VNode::ExceptHandler(node)) = ctx.node else { return Ok(None) };
+    let Some(VNode::ExceptHandler(node)) = ctx.node else {
+        return Ok(None);
+    };
     if node.body.len() != 1 {
         return Ok(None);
     }
     let check_typed_exception = cfg.try_except_continue.check_typed_exception.clone()?;
-    if !check_typed_exception {
-        if let Some(ty) = &node.type_ {
-            let is_exception = matches!(&**ty, Expr::Name(n) if n.id.as_str() == "Exception");
-            if !is_exception {
-                return Ok(None);
-            }
+    if !check_typed_exception && let Some(ty) = &node.type_ {
+        let is_exception = matches!(&**ty, Expr::Name(n) if n.id.as_str() == "Exception");
+        if !is_exception {
+            return Ok(None);
         }
     }
     if matches!(node.body[0], Stmt::Continue(_)) {
-        return Ok(Some(IssueDraft::new(Rank::Low, Rank::High, Cwe::IMPROPER_CHECK_OF_EXCEPT_COND, "Try, Except, Continue detected.")));
+        return Ok(Some(IssueDraft::new(
+            Rank::Low,
+            Rank::High,
+            Cwe::IMPROPER_CHECK_OF_EXCEPT_COND,
+            "Try, Except, Continue detected.",
+        )));
     }
     Ok(None)
 }

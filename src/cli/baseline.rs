@@ -23,19 +23,22 @@ fn log_error(msg: impl std::fmt::Display) {
 
 /// Path to the `bandit` binary: next to the current executable, else `PATH`.
 fn bandit_path() -> PathBuf {
-    if let Ok(cur) = std::env::current_exe() {
-        if let Some(dir) = cur.parent() {
-            let candidate = dir.join("bandit");
-            if candidate.is_file() {
-                return candidate;
-            }
+    if let Ok(cur) = std::env::current_exe()
+        && let Some(dir) = cur.parent()
+    {
+        let candidate = dir.join("bandit");
+        if candidate.is_file() {
+            return candidate;
         }
     }
     PathBuf::from("bandit")
 }
 
 fn git(args: &[&str]) -> Result<String, String> {
-    let out = Command::new("git").args(args).output().map_err(|e| e.to_string())?;
+    let out = Command::new("git")
+        .args(args)
+        .output()
+        .map_err(|e| e.to_string())?;
     if !out.status.success() {
         return Err(String::from_utf8_lossy(&out.stderr).trim().to_string());
     }
@@ -47,7 +50,9 @@ fn is_git_command_not_found() -> bool {
 }
 
 fn is_dirty() -> bool {
-    git(&["status", "--porcelain", "--untracked-files=no"]).map(|s| !s.is_empty()).unwrap_or(true)
+    git(&["status", "--porcelain", "--untracked-files=no"])
+        .map(|s| !s.is_empty())
+        .unwrap_or(true)
 }
 
 fn name_rev(sha: &str) -> String {
@@ -70,7 +75,9 @@ fn initialize(targets: &[String], bandit_args: &[String]) -> Option<Initialized>
     let output_format = match targets_output_format(bandit_args) {
         Some(v) => {
             if !VALID_FORMATS.contains(&v.as_str()) {
-                log_error(format!("argument -f: invalid choice: '{v}' (choose from 'txt', 'html', 'json')"));
+                log_error(format!(
+                    "argument -f: invalid choice: '{v}' (choose from 'txt', 'html', 'json')"
+                ));
                 return None;
             }
             v
@@ -83,7 +90,9 @@ fn initialize(targets: &[String], bandit_args: &[String]) -> Option<Initialized>
     }
 
     if output_format == DEFAULT_OUTPUT_FORMAT {
-        log_info(format!("No output format specified, using {DEFAULT_OUTPUT_FORMAT}"));
+        log_info(format!(
+            "No output format specified, using {DEFAULT_OUTPUT_FORMAT}"
+        ));
     }
     let report_fname = format!("{REPORT_BASENAME}.{output_format}");
 
@@ -110,7 +119,9 @@ fn initialize(targets: &[String], bandit_args: &[String]) -> Option<Initialized>
         valid = false;
     }
     if std::path::Path::new(BASELINE_TMP_FILE).exists() {
-        log_error(format!("Temporary file {BASELINE_TMP_FILE} needs to be removed prior to running"));
+        log_error(format!(
+            "Temporary file {BASELINE_TMP_FILE} needs to be removed prior to running"
+        ));
         valid = false;
     }
     if bandit_args.iter().any(|a| a == "-o") {
@@ -118,7 +129,14 @@ fn initialize(targets: &[String], bandit_args: &[String]) -> Option<Initialized>
         valid = false;
     }
 
-    if valid { Some(Initialized { output_format, report_fname }) } else { None }
+    if valid {
+        Some(Initialized {
+            output_format,
+            report_fname,
+        })
+    } else {
+        None
+    }
 }
 
 /// Extract `-f <fmt>` from the raw argv (the only flag `initialize()` itself
@@ -153,8 +171,15 @@ fn targets_of(argv: &[String]) -> Vec<String> {
 /// is inherited (Python doesn't pass `stderr=STDOUT`, so log output streams
 /// straight to the terminal instead of being captured here).
 fn run_bandit(args: &[String]) -> (i32, String) {
-    match Command::new(bandit_path()).args(args).stderr(std::process::Stdio::inherit()).output() {
-        Ok(o) => (o.status.code().unwrap_or(1), String::from_utf8_lossy(&o.stdout).into_owned()),
+    match Command::new(bandit_path())
+        .args(args)
+        .stderr(std::process::Stdio::inherit())
+        .output()
+    {
+        Ok(o) => (
+            o.status.code().unwrap_or(1),
+            String::from_utf8_lossy(&o.stdout).into_owned(),
+        ),
         Err(e) => (1, e.to_string()),
     }
 }
@@ -177,7 +202,10 @@ pub fn main(bandit_args: Vec<String>) -> i32 {
             return 2;
         }
     };
-    log_info(format!("Got current commit: [{}]", name_rev(&current_commit)));
+    log_info(format!(
+        "Got current commit: [{}]",
+        name_rev(&current_commit)
+    ));
 
     let parent_commit = match git(&["rev-parse", "HEAD^"]) {
         Ok(sha) => sha,
@@ -188,8 +216,11 @@ pub fn main(bandit_args: Vec<String>) -> i32 {
     };
     log_info(format!("Got parent commit: [{}]", name_rev(&parent_commit)));
 
-    let output_type: Vec<String> =
-        if init.output_format == DEFAULT_OUTPUT_FORMAT { vec!["-f".to_string(), "txt".to_string()] } else { vec!["-o".to_string(), init.report_fname.clone()] };
+    let output_type: Vec<String> = if init.output_format == DEFAULT_OUTPUT_FORMAT {
+        vec!["-f".to_string(), "txt".to_string()]
+    } else {
+        vec!["-o".to_string(), init.report_fname.clone()]
+    };
 
     let tmpdir = match tempfile_dir() {
         Ok(d) => d,
@@ -204,7 +235,12 @@ pub fn main(bandit_args: Vec<String>) -> i32 {
     let steps: [(&str, &str, Vec<String>); 2] = [
         ("Getting Bandit baseline results", &parent_commit, {
             let mut a = bandit_args.clone();
-            a.extend(["-f".to_string(), "json".to_string(), "-o".to_string(), bandit_tmpfile_str.clone()]);
+            a.extend([
+                "-f".to_string(),
+                "json".to_string(),
+                "-o".to_string(),
+                bandit_tmpfile_str.clone(),
+            ]);
             a
         }),
         ("Comparing Bandit results to baseline", &current_commit, {
@@ -229,7 +265,9 @@ pub fn main(bandit_args: Vec<String>) -> i32 {
         return_code = code;
         last_output = output;
         if !(0..=1).contains(&return_code) {
-            log_error(format!("Error running command: {bandit_args:?}\nOutput: {last_output}\n"));
+            log_error(format!(
+                "Error running command: {bandit_args:?}\nOutput: {last_output}\n"
+            ));
         }
     }
 

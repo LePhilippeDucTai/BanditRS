@@ -38,7 +38,15 @@ fn test_no_arguments() {
 fn test_piped_input() {
     let (rc, out) = run(&["-"], Some("imports.py"));
     assert_eq!(rc, 1);
-    for s in ["Total lines of code: 4", "Low: 2", "High: 2", "Files skipped (0):", "Issue: [B403:blacklist] Consider possible", "<stdin>:2", "<stdin>:4"] {
+    for s in [
+        "Total lines of code: 4",
+        "Low: 2",
+        "High: 2",
+        "Files skipped (0):",
+        "Issue: [B403:blacklist] Consider possible",
+        "<stdin>:2",
+        "<stdin>:4",
+    ] {
         assert!(out.contains(s), "missing {s:?} in {out}");
     }
 }
@@ -54,7 +62,12 @@ fn test_nonexistent_config() {
 fn test_help_arg() {
     let (rc, out) = run(&["-h"], None);
     assert_eq!(rc, 0);
-    for s in ["Bandit - a Python source code security analyzer", "usage: bandit [-h]", "positional arguments:", "tests were discovered and loaded:"] {
+    for s in [
+        "Bandit - a Python source code security analyzer",
+        "usage: bandit [-h]",
+        "positional arguments:",
+        "tests were discovered and loaded:",
+    ] {
         assert!(out.contains(s), "missing {s:?}");
     }
 }
@@ -71,7 +84,11 @@ fn test_example_nonexistent() {
 fn test_example_okay() {
     let (rc, out) = run(&[&example("okay.py")], None);
     assert_eq!(rc, 0);
-    for s in ["Total lines of code: 1", "Files skipped (0):", "No issues identified."] {
+    for s in [
+        "Total lines of code: 1",
+        "Files skipped (0):",
+        "No issues identified.",
+    ] {
         assert!(out.contains(s), "missing {s:?}");
     }
 }
@@ -96,7 +113,15 @@ fn test_example_nonsense2() {
 fn test_example_imports() {
     let (rc, out) = run(&[&example("imports.py")], None);
     assert_eq!(rc, 1);
-    for s in ["Total lines of code: 4", "Low: 2", "High: 2", "Files skipped (0):", "Issue: [B403:blacklist] Consider possible", "imports.py:2", "imports.py:4"] {
+    for s in [
+        "Total lines of code: 4",
+        "Low: 2",
+        "High: 2",
+        "Files skipped (0):",
+        "Issue: [B403:blacklist] Consider possible",
+        "imports.py:2",
+        "imports.py:4",
+    ] {
         assert!(out.contains(s), "missing {s:?}");
     }
 }

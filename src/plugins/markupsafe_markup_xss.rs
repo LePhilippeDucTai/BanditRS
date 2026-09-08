@@ -12,7 +12,12 @@ use crate::plugins::PluginResult;
 fn is_constant(e: &Expr) -> bool {
     matches!(
         e,
-        Expr::StringLiteral(_) | Expr::NumberLiteral(_) | Expr::BooleanLiteral(_) | Expr::NoneLiteral(_) | Expr::BytesLiteral(_) | Expr::EllipsisLiteral(_)
+        Expr::StringLiteral(_)
+            | Expr::NumberLiteral(_)
+            | Expr::BooleanLiteral(_)
+            | Expr::NoneLiteral(_)
+            | Expr::BytesLiteral(_)
+            | Expr::EllipsisLiteral(_)
     )
 }
 
@@ -25,24 +30,29 @@ pub fn markupsafe_markup_xss(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> Plug
             return Ok(None);
         }
     }
-    let Some(call) = ctx.call else { return Ok(None) };
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
     let args = &call.arguments.args;
     if args.is_empty() || is_constant(&args[0]) {
         return Ok(None);
     }
     let allowed = cfg.markupsafe_xss.allowed_calls.items_or_empty()?;
-    if !allowed.is_empty() {
-        if let Expr::Call(inner) = &args[0] {
-            let name = call_name(inner, ctx.import_aliases);
-            if allowed.iter().any(|a| a == &name) {
-                return Ok(None);
-            }
+    if !allowed.is_empty()
+        && let Expr::Call(inner) = &args[0]
+    {
+        let name = call_name(inner, ctx.import_aliases);
+        if allowed.iter().any(|a| a == &name) {
+            return Ok(None);
         }
     }
     Ok(Some(IssueDraft::new(
         Rank::Medium,
         Rank::High,
         Cwe::XSS,
-        format!("Potential XSS with ``{qual}`` detected. Do not use ``{}`` on untrusted data.", ctx.call_function_name().unwrap_or("")),
+        format!(
+            "Potential XSS with ``{qual}`` detected. Do not use ``{}`` on untrusted data.",
+            ctx.call_function_name().unwrap_or("")
+        ),
     )))
 }

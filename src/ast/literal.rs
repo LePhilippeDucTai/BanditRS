@@ -169,24 +169,51 @@ impl<'a> PyValue<'a> {
                 if *r == 0.0 && !r.is_sign_negative() {
                     format!("{}j", repr_float_short(*i))
                 } else {
-                    let sign = if *i < 0.0 || (*i == 0.0 && i.is_sign_negative()) { "-" } else { "+" };
-                    format!("({}{}{}j)", repr_float_short(*r), sign, repr_float_short(i.abs()))
+                    let sign = if *i < 0.0 || (*i == 0.0 && i.is_sign_negative()) {
+                        "-"
+                    } else {
+                        "+"
+                    };
+                    format!(
+                        "({}{}{}j)",
+                        repr_float_short(*r),
+                        sign,
+                        repr_float_short(i.abs())
+                    )
                 }
             }
             PyValue::Ellipsis => "Ellipsis".to_string(),
-            PyValue::List(v) => format!("[{}]", v.iter().map(PyValue::py_repr).collect::<Vec<_>>().join(", ")),
+            PyValue::List(v) => format!(
+                "[{}]",
+                v.iter()
+                    .map(PyValue::py_repr)
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
             PyValue::Tuple(v) => {
                 if v.len() == 1 {
                     format!("({},)", v[0].py_repr())
                 } else {
-                    format!("({})", v.iter().map(PyValue::py_repr).collect::<Vec<_>>().join(", "))
+                    format!(
+                        "({})",
+                        v.iter()
+                            .map(PyValue::py_repr)
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
                 }
             }
             PyValue::Set(v) => {
                 if v.is_empty() {
                     "set()".to_string()
                 } else {
-                    format!("{{{}}}", v.iter().map(PyValue::py_repr).collect::<Vec<_>>().join(", "))
+                    format!(
+                        "{{{}}}",
+                        v.iter()
+                            .map(PyValue::py_repr)
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
                 }
             }
             PyValue::Dict(d) => {
@@ -194,7 +221,11 @@ impl<'a> PyValue<'a> {
                     .items
                     .iter()
                     .map(|it| {
-                        let k = it.key.as_ref().map(node_repr).unwrap_or_else(|| "None".to_string());
+                        let k = it
+                            .key
+                            .as_ref()
+                            .map(node_repr)
+                            .unwrap_or_else(|| "None".to_string());
                         format!("{k}: {}", node_repr(&it.value))
                     })
                     .collect();
@@ -207,7 +238,10 @@ impl<'a> PyValue<'a> {
 /// `repr()` of a raw AST node (`<ast.Name object at 0x...>`); the address is
 /// rendered deterministically.
 pub fn node_repr(expr: &Expr) -> String {
-    format!("<ast.{} object at 0x0>", crate::ast::VNode::Expr(expr).class_name())
+    format!(
+        "<ast.{} object at 0x0>",
+        crate::ast::VNode::Expr(expr).class_name()
+    )
 }
 
 /// Whether Python's `str.isprintable()` considers `c` printable
@@ -250,7 +284,11 @@ pub fn is_printable(c: char) -> bool {
 
 /// Python `repr(str)`.
 pub fn repr_str(s: &str) -> String {
-    let quote = if s.contains('\'') && !s.contains('"') { '"' } else { '\'' };
+    let quote = if s.contains('\'') && !s.contains('"') {
+        '"'
+    } else {
+        '\''
+    };
     let mut out = String::with_capacity(s.len() + 2);
     out.push(quote);
     for c in s.chars() {
@@ -282,7 +320,11 @@ pub fn repr_str(s: &str) -> String {
 
 /// Python `repr(bytes)`.
 pub fn repr_bytes(b: &[u8]) -> String {
-    let quote = if b.contains(&b'\'') && !b.contains(&b'"') { b'"' } else { b'\'' };
+    let quote = if b.contains(&b'\'') && !b.contains(&b'"') {
+        b'"'
+    } else {
+        b'\''
+    };
     let mut out = String::from("b");
     out.push(quote as char);
     for &c in b {
@@ -309,7 +351,11 @@ pub fn repr_float(f: f64) -> String {
         return "nan".to_string();
     }
     if f.is_infinite() {
-        return if f > 0.0 { "inf".to_string() } else { "-inf".to_string() };
+        return if f > 0.0 {
+            "inf".to_string()
+        } else {
+            "-inf".to_string()
+        };
     }
     let s = format!("{f:?}");
     // Rust: "1e16" / "1e-5"; Python: "1e+16" / "1e-05".
@@ -318,7 +364,11 @@ pub fn repr_float(f: f64) -> String {
             Some(d) => ("-", d),
             None => ("+", exp),
         };
-        let digits = if digits.len() < 2 { format!("0{digits}") } else { digits.to_string() };
+        let digits = if digits.len() < 2 {
+            format!("0{digits}")
+        } else {
+            digits.to_string()
+        };
         let mant = mant.strip_suffix(".0").unwrap_or(mant);
         return format!("{mant}e{sign}{digits}");
     }
@@ -357,11 +407,23 @@ pub fn get_literal_value<'a>(expr: &'a Expr) -> Result<PyValue<'a>, PyErr> {
             Number::Float(f) => PyValue::Float(*f),
             Number::Complex { real, imag } => PyValue::Complex(*real, *imag),
         },
-        Expr::BooleanLiteral(b) => PyValue::Str(Cow::Borrowed(if b.value { "True" } else { "False" })),
+        Expr::BooleanLiteral(b) => {
+            PyValue::Str(Cow::Borrowed(if b.value { "True" } else { "False" }))
+        }
         Expr::NoneLiteral(_) => PyValue::Str(Cow::Borrowed("None")),
         Expr::EllipsisLiteral(_) => PyValue::Ellipsis,
-        Expr::List(l) => PyValue::List(l.elts.iter().map(get_literal_value).collect::<Result<_, _>>()?),
-        Expr::Tuple(t) => PyValue::Tuple(t.elts.iter().map(get_literal_value).collect::<Result<_, _>>()?),
+        Expr::List(l) => PyValue::List(
+            l.elts
+                .iter()
+                .map(get_literal_value)
+                .collect::<Result<_, _>>()?,
+        ),
+        Expr::Tuple(t) => PyValue::Tuple(
+            t.elts
+                .iter()
+                .map(get_literal_value)
+                .collect::<Result<_, _>>()?,
+        ),
         Expr::Set(s) => {
             let mut items: Vec<PyValue<'a>> = Vec::with_capacity(s.elts.len());
             for e in &s.elts {
@@ -437,7 +499,9 @@ mod tests {
     fn equality_and_truth() {
         assert!(PyValue::Int(0).py_eq(&PyValue::Float(0.0)));
         assert!(!PyValue::Int(0).py_eq(&PyValue::str("0")));
-        assert!(PyValue::List(vec![PyValue::Int(1)]).py_eq(&PyValue::List(vec![PyValue::Float(1.0)])));
+        assert!(
+            PyValue::List(vec![PyValue::Int(1)]).py_eq(&PyValue::List(vec![PyValue::Float(1.0)]))
+        );
         assert!(!PyValue::List(vec![]).py_eq(&PyValue::Tuple(vec![])));
         assert!(!PyValue::None.truthy());
         assert!(!PyValue::str("").truthy());

@@ -66,7 +66,10 @@ pub fn qual_attr(expr: &Expr, aliases: &Aliases) -> String {
     match expr {
         Expr::Attribute(a) => {
             let prefix = match &*a.value {
-                Expr::Name(n) => aliases.get(n.id.as_str()).map(String::as_str).unwrap_or(n.id.as_str()),
+                Expr::Name(n) => aliases
+                    .get(n.id.as_str())
+                    .map(String::as_str)
+                    .unwrap_or(n.id.as_str()),
                 _ => "",
             };
             format!("{prefix}.{}", a.attr.as_str())
@@ -94,7 +97,10 @@ mod tests {
     }
 
     fn aliases(pairs: &[(&str, &str)]) -> Aliases {
-        pairs.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect()
+        pairs
+            .iter()
+            .map(|(k, v)| (k.to_string(), v.to_string()))
+            .collect()
     }
 
     #[test]
@@ -102,9 +108,18 @@ mod tests {
         let e = call_of("a.b.c.d(x,y)");
         let Expr::Call(c) = &e else { panic!() };
         assert_eq!(call_name(c, &aliases(&[])), "a.b.c.d");
-        assert_eq!(call_name(c, &aliases(&[("a", "alias.x.y")])), "alias.x.y.b.c.d");
-        assert_eq!(call_name(c, &aliases(&[("a.b", "alias.x.y")])), "alias.x.y.c.d");
-        assert_eq!(call_name(c, &aliases(&[("a.b.c.d", "alias.x.y")])), "alias.x.y");
+        assert_eq!(
+            call_name(c, &aliases(&[("a", "alias.x.y")])),
+            "alias.x.y.b.c.d"
+        );
+        assert_eq!(
+            call_name(c, &aliases(&[("a.b", "alias.x.y")])),
+            "alias.x.y.c.d"
+        );
+        assert_eq!(
+            call_name(c, &aliases(&[("a.b.c.d", "alias.x.y")])),
+            "alias.x.y"
+        );
         let e = call_of("a.list[0](x,y)");
         let Expr::Call(c) = &e else { panic!() };
         assert_eq!(attr_qual_name(&c.func, &aliases(&[])), "");
@@ -119,7 +134,10 @@ mod tests {
     fn get_qual_attr() {
         let e = call_of("ssl.PROTOCOL_SSLv2");
         assert_eq!(qual_attr(&e, &aliases(&[])), "ssl.PROTOCOL_SSLv2");
-        assert_eq!(qual_attr(&e, &aliases(&[("ssl", "OpenSSL.SSL")])), "OpenSSL.SSL.PROTOCOL_SSLv2");
+        assert_eq!(
+            qual_attr(&e, &aliases(&[("ssl", "OpenSSL.SSL")])),
+            "OpenSSL.SSL.PROTOCOL_SSLv2"
+        );
         let e = call_of("a.b.c");
         assert_eq!(qual_attr(&e, &aliases(&[])), ".c");
         let e = call_of("name");

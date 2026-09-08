@@ -27,14 +27,19 @@ impl SourceFile {
         let text = text.into();
         let line_starts = compute_line_starts(&text);
         let is_stdin = name == "<stdin>";
-        SourceFile { name, text, line_starts, is_stdin }
+        SourceFile {
+            name,
+            text,
+            line_starts,
+            is_stdin,
+        }
     }
 
     /// Number of lines (a trailing terminator does not start a new line
     /// unless followed by content, matching `str.splitlines`).
     pub fn line_count(&self) -> usize {
         let n = self.line_starts.len();
-        if n > 0 && self.line_starts[n - 1] as usize >= self.text.len() && self.text.len() > 0 {
+        if n > 0 && self.line_starts[n - 1] as usize >= self.text.len() && !self.text.is_empty() {
             n - 1
         } else {
             n
@@ -53,7 +58,10 @@ impl SourceFile {
     /// to the end of the text.
     pub fn line_start(&self, line: u32) -> u32 {
         let idx = line.saturating_sub(1) as usize;
-        self.line_starts.get(idx).copied().unwrap_or(self.text.len() as u32)
+        self.line_starts
+            .get(idx)
+            .copied()
+            .unwrap_or(self.text.len() as u32)
     }
 
     /// `(line, byte column)` of `offset`; line is 1-based, column 0-based.
@@ -150,13 +158,21 @@ impl SourceStore {
 
     /// Register a file.
     pub fn insert(&self, file: Arc<SourceFile>) {
-        self.files.lock().unwrap_or_else(|e| e.into_inner()).insert(file.name.clone(), file);
+        self.files
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .insert(file.name.clone(), file);
     }
 
     /// Fetch a file, loading it from disk (decoded like Python's `linecache`)
     /// when unknown. Returns `None` when the file cannot be read.
     pub fn get(&self, name: &str) -> Option<Arc<SourceFile>> {
-        if let Some(f) = self.files.lock().unwrap_or_else(|e| e.into_inner()).get(name) {
+        if let Some(f) = self
+            .files
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .get(name)
+        {
             return Some(f.clone());
         }
         let bytes = std::fs::read(name).ok()?;

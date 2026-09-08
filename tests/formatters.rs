@@ -24,7 +24,16 @@ fn base_manager() -> Manager {
 }
 
 fn make_issue(fname: &str, lineno: u32, col: u32, end_col: u32) -> Issue {
-    let mut issue = Issue::new(Rank::Medium, Rank::Medium, Cwe::MULTIPLE_BINDS, TEXT, fname, TEST_NAME, TEST_ID, lineno);
+    let mut issue = Issue::new(
+        Rank::Medium,
+        Rank::Medium,
+        Cwe::MULTIPLE_BINDS,
+        TEXT,
+        fname,
+        TEST_NAME,
+        TEST_ID,
+        lineno,
+    );
     issue.linerange = LineRange::single(lineno);
     issue.col_offset = col;
     issue.end_col_offset = end_col;
@@ -92,7 +101,10 @@ fn csv_report_has_expected_columns() {
     let text = String::from_utf8(buf).unwrap();
     let mut lines = text.split("\r\n");
     let header = lines.next().unwrap();
-    assert_eq!(header, "filename,test_name,test_id,issue_severity,issue_confidence,issue_cwe,issue_text,line_number,col_offset,end_col_offset,line_range,more_info");
+    assert_eq!(
+        header,
+        "filename,test_name,test_id,issue_severity,issue_confidence,issue_cwe,issue_text,line_number,col_offset,end_col_offset,line_range,more_info"
+    );
     let row = lines.next().unwrap();
     assert!(row.starts_with(&fname));
     assert!(row.contains(",4,8,16,[4],"), "row was: {row}");
@@ -122,7 +134,14 @@ fn custom_report_renders_bare_tags() {
     mgr.results.push(make_issue(&fname, 4, 30, 38));
 
     let mut buf = Vec::new();
-    custom::report(&mgr, &mut buf, Rank::Low, Rank::Low, Some("{line},{col},{end_col},{severity},{msg}")).unwrap();
+    custom::report(
+        &mgr,
+        &mut buf,
+        Rank::Low,
+        Rank::Low,
+        Some("{line},{col},{end_col},{severity},{msg}"),
+    )
+    .unwrap();
     let text = String::from_utf8(buf).unwrap();
     assert_eq!(text, format!("4,30,38,MEDIUM,{TEXT}\n"));
 }
@@ -178,7 +197,10 @@ fn screen_report_hint_when_output_file_given() {
         banditrs::log::set_level(banditrs::log::Level::Info);
         screen::report(&mgr, Rank::Low, Rank::Low, -1, Some("report.txt")).unwrap();
     });
-    assert!(entries.iter().any(|e| e.message.contains("Screen formatter output was not written to file: report.txt")));
+    assert!(entries.iter().any(|e| {
+        e.message
+            .contains("Screen formatter output was not written to file: report.txt")
+    }));
 }
 
 #[test]
@@ -207,7 +229,10 @@ fn html_report_escapes_code_only() {
     let (tmp, fname) = tmp_name();
     std::fs::write(tmp.path(), "if a < b:\n    <tag in code>\n    pass\n").unwrap();
     let mut issue = make_issue(&fname, 2, 4, 20);
-    issue.source = Some(std::sync::Arc::new(banditrs::source::SourceFile::new(&fname, "if a < b:\n    <tag in code>\n    pass\n")));
+    issue.source = Some(std::sync::Arc::new(banditrs::source::SourceFile::new(
+        &fname,
+        "if a < b:\n    <tag in code>\n    pass\n",
+    )));
     mgr.results.push(issue);
 
     let mut buf = Vec::new();
@@ -226,7 +251,10 @@ fn sarif_report_has_expected_fields() {
     let mut buf = Vec::new();
     sarif::report(&mgr, &mut buf, Rank::Low, Rank::Low, -1).unwrap();
     let v: serde_json::Value = serde_json::from_slice(&buf).unwrap();
-    assert_eq!(v["$schema"], "https://json.schemastore.org/sarif-2.1.0.json");
+    assert_eq!(
+        v["$schema"],
+        "https://json.schemastore.org/sarif-2.1.0.json"
+    );
     assert_eq!(v["version"], "2.1.0");
     let driver = &v["runs"][0]["tool"]["driver"];
     assert_eq!(driver["name"], "Bandit");
@@ -237,7 +265,11 @@ fn sarif_report_has_expected_fields() {
     assert!(tags.iter().any(|t| t == "security"));
     assert!(tags.iter().any(|t| t == "external/cwe/cwe-605"));
     assert_eq!(driver["rules"][0]["properties"]["precision"], "medium");
-    assert!(v["runs"][0]["invocations"][0]["executionSuccessful"].as_bool().unwrap());
+    assert!(
+        v["runs"][0]["invocations"][0]["executionSuccessful"]
+            .as_bool()
+            .unwrap()
+    );
     assert!(v["runs"][0]["invocations"][0]["endTimeUtc"].is_string());
     let result = &v["runs"][0]["results"][0];
     assert!(result.get("level").is_none());
@@ -245,5 +277,10 @@ fn sarif_report_has_expected_fields() {
     let region = &result["locations"][0]["physicalLocation"]["region"];
     assert_eq!(region["startLine"], 4);
     assert_eq!(region["endLine"], 4);
-    assert!(result["locations"][0]["physicalLocation"]["artifactLocation"]["uri"].as_str().unwrap().contains(&fname[1..]));
+    assert!(
+        result["locations"][0]["physicalLocation"]["artifactLocation"]["uri"]
+            .as_str()
+            .unwrap()
+            .contains(&fname[1..])
+    );
 }

@@ -41,7 +41,9 @@ impl ListOpt {
     pub fn contains_str(&self, key: &str, value: &str) -> Result<bool, PyErr> {
         match self {
             ListOpt::Missing => Err(PyErr::key_error(key)),
-            ListOpt::Null => Err(PyErr::type_error("argument of type 'NoneType' is not iterable")),
+            ListOpt::Null => Err(PyErr::type_error(
+                "argument of type 'NoneType' is not iterable",
+            )),
             ListOpt::Items(items) => Ok(items.iter().any(|i| i == value)),
         }
     }
@@ -127,7 +129,9 @@ pub struct AssertUsedConfig {
 
 impl Default for AssertUsedConfig {
     fn default() -> Self {
-        AssertUsedConfig { skips: ListOpt::Items(vec![]) }
+        AssertUsedConfig {
+            skips: ListOpt::Items(vec![]),
+        }
     }
 }
 
@@ -140,7 +144,9 @@ pub struct TmpDirConfig {
 
 impl Default for TmpDirConfig {
     fn default() -> Self {
-        TmpDirConfig { tmp_dirs: ListOpt::of(&["/tmp", "/var/tmp", "/dev/shm"]) }
+        TmpDirConfig {
+            tmp_dirs: ListOpt::of(&["/tmp", "/var/tmp", "/dev/shm"]),
+        }
     }
 }
 
@@ -153,7 +159,9 @@ pub struct TryExceptConfig {
 
 impl Default for TryExceptConfig {
     fn default() -> Self {
-        TryExceptConfig { check_typed_exception: Ok(false) }
+        TryExceptConfig {
+            check_typed_exception: Ok(false),
+        }
     }
 }
 
@@ -215,7 +223,10 @@ pub struct MarkupSafeConfig {
 
 impl Default for MarkupSafeConfig {
     fn default() -> Self {
-        MarkupSafeConfig { extend_markup_names: ListOpt::Items(vec![]), allowed_calls: ListOpt::Items(vec![]) }
+        MarkupSafeConfig {
+            extend_markup_names: ListOpt::Items(vec![]),
+            allowed_calls: ListOpt::Items(vec![]),
+        }
     }
 }
 
@@ -238,7 +249,11 @@ fn list_opt(map: &IndexMap<String, ConfigValue>, key: &str) -> ListOpt {
     match map.get(key) {
         None => ListOpt::Missing,
         Some(ConfigValue::Null) => ListOpt::Null,
-        Some(v) => ListOpt::Items(v.as_list().map(|l| l.iter().map(ConfigValue::py_str).collect()).unwrap_or_else(|| vec![v.py_str()])),
+        Some(v) => ListOpt::Items(
+            v.as_list()
+                .map(|l| l.iter().map(ConfigValue::py_str).collect())
+                .unwrap_or_else(|| vec![v.py_str()]),
+        ),
     }
 }
 
@@ -256,7 +271,10 @@ fn int_opt(map: &IndexMap<String, ConfigValue>, key: &str) -> Result<i64, PyErr>
         None => Err(PyErr::key_error(key)),
         Some(ConfigValue::Int(i)) => Ok(*i),
         Some(ConfigValue::Float(f)) => Ok(*f as i64),
-        Some(v) => Err(PyErr::type_error(format!("'{}' object cannot be interpreted as an integer", v.py_str()))),
+        Some(v) => Err(PyErr::type_error(format!(
+            "'{}' object cannot be interpreted as an integer",
+            v.py_str()
+        ))),
     }
 }
 
@@ -279,23 +297,33 @@ impl PluginConfigs {
         };
         let assert_used = match section("assert_used") {
             None => AssertUsedConfig::default(),
-            Some(m) => AssertUsedConfig { skips: list_opt(m, "skips") },
+            Some(m) => AssertUsedConfig {
+                skips: list_opt(m, "skips"),
+            },
         };
         let hardcoded_tmp_directory = match section("hardcoded_tmp_directory") {
             None => TmpDirConfig::default(),
-            Some(m) => TmpDirConfig { tmp_dirs: list_opt(m, "tmp_dirs") },
+            Some(m) => TmpDirConfig {
+                tmp_dirs: list_opt(m, "tmp_dirs"),
+            },
         };
         let try_except_pass = match section("try_except_pass") {
             None => TryExceptConfig::default(),
-            Some(m) => TryExceptConfig { check_typed_exception: bool_opt(m, "check_typed_exception") },
+            Some(m) => TryExceptConfig {
+                check_typed_exception: bool_opt(m, "check_typed_exception"),
+            },
         };
         let try_except_continue = match section("try_except_continue") {
             None => TryExceptConfig::default(),
-            Some(m) => TryExceptConfig { check_typed_exception: bool_opt(m, "check_typed_exception") },
+            Some(m) => TryExceptConfig {
+                check_typed_exception: bool_opt(m, "check_typed_exception"),
+            },
         };
         let ssl_with_bad_version = match section("ssl_with_bad_version") {
             None => SslConfig::default(),
-            Some(m) => SslConfig { bad_protocol_versions: list_opt(m, "bad_protocol_versions") },
+            Some(m) => SslConfig {
+                bad_protocol_versions: list_opt(m, "bad_protocol_versions"),
+            },
         };
         let weak_cryptographic_key = match section("weak_cryptographic_key") {
             None => WeakKeyConfig::default(),

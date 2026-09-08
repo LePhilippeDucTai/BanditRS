@@ -17,6 +17,7 @@
 //!    `metrics.nosec += 1`; contains test_id → skip and
 //!    `metrics.skipped_tests += 1`; otherwise report;
 //! 4. reported issues are pushed to `results` and `scores.note(sev, conf)`.
+//!
 //! On `None` results, if the nosec set for the context names this test id
 //! log `"nosec encountered ({id}), but no failed test on file {fname}:{lineno}"`
 //! as a warning.
@@ -47,7 +48,11 @@ pub struct Tester<'t> {
 /// `_get_nosecs_from_contexts`: `base` (only when a result carries an explicit
 /// lineno) unioned with the first non-`None` entry over `linerange`; both
 /// absent → `None`.
-fn combined_nosec(nosec: &NosecLines, draft_lineno: Option<u32>, linerange: LineRange) -> Option<FxHashSet<String>> {
+fn combined_nosec(
+    nosec: &NosecLines,
+    draft_lineno: Option<u32>,
+    linerange: LineRange,
+) -> Option<FxHashSet<String>> {
     let base = draft_lineno.and_then(|l| nosec.get(l));
     let ctx_tests = nosec.for_range(linerange);
     match (base, ctx_tests) {
@@ -69,7 +74,11 @@ impl<'a, 't> TestRunner<'a> for Tester<'t> {
             let (name, default_id, result) = match test_ref {
                 TestRef::Plugin(p) => (p.func_name, p.id, (p.func)(ctx, &self.test_set.configs)),
                 TestRef::Blacklist => {
-                    let table = self.test_set.blacklist.as_ref().expect("B001 registered without a table");
+                    let table = self
+                        .test_set
+                        .blacklist
+                        .as_ref()
+                        .expect("B001 registered without a table");
                     ("blacklist", "B001", blacklist::blacklist(ctx, kind, table))
                 }
             };
@@ -85,22 +94,25 @@ impl<'a, 't> TestRunner<'a> for Tester<'t> {
                     );
                 }
                 Ok(None) => {
-                    if let Some(ids) = combined_nosec(self.nosec, None, ctx.linerange) {
-                        if !ids.is_empty() && ids.contains(default_id) {
-                            crate::log_warning!(
-                                "tester",
-                                "nosec encountered ({}), but no failed test on file {}:{}",
-                                default_id,
-                                ctx.filename(),
-                                ctx.lineno().unwrap_or(0)
-                            );
-                        }
+                    if let Some(ids) = combined_nosec(self.nosec, None, ctx.linerange)
+                        && !ids.is_empty()
+                        && ids.contains(default_id)
+                    {
+                        crate::log_warning!(
+                            "tester",
+                            "nosec encountered ({}), but no failed test on file {}:{}",
+                            default_id,
+                            ctx.filename(),
+                            ctx.lineno().unwrap_or(0)
+                        );
                     }
                 }
                 Ok(Some(draft)) => {
                     let nosec_ids = combined_nosec(self.nosec, draft.lineno, ctx.linerange);
                     let lineno = draft.lineno.unwrap_or_else(|| ctx.lineno().unwrap_or(0));
-                    let col_offset = draft.col_offset.unwrap_or_else(|| ctx.col_offset().unwrap_or(0));
+                    let col_offset = draft
+                        .col_offset
+                        .unwrap_or_else(|| ctx.col_offset().unwrap_or(0));
                     let linerange = draft.linerange.unwrap_or(ctx.linerange);
                     let end_col_offset = ctx.end_col_offset();
                     let test_id = draft.test_id.clone().unwrap_or(Cow::Borrowed(default_id));

@@ -25,7 +25,9 @@ pub enum DecodeError {
 impl fmt::Display for DecodeError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            DecodeError::InvalidDeclaration => f.write_str("invalid or missing encoding declaration"),
+            DecodeError::InvalidDeclaration => {
+                f.write_str("invalid or missing encoding declaration")
+            }
             DecodeError::UnknownEncoding(e) => write!(f, "unknown encoding: {e}"),
             DecodeError::EncodingProblem => f.write_str("encoding problem: utf-8"),
             DecodeError::Undecodable(e) => write!(f, "'{e}' codec can't decode source"),
@@ -60,13 +62,21 @@ fn first_line(data: &[u8]) -> (&[u8], &[u8]) {
 
 fn is_blank(line: &[u8]) -> bool {
     // blank_re = rb'^[ \t\f]*(?:[#\r\n]|$)'
-    let rest = line.iter().position(|&b| !matches!(b, b' ' | b'\t' | b'\x0c')).map_or(&[][..], |i| &line[i..]);
+    let rest = line
+        .iter()
+        .position(|&b| !matches!(b, b' ' | b'\t' | b'\x0c'))
+        .map_or(&[][..], |i| &line[i..]);
     rest.is_empty() || matches!(rest[0], b'#' | b'\r' | b'\n')
 }
 
 /// `_get_normal_name` from `tokenize.py`.
 fn normal_name(orig: &str) -> String {
-    let enc: String = orig.chars().take(12).collect::<String>().to_lowercase().replace('_', "-");
+    let enc: String = orig
+        .chars()
+        .take(12)
+        .collect::<String>()
+        .to_lowercase()
+        .replace('_', "-");
     if enc == "utf-8" || enc.starts_with("utf-8-") {
         return "utf-8".to_string();
     }
@@ -104,7 +114,10 @@ pub fn detect_encoding(data: &[u8]) -> Result<Detected, DecodeError> {
         bom = true;
         data = &data[3..];
     }
-    let default = || Detected { encoding: "utf-8".to_string(), bom };
+    let default = || Detected {
+        encoding: "utf-8".to_string(),
+        bom,
+    };
     let (first, rest) = first_line(data);
     if first.is_empty() {
         return Ok(default());
@@ -141,9 +154,11 @@ impl Codec {
         let n = n.as_str();
         match n {
             "utf-8" | "utf8" | "u8" | "utf" | "cp65001" | "utf-8-sig" => return Some(Codec::Utf8),
-            "iso-8859-1" | "latin-1" | "latin1" | "l1" | "iso8859-1" | "8859" | "cp819" | "iso88591"
-            | "iso-latin-1" | "latin" => return Some(Codec::Latin1),
-            "ascii" | "us-ascii" | "646" | "ansi-x3.4-1968" | "iso646-us" | "us" => return Some(Codec::Ascii),
+            "iso-8859-1" | "latin-1" | "latin1" | "l1" | "iso8859-1" | "8859" | "cp819"
+            | "iso88591" | "iso-latin-1" | "latin" => return Some(Codec::Latin1),
+            "ascii" | "us-ascii" | "646" | "ansi-x3.4-1968" | "iso646-us" | "us" => {
+                return Some(Codec::Ascii);
+            }
             _ => {}
         }
         // Python accepts a few forms encoding_rs does not know.
@@ -216,24 +231,65 @@ mod tests {
     #[test]
     fn detects_cookies() {
         assert_eq!(detect_encoding(b"x = 1\n").unwrap().encoding, "utf-8");
-        assert_eq!(detect_encoding(b"# -*- coding: latin-1 -*-\nx\n").unwrap().encoding, "iso-8859-1");
-        assert_eq!(detect_encoding(b"#!/usr/bin/env python3\n# -*- coding: latin-1 -*-\n").unwrap().encoding, "iso-8859-1");
+        assert_eq!(
+            detect_encoding(b"# -*- coding: latin-1 -*-\nx\n")
+                .unwrap()
+                .encoding,
+            "iso-8859-1"
+        );
+        assert_eq!(
+            detect_encoding(b"#!/usr/bin/env python3\n# -*- coding: latin-1 -*-\n")
+                .unwrap()
+                .encoding,
+            "iso-8859-1"
+        );
         // cookie on line 2 only counts when line 1 is blank or a comment
-        assert_eq!(detect_encoding(b"x = 1\n# coding: latin-1\n").unwrap().encoding, "utf-8");
-        assert_eq!(detect_encoding(b"# vim: set fileencoding=utf8 :\n").unwrap().encoding, "utf8");
-        assert_eq!(detect_encoding(b"\xef\xbb\xbfx = 1\n").unwrap(), Detected { encoding: "utf-8".into(), bom: true });
-        assert_eq!(detect_encoding(b"\xef\xbb\xbf# coding: latin-1\n"), Err(DecodeError::EncodingProblem));
-        assert_eq!(detect_encoding(b"# coding: nonsense-x\n"), Err(DecodeError::UnknownEncoding("nonsense-x".into())));
-        assert_eq!(detect_encoding(b"\x1f\x8b\x08\x08\xff\n"), Err(DecodeError::InvalidDeclaration));
+        assert_eq!(
+            detect_encoding(b"x = 1\n# coding: latin-1\n")
+                .unwrap()
+                .encoding,
+            "utf-8"
+        );
+        assert_eq!(
+            detect_encoding(b"# vim: set fileencoding=utf8 :\n")
+                .unwrap()
+                .encoding,
+            "utf8"
+        );
+        assert_eq!(
+            detect_encoding(b"\xef\xbb\xbfx = 1\n").unwrap(),
+            Detected {
+                encoding: "utf-8".into(),
+                bom: true
+            }
+        );
+        assert_eq!(
+            detect_encoding(b"\xef\xbb\xbf# coding: latin-1\n"),
+            Err(DecodeError::EncodingProblem)
+        );
+        assert_eq!(
+            detect_encoding(b"# coding: nonsense-x\n"),
+            Err(DecodeError::UnknownEncoding("nonsense-x".into()))
+        );
+        assert_eq!(
+            detect_encoding(b"\x1f\x8b\x08\x08\xff\n"),
+            Err(DecodeError::InvalidDeclaration)
+        );
     }
 
     #[test]
     fn decodes() {
-        assert_eq!(decode_source(b"# coding: latin-1\nx = '\xe9'\n").unwrap(), "# coding: latin-1\nx = '\u{e9}'\n");
+        assert_eq!(
+            decode_source(b"# coding: latin-1\nx = '\xe9'\n").unwrap(),
+            "# coding: latin-1\nx = '\u{e9}'\n"
+        );
         assert_eq!(decode_source(b"\xef\xbb\xbfx = 1\n").unwrap(), "x = 1\n");
         assert!(decode_source(b"x = '\xe9'\n").is_err());
         assert!(decode_source(b"# coding: ascii\nx = '\xe9'\n").is_err());
-        assert_eq!(decode_source(b"# coding: cp1252\nx = '\x80'\n").unwrap(), "# coding: cp1252\nx = '\u{20ac}'\n");
+        assert_eq!(
+            decode_source(b"# coding: cp1252\nx = '\x80'\n").unwrap(),
+            "# coding: cp1252\nx = '\u{20ac}'\n"
+        );
         assert!(decode_source(b"x = 1\x00\n").is_err());
         assert_eq!(decode_source(b"").unwrap(), "");
     }

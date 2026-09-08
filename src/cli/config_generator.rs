@@ -7,7 +7,9 @@ use crate::core::registry;
 const TEMPLATE: &str = "\n### Bandit config file generated from:\n# '{cli}'\n\n### This config may optionally select a subset of tests to run or skip by\n### filling out the 'tests' and 'skips' lists given below. If no tests are\n### specified for inclusion then it is assumed all tests are desired. The skips\n### set will remove specific tests from the include set. This can be controlled\n### using the -t/-s CLI options. Note that the same test ID should not appear\n### in both 'tests' and 'skips', this would be nonsensical and is detected by\n### Bandit at runtime.\n\n# Available tests:\n{test_list}\n\n# (optional) list included test IDs here, eg '[B101, B406]':\n{test}\n\n# (optional) list skipped test IDs here, eg '[B101, B406]':\n{skip}\n\n### (optional) plugin settings - some test plugins require configuration data\n### that may be given here, per-plugin. All bandit test plugins have a built in\n### set of sensible defaults and these will be used if no configuration is\n### provided. It is not necessary to provide settings for every (or any) plugin\n### if the defaults are acceptable.\n\n{settings}\n";
 
 fn print_help() {
-    println!("usage: bandit-config-generator [-h] [--show-defaults] [-o OUTPUT_FILE] [-t TESTS] [-s SKIPS]\n");
+    println!(
+        "usage: bandit-config-generator [-h] [--show-defaults] [-o OUTPUT_FILE] [-t TESTS] [-s SKIPS]\n"
+    );
     println!("Bandit Config Generator\n");
     println!("    This tool is used to generate an optional profile.  The profile may be used");
     println!("    to include or skip tests and override values for plugins.\n");
@@ -18,7 +20,9 @@ fn print_help() {
     println!("    in values.\n");
     println!("options:");
     println!("  -h, --help            show this help message and exit");
-    println!("  --show-defaults       show the default settings values for each plugin but do not output a profile");
+    println!(
+        "  --show-defaults       show the default settings values for each plugin but do not output a profile"
+    );
     println!("  -o OUTPUT_FILE, --out OUTPUT_FILE");
     println!("                        output file to save profile");
     println!("  -t TESTS, --tests TESTS");
@@ -92,8 +96,14 @@ pub fn main(args: Vec<String>) -> i32 {
             return 0;
         }
 
-        let skips_list: Vec<String> = skips.as_deref().map(|s| s.split(',').map(str::to_string).collect()).unwrap_or_default();
-        let tests_list: Vec<String> = tests.as_deref().map(|s| s.split(',').map(str::to_string).collect()).unwrap_or_default();
+        let skips_list: Vec<String> = skips
+            .as_deref()
+            .map(|s| s.split(',').map(str::to_string).collect())
+            .unwrap_or_default();
+        let tests_list: Vec<String> = tests
+            .as_deref()
+            .map(|s| s.split(',').map(str::to_string).collect())
+            .unwrap_or_default();
 
         let mut invalid = None;
         for skip in &skips_list {
@@ -115,16 +125,36 @@ pub fn main(args: Vec<String>) -> i32 {
             return 0;
         }
 
-        let mut test_list: Vec<String> = registry::all_ids_and_names().iter().map(|(id, name)| format!("# {id} : {name}")).collect();
+        let mut test_list: Vec<String> = registry::all_ids_and_names()
+            .iter()
+            .map(|(id, name)| format!("# {id} : {name}"))
+            .collect();
         test_list.sort();
 
-        let cli = std::iter::once("bandit-config-generator".to_string()).chain(args.iter().cloned()).collect::<Vec<_>>().join(" ");
+        let cli = std::iter::once("bandit-config-generator".to_string())
+            .chain(args.iter().cloned())
+            .collect::<Vec<_>>()
+            .join(" ");
         let contents = TEMPLATE
             .replace("{cli}", &cli)
             .replace("{settings}", &yaml_settings)
             .replace("{test_list}", &test_list.join("\n"))
-            .replace("{skip}", &if skips_list.is_empty() { "skips:".to_string() } else { format!("skips: {}", py_list_repr(&skips_list)) })
-            .replace("{test}", &if tests_list.is_empty() { "tests:".to_string() } else { format!("tests: {}", py_list_repr(&tests_list)) });
+            .replace(
+                "{skip}",
+                &if skips_list.is_empty() {
+                    "skips:".to_string()
+                } else {
+                    format!("skips: {}", py_list_repr(&skips_list))
+                },
+            )
+            .replace(
+                "{test}",
+                &if tests_list.is_empty() {
+                    "tests:".to_string()
+                } else {
+                    format!("tests: {}", py_list_repr(&tests_list))
+                },
+            );
 
         match std::fs::write(&path, contents) {
             Ok(()) => crate::log_info!("config_generator", "Successfully wrote profile: {}", path),

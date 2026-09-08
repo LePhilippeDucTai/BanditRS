@@ -54,10 +54,8 @@ fn parse_code(code: &str) -> (u32, Vec<String>) {
         }
         snippet_lines.push(format!("{text}\n"));
     }
-    if !last_real_line_ends_in_newline {
-        if let Some(last) = snippet_lines.last_mut() {
-            last.pop();
-        }
+    if !last_real_line_ends_in_newline && let Some(last) = snippet_lines.last_mut() {
+        last.pop();
     }
     (first_line_number, snippet_lines)
 }
@@ -79,7 +77,11 @@ fn region_and_context_region(issue: &Issue) -> (Value, Option<Value>) {
     // the Python list, i.e. `start + 1` for our contiguous range — NOT the
     // true last line. A bandit quirk (SARIF's region always looks 1 line
     // past the start for multi-line issues) that we replicate verbatim.
-    let end_line = if line_range.len() > 1 { line_range.start + 1 } else { line_range.start };
+    let end_line = if line_range.len() > 1 {
+        line_range.start + 1
+    } else {
+        line_range.start
+    };
 
     let mut region = Map::new();
     let mut context_region = None;
@@ -90,8 +92,15 @@ fn region_and_context_region(issue: &Issue) -> (Value, Option<Value>) {
         // window `get_code` — differs from `line_range[0]`) wraps from the
         // end rather than erroring. Replicated verbatim.
         let idx = start_line as i64 - first_line_number as i64;
-        let wrapped = if idx < 0 { idx + snippet_lines.len() as i64 } else { idx };
-        if let Some(snippet_line) = usize::try_from(wrapped).ok().and_then(|i| snippet_lines.get(i)) {
+        let wrapped = if idx < 0 {
+            idx + snippet_lines.len() as i64
+        } else {
+            idx
+        };
+        if let Some(snippet_line) = usize::try_from(wrapped)
+            .ok()
+            .and_then(|i| snippet_lines.get(i))
+        {
             let mut snippet = Map::new();
             snippet.insert("text".into(), Value::from(snippet_line.as_str()));
             region.insert("snippet".into(), Value::Object(snippet));
@@ -100,7 +109,10 @@ fn region_and_context_region(issue: &Issue) -> (Value, Option<Value>) {
         ctx_snippet.insert("text".into(), Value::from(snippet_lines.concat()));
         let mut ctx_ordered = Map::new();
         ctx_ordered.insert("snippet".into(), Value::Object(ctx_snippet));
-        ctx_ordered.insert("endLine".into(), Value::from(first_line_number + snippet_lines.len() as u32 - 1));
+        ctx_ordered.insert(
+            "endLine".into(),
+            Value::from(first_line_number + snippet_lines.len() as u32 - 1),
+        );
         ctx_ordered.insert("startLine".into(), Value::from(first_line_number));
         context_region = Some(Value::Object(ctx_ordered));
     }
@@ -119,7 +131,13 @@ fn create_result(issue: &Issue, rules: &mut IndexMap<String, Value>) -> Value {
         rule.insert("id".into(), Value::from(issue.test_id.as_ref()));
         rule.insert("name".into(), Value::from(issue.test.as_ref()));
         let mut props = Map::new();
-        props.insert("tags".into(), Value::Array(vec![Value::from("security"), Value::from(format!("external/cwe/cwe-{}", issue.cwe.id()))]));
+        props.insert(
+            "tags".into(),
+            Value::Array(vec![
+                Value::from("security"),
+                Value::from(format!("external/cwe/cwe-{}", issue.cwe.id())),
+            ]),
+        );
         props.insert("precision".into(), Value::from(issue.confidence.lower()));
         rule.insert("properties".into(), Value::Object(props));
         rule.insert("helpUri".into(), Value::from(get_url(&issue.test_id)));
@@ -131,7 +149,10 @@ fn create_result(issue: &Issue, rules: &mut IndexMap<String, Value>) -> Value {
     let mut physical_location = Map::new();
     let (region, context_region) = region_and_context_region(issue);
     physical_location.insert("region".into(), region);
-    physical_location.insert("artifactLocation".into(), artifact_location(&to_uri(&issue.fname)));
+    physical_location.insert(
+        "artifactLocation".into(),
+        artifact_location(&to_uri(&issue.fname)),
+    );
     if let Some(cr) = context_region {
         physical_location.insert("contextRegion".into(), cr);
     }
@@ -143,17 +164,29 @@ fn create_result(issue: &Issue, rules: &mut IndexMap<String, Value>) -> Value {
     message.insert("text".into(), Value::from(issue.text.as_str()));
 
     let mut props = Map::new();
-    props.insert("issue_confidence".into(), Value::from(issue.confidence.as_str()));
-    props.insert("issue_severity".into(), Value::from(issue.severity.as_str()));
+    props.insert(
+        "issue_confidence".into(),
+        Value::from(issue.confidence.as_str()),
+    );
+    props.insert(
+        "issue_severity".into(),
+        Value::from(issue.severity.as_str()),
+    );
 
     let mut result = Map::new();
     result.insert("message".into(), Value::Object(message));
     // SARIF default level is "warning"; jschema_to_python omits fields equal
     // to their default, so MEDIUM/UNDEFINED (both map to "warning") vanish.
     if matches!(issue.severity, Rank::High | Rank::Low) {
-        result.insert("level".into(), Value::from(level_from_severity(issue.severity)));
+        result.insert(
+            "level".into(),
+            Value::from(level_from_severity(issue.severity)),
+        );
     }
-    result.insert("locations".into(), Value::Array(vec![Value::Object(location)]));
+    result.insert(
+        "locations".into(),
+        Value::Array(vec![Value::Object(location)]),
+    );
     result.insert("properties".into(), Value::Object(props));
     result.insert("ruleId".into(), Value::from(issue.test_id.as_ref()));
     result.insert("ruleIndex".into(), Value::from(rule_index));
@@ -161,7 +194,13 @@ fn create_result(issue: &Issue, rules: &mut IndexMap<String, Value>) -> Value {
 }
 
 /// `report(manager, fileobj, sev_level, conf_level, lines)`.
-pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_level: Rank, _lines: i64) -> io::Result<()> {
+pub fn report(
+    manager: &Manager,
+    out: &mut dyn Write,
+    sev_level: Rank,
+    conf_level: Rank,
+    _lines: i64,
+) -> io::Result<()> {
     let mut driver = Map::new();
     driver.insert("name".into(), Value::from("Bandit"));
     driver.insert("organization".into(), Value::from(crate::AUTHOR));
@@ -193,17 +232,24 @@ pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_leve
                 let mut message = Map::new();
                 message.insert("text".into(), Value::from(reason.as_str()));
                 let mut physical_location = Map::new();
-                physical_location.insert("artifactLocation".into(), artifact_location(&to_uri(fname)));
+                physical_location
+                    .insert("artifactLocation".into(), artifact_location(&to_uri(fname)));
                 let mut location = Map::new();
                 location.insert("physicalLocation".into(), Value::Object(physical_location));
                 let mut notification = Map::new();
                 notification.insert("message".into(), Value::Object(message));
                 notification.insert("level".into(), Value::from("error"));
-                notification.insert("locations".into(), Value::Array(vec![Value::Object(location)]));
+                notification.insert(
+                    "locations".into(),
+                    Value::Array(vec![Value::Object(location)]),
+                );
                 Value::Object(notification)
             })
             .collect();
-        invocation.insert("toolConfigurationNotifications".into(), Value::Array(notifications));
+        invocation.insert(
+            "toolConfigurationNotifications".into(),
+            Value::Array(notifications),
+        );
     }
 
     let mut properties = Map::new();
@@ -211,7 +257,10 @@ pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_leve
 
     let mut run = Map::new();
     run.insert("tool".into(), Value::Object(tool));
-    run.insert("invocations".into(), Value::Array(vec![Value::Object(invocation)]));
+    run.insert(
+        "invocations".into(),
+        Value::Array(vec![Value::Object(invocation)]),
+    );
     run.insert("properties".into(), Value::Object(properties));
     run.insert("results".into(), Value::Array(results));
 

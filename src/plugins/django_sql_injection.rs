@@ -14,7 +14,9 @@ pub fn django_extra_used(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginR
     if ctx.call_function_name() != Some("extra") {
         return Ok(None);
     }
-    let Some(call) = ctx.call else { return Ok(None) };
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
 
     let mut select: Option<&Expr> = None;
     let mut where_: Option<&Expr> = None;
@@ -35,59 +37,81 @@ pub fn django_extra_used(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginR
     }
 
     let mut insecure = false;
-    'outer: for val in [where_, tables] {
-        if let Some(v) = val {
-            match v {
-                Expr::List(l) => {
-                    for elt in &l.elts {
-                        if !matches!(elt, Expr::StringLiteral(_)) {
-                            insecure = true;
-                            break 'outer;
-                        }
+    'outer: for v in [where_, tables].into_iter().flatten() {
+        match v {
+            Expr::List(l) => {
+                for elt in &l.elts {
+                    if !matches!(elt, Expr::StringLiteral(_)) {
+                        insecure = true;
+                        break 'outer;
                     }
                 }
-                _ => {
-                    insecure = true;
-                    break 'outer;
-                }
+            }
+            _ => {
+                insecure = true;
+                break 'outer;
             }
         }
     }
-    if !insecure {
-        if let Some(v) = select {
-            match v {
-                Expr::Dict(d) => {
-                    let all_str_keys = d.items.iter().all(|it| it.key.as_ref().is_some_and(|k| matches!(k, Expr::StringLiteral(_))));
-                    let all_str_values = all_str_keys && d.items.iter().all(|it| matches!(&it.value, Expr::StringLiteral(_)));
-                    insecure = !all_str_values;
-                }
-                _ => insecure = true,
+    if !insecure && let Some(v) = select {
+        match v {
+            Expr::Dict(d) => {
+                let all_str_keys = d.items.iter().all(|it| {
+                    it.key
+                        .as_ref()
+                        .is_some_and(|k| matches!(k, Expr::StringLiteral(_)))
+                });
+                let all_str_values = all_str_keys
+                    && d.items
+                        .iter()
+                        .all(|it| matches!(&it.value, Expr::StringLiteral(_)));
+                insecure = !all_str_values;
             }
+            _ => insecure = true,
         }
     }
 
     if insecure {
-        return Ok(Some(IssueDraft::new(Rank::Medium, Rank::Medium, Cwe::SQL_INJECTION, "Use of extra potential SQL attack vector.")));
+        return Ok(Some(IssueDraft::new(
+            Rank::Medium,
+            Rank::Medium,
+            Cwe::SQL_INJECTION,
+            "Use of extra potential SQL attack vector.",
+        )));
     }
     Ok(None)
 }
 
 /// `django_rawsql_used` (B611).
 pub fn django_rawsql_used(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginResult {
-    if !ctx.is_module_imported_like("django.db.models") || ctx.call_function_name() != Some("RawSQL") {
+    if !ctx.is_module_imported_like("django.db.models")
+        || ctx.call_function_name() != Some("RawSQL")
+    {
         return Ok(None);
     }
-    let Some(call) = ctx.call else { return Ok(None) };
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
     let sql: &Expr = if let Some(first) = call.arguments.args.first() {
         first
     } else {
-        match call.arguments.keywords.iter().find(|k| k.arg.as_ref().is_some_and(|a| a.as_str() == "sql")) {
+        match call
+            .arguments
+            .keywords
+            .iter()
+            .find(|k| k.arg.as_ref().is_some_and(|a| a.as_str() == "sql"))
+        {
             Some(k) => &k.value,
             None => return Err(PyErr::key_error("sql")),
         }
     };
     if !matches!(sql, Expr::StringLiteral(_)) {
-        return Ok(Some(IssueDraft::new(Rank::Medium, Rank::Medium, Cwe::SQL_INJECTION, "Use of RawSQL potential SQL attack vector.")));
+        return Ok(Some(IssueDraft::new(
+            Rank::Medium,
+            Rank::Medium,
+            Cwe::SQL_INJECTION,
+            "Use of RawSQL potential SQL attack vector.",
+        )));
     }
     Ok(None)
 }

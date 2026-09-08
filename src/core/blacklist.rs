@@ -46,16 +46,36 @@ pub struct BlacklistEntry {
 }
 
 impl BlacklistEntry {
-    const fn new(name: &'static str, id: &'static str, cwe: Cwe, qualnames: &'static [&'static str], message: &'static str, level: &'static str) -> StaticEntry {
-        StaticEntry { name, id, cwe, qualnames, message, level }
+    #[allow(clippy::new_ret_no_self)] // builds a `StaticEntry` (the const table's row type), not a `BlacklistEntry`
+    const fn new(
+        name: &'static str,
+        id: &'static str,
+        cwe: Cwe,
+        qualnames: &'static [&'static str],
+        message: &'static str,
+        level: &'static str,
+    ) -> StaticEntry {
+        StaticEntry {
+            name,
+            id,
+            cwe,
+            qualnames,
+            message,
+            level,
+        }
     }
 
     /// `report_issue(check, name)`.
     pub fn report_issue(&self, name: &str) -> IssueDraft {
         let severity = Rank::parse(&self.level).unwrap_or(Rank::Medium);
-        IssueDraft::new(severity, Rank::High, self.cwe, self.message.replace("{name}", name))
-            .with_ident(name)
-            .with_test_id(self.id.clone())
+        IssueDraft::new(
+            severity,
+            Rank::High,
+            self.cwe,
+            self.message.replace("{name}", name),
+        )
+        .with_ident(name)
+        .with_test_id(self.id.clone())
     }
 }
 
@@ -278,7 +298,10 @@ pub static BLACKLIST_CALLS: &[StaticEntry] = &[
         "xml_bad_expatbuilder",
         "B316",
         Cwe::IMPROPER_INPUT_VALIDATION,
-        &["xml.dom.expatbuilder.parse", "xml.dom.expatbuilder.parseString"],
+        &[
+            "xml.dom.expatbuilder.parse",
+            "xml.dom.expatbuilder.parseString",
+        ],
         XML_MSG_CALLS,
         "MEDIUM",
     ),
@@ -286,7 +309,11 @@ pub static BLACKLIST_CALLS: &[StaticEntry] = &[
         "xml_bad_sax",
         "B317",
         Cwe::IMPROPER_INPUT_VALIDATION,
-        &["xml.sax.parse", "xml.sax.parseString", "xml.sax.make_parser"],
+        &[
+            "xml.sax.parse",
+            "xml.sax.parseString",
+            "xml.sax.make_parser",
+        ],
         XML_MSG_CALLS,
         "MEDIUM",
     ),
@@ -367,7 +394,14 @@ pub static BLACKLIST_IMPORTS: &[StaticEntry] = &[
         XML_MSG_IMPORTS,
         "LOW",
     ),
-    BlacklistEntry::new("import_xml_sax", "B406", Cwe::IMPROPER_INPUT_VALIDATION, &["xml.sax"], XML_MSG_IMPORTS, "LOW"),
+    BlacklistEntry::new(
+        "import_xml_sax",
+        "B406",
+        Cwe::IMPROPER_INPUT_VALIDATION,
+        &["xml.sax"],
+        XML_MSG_IMPORTS,
+        "LOW",
+    ),
     BlacklistEntry::new(
         "import_xml_expat",
         "B407",
@@ -404,7 +438,11 @@ pub static BLACKLIST_IMPORTS: &[StaticEntry] = &[
         "import_httpoxy",
         "B412",
         Cwe::IMPROPER_ACCESS_CONTROL,
-        &["wsgiref.handlers.CGIHandler", "twisted.web.twcgi.CGIScript", "twisted.web.twcgi.CGIDirectory"],
+        &[
+            "wsgiref.handlers.CGIHandler",
+            "twisted.web.twcgi.CGIScript",
+            "twisted.web.twcgi.CGIDirectory",
+        ],
         "Consider possible security implications associated with {name} module.",
         "HIGH",
     ),
@@ -466,17 +504,35 @@ pub struct BlacklistTable {
 impl BlacklistTable {
     /// The full built-in table (`{"Call": calls + imports, "Import": imports, "ImportFrom": imports}`).
     pub fn builtin() -> BlacklistTable {
-        let imports: Vec<BlacklistEntry> = BLACKLIST_IMPORTS.iter().map(StaticEntry::to_entry).collect();
-        let mut call: Vec<BlacklistEntry> = BLACKLIST_CALLS.iter().map(StaticEntry::to_entry).collect();
+        let imports: Vec<BlacklistEntry> = BLACKLIST_IMPORTS
+            .iter()
+            .map(StaticEntry::to_entry)
+            .collect();
+        let mut call: Vec<BlacklistEntry> =
+            BLACKLIST_CALLS.iter().map(StaticEntry::to_entry).collect();
         call.extend(imports.iter().cloned());
-        let mut t = BlacklistTable { call, import: imports.clone(), import_from: imports, call_index: FxHashMap::default() };
+        let mut t = BlacklistTable {
+            call,
+            import: imports.clone(),
+            import_from: imports,
+            call_index: FxHashMap::default(),
+        };
         t.rebuild_index();
         t
     }
 
     /// Build a table from explicit per-type entries (legacy `profile["blacklist"]`).
-    pub fn from_parts(call: Vec<BlacklistEntry>, import: Vec<BlacklistEntry>, import_from: Vec<BlacklistEntry>) -> BlacklistTable {
-        let mut t = BlacklistTable { call, import, import_from, call_index: FxHashMap::default() };
+    pub fn from_parts(
+        call: Vec<BlacklistEntry>,
+        import: Vec<BlacklistEntry>,
+        import_from: Vec<BlacklistEntry>,
+    ) -> BlacklistTable {
+        let mut t = BlacklistTable {
+            call,
+            import,
+            import_from,
+            call_index: FxHashMap::default(),
+        };
         t.rebuild_index();
         t
     }
@@ -485,8 +541,18 @@ impl BlacklistTable {
     pub fn filtered(&self, keep: impl Fn(&str) -> bool) -> BlacklistTable {
         let mut t = BlacklistTable {
             call: self.call.iter().filter(|e| keep(&e.id)).cloned().collect(),
-            import: self.import.iter().filter(|e| keep(&e.id)).cloned().collect(),
-            import_from: self.import_from.iter().filter(|e| keep(&e.id)).cloned().collect(),
+            import: self
+                .import
+                .iter()
+                .filter(|e| keep(&e.id))
+                .cloned()
+                .collect(),
+            import_from: self
+                .import_from
+                .iter()
+                .filter(|e| keep(&e.id))
+                .cloned()
+                .collect(),
             call_index: FxHashMap::default(),
         };
         t.rebuild_index();
@@ -514,21 +580,31 @@ impl BlacklistTable {
 
 /// `blacklisting.py::blacklist`'s `name` computation for `Call` nodes: `Ok(None)`
 /// mirrors the Python `None` value (never matches any qualname).
-fn call_blacklist_name(ctx: &crate::core::context::Context<'_, '_>) -> Result<Option<String>, PyErr> {
-    let call = ctx.call.expect("blacklist is only called for Call contexts with a call");
-    if let Expr::Name(n) = &*call.func {
-        if n.id.as_str() == "__import__" {
-            return Ok(Some(match call.arguments.args.first() {
-                None => String::new(),
-                Some(Expr::StringLiteral(s)) => s.value.to_str().to_string(),
-                Some(_) => "UNKNOWN".to_string(),
-            }));
-        }
+fn call_blacklist_name(
+    ctx: &crate::core::context::Context<'_, '_>,
+) -> Result<Option<String>, PyErr> {
+    let call = ctx
+        .call
+        .expect("blacklist is only called for Call contexts with a call");
+    if let Expr::Name(n) = &*call.func
+        && n.id.as_str() == "__import__"
+    {
+        return Ok(Some(match call.arguments.args.first() {
+            None => String::new(),
+            Some(Expr::StringLiteral(s)) => s.value.to_str().to_string(),
+            Some(_) => "UNKNOWN".to_string(),
+        }));
     }
     let mut name = ctx.qualname.map(str::to_string);
-    if matches!(name.as_deref(), Some("importlib.import_module") | Some("importlib.__import__")) {
+    if matches!(
+        name.as_deref(),
+        Some("importlib.import_module") | Some("importlib.__import__")
+    ) {
         name = if ctx.call_args_count().unwrap_or(0) > 0 {
-            ctx.call_args()?.first().and_then(PyValue::as_str).map(str::to_string)
+            ctx.call_args()?
+                .first()
+                .and_then(PyValue::as_str)
+                .map(str::to_string)
         } else {
             match ctx.call_keywords()?.and_then(|k| k.get("name").cloned()) {
                 Some(v) => v.as_str().map(str::to_string),
@@ -567,12 +643,20 @@ pub fn blacklist(
             let (names, prefix) = match stmt {
                 Stmt::Import(imp) => (&imp.names, String::new()),
                 Stmt::ImportFrom(imp) => {
-                    let prefix = imp.module.as_ref().map(|m| format!("{}.", m.as_str())).unwrap_or_default();
+                    let prefix = imp
+                        .module
+                        .as_ref()
+                        .map(|m| format!("{}.", m.as_str()))
+                        .unwrap_or_default();
                     (&imp.names, prefix)
                 }
                 _ => return Ok(None),
             };
-            let entries = if kind == NodeKind::Import { &table.import } else { &table.import_from };
+            let entries = if kind == NodeKind::Import {
+                &table.import
+            } else {
+                &table.import_from
+            };
             for entry in entries {
                 for alias in names.iter() {
                     let full = format!("{prefix}{}", alias.name.as_str());
@@ -616,8 +700,14 @@ mod tests {
         assert_eq!(BLACKLIST_CALLS.len(), 20);
         assert_eq!(BLACKLIST_IMPORTS.len(), 13);
         let t = BlacklistTable::builtin();
-        assert_eq!(t.find_call("pickle.loads").map(|e| e.id.as_ref()), Some("B301"));
-        assert_eq!(t.find_call("telnetlib").map(|e| e.id.as_ref()), Some("B401"));
+        assert_eq!(
+            t.find_call("pickle.loads").map(|e| e.id.as_ref()),
+            Some("B301")
+        );
+        assert_eq!(
+            t.find_call("telnetlib").map(|e| e.id.as_ref()),
+            Some("B401")
+        );
         assert!(t.find_call("hashlib.md5").is_none());
         assert_eq!(entry_by_id("B413").unwrap().name, "import_pycrypto");
         assert_eq!(entry_by_name("md5").unwrap().id, "B303");

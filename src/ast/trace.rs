@@ -57,10 +57,20 @@ impl<'a> TestRunner<'a> for TraceRunner {
 
     fn run_tests(&mut self, ctx: &Context<'a, '_>, kind: NodeKind) -> Scores {
         match kind {
-            NodeKind::Call => self.lines.push(format!("CALL\t{}\t{}", opt(ctx.qualname), opt(ctx.name))),
-            NodeKind::FunctionDef => self.lines.push(format!("FUNC\t{}\t{}", opt(ctx.qualname), opt(ctx.name))),
+            NodeKind::Call => {
+                self.lines
+                    .push(format!("CALL\t{}\t{}", opt(ctx.qualname), opt(ctx.name)))
+            }
+            NodeKind::FunctionDef => {
+                self.lines
+                    .push(format!("FUNC\t{}\t{}", opt(ctx.qualname), opt(ctx.name)))
+            }
             NodeKind::Import => self.lines.push(format!("IMPORT\t{}", opt(ctx.module))),
-            NodeKind::ImportFrom => self.lines.push(format!("IMPORTFROM\t{}\t{}", opt(ctx.module), opt(ctx.name))),
+            NodeKind::ImportFrom => self.lines.push(format!(
+                "IMPORTFROM\t{}\t{}",
+                opt(ctx.module),
+                opt(ctx.name)
+            )),
             NodeKind::Str => self.lines.push(format!(
                 "STR\t{}\t{}-{}",
                 repr_str(ctx.string_val().unwrap_or("")),
@@ -95,7 +105,8 @@ pub fn dump_walk(path: &str, compat: PyCompat) -> Result<String, String> {
     let bytes = std::fs::read(path).map_err(|e| e.to_string())?;
     let text = crate::pycompat::encoding::decode_source(&bytes).map_err(|e| e.to_string())?;
     let file = SourceFile::new(path, text);
-    let parsed = crate::source::parse::parse_module(&file.text, compat).map_err(|e| e.to_string())?;
+    let parsed =
+        crate::source::parse::parse_module(&file.text, compat).map_err(|e| e.to_string())?;
     let lines = trace_module(&file, parsed.syntax(), compat);
     Ok(lines.join("\n"))
 }
@@ -112,7 +123,9 @@ mod tests {
 
     #[test]
     fn calls_imports_and_strings() {
-        let lines = trace("import os as o\nfrom a import b\no.system(b('x'))\n\"doc\"\ndef f(p='/tmp'):\n    pass\n");
+        let lines = trace(
+            "import os as o\nfrom a import b\no.system(b('x'))\n\"doc\"\ndef f(p='/tmp'):\n    pass\n",
+        );
         assert!(lines.contains(&"IMPORT\tos".to_string()));
         assert!(lines.contains(&"IMPORTFROM\ta\tb".to_string()));
         assert!(lines.contains(&"CALL\tos.system\tsystem".to_string()));
@@ -122,14 +135,28 @@ mod tests {
         assert!(lines.contains(&"FUNC\tmod.f\tf".to_string()));
         // default value: parent is `arguments` (no position) -> range of its children
         assert!(lines.contains(&"STR\t'/tmp'\t5-5".to_string()));
-        assert!(lines.iter().any(|l| l.starts_with("arguments\t-\t-\t-\t-\t5-5\tFunctionDef\t-")));
+        assert!(
+            lines
+                .iter()
+                .any(|l| l.starts_with("arguments\t-\t-\t-\t-\t5-5\tFunctionDef\t-"))
+        );
     }
 
     #[test]
     fn decorated_def_position_and_elif() {
-        let lines = trace("@dec\n@dec2\ndef f():\n    pass\nif a:\n    pass\nelif b:\n    pass\nelse:\n    pass\n");
-        assert!(lines.iter().any(|l| l.starts_with("FunctionDef\t3\t0\t4\t8\t3-4\tModule\t5")));
-        assert!(lines.iter().any(|l| l.starts_with("If\t7\t0\t10\t8\t7-10\tIf\t-")));
+        let lines = trace(
+            "@dec\n@dec2\ndef f():\n    pass\nif a:\n    pass\nelif b:\n    pass\nelse:\n    pass\n",
+        );
+        assert!(
+            lines
+                .iter()
+                .any(|l| l.starts_with("FunctionDef\t3\t0\t4\t8\t3-4\tModule\t5"))
+        );
+        assert!(
+            lines
+                .iter()
+                .any(|l| l.starts_with("If\t7\t0\t10\t8\t7-10\tIf\t-"))
+        );
     }
 
     #[test]
@@ -137,7 +164,11 @@ mod tests {
         let lines = trace("x = f'a{b}c' 'd'\n");
         let strs: Vec<&String> = lines.iter().filter(|l| l.starts_with("STR")).collect();
         assert_eq!(strs, vec!["STR\t'a'\t1-1", "STR\t'cd'\t1-1"]);
-        assert!(lines.iter().any(|l| l.starts_with("JoinedStr\t1\t4\t1\t16")));
+        assert!(
+            lines
+                .iter()
+                .any(|l| l.starts_with("JoinedStr\t1\t4\t1\t16"))
+        );
         assert!(lines.iter().any(|l| l.starts_with("FormattedValue\t")));
     }
 }

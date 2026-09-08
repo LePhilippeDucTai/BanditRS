@@ -12,7 +12,11 @@ pub fn flask_debug_true(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginRe
     if !ctx.is_module_imported_like("flask") {
         return Ok(None);
     }
-    if !ctx.call_function_name_qual().unwrap_or("").ends_with(".run") {
+    if !ctx
+        .call_function_name_qual()
+        .unwrap_or("")
+        .ends_with(".run")
+    {
         return Ok(None);
     }
     if ctx.check_call_arg_is("debug", &PyValue::str("True"))? == Some(true) {

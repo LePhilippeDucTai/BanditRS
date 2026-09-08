@@ -7,7 +7,8 @@ pub fn quote(s: &str, safe: &str) -> String {
     let mut out = String::with_capacity(s.len());
     for byte in s.as_bytes() {
         let c = *byte as char;
-        if byte.is_ascii_alphanumeric() || b"_.-~".contains(byte) || safe.as_bytes().contains(byte) {
+        if byte.is_ascii_alphanumeric() || b"_.-~".contains(byte) || safe.as_bytes().contains(byte)
+        {
             out.push(c);
         } else {
             out.push_str(&format!("%{byte:02X}"));
@@ -33,6 +34,9 @@ mod tests {
 
     #[test]
     fn file_uri() {
-        assert_eq!(as_file_uri("/abs/path with space.py"), "file:///abs/path%20with%20space.py");
+        assert_eq!(
+            as_file_uri("/abs/path with space.py"),
+            "file:///abs/path%20with%20space.py"
+        );
     }
 }

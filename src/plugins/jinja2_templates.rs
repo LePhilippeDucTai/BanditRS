@@ -19,8 +19,15 @@ pub fn jinja2_autoescape_false(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> P
     if !(parts.contains(&"jinja2") && parts.last() == Some(&"Environment")) {
         return Ok(None);
     }
-    let Some(call) = ctx.call else { return Ok(None) };
-    let Some(kw) = call.arguments.keywords.iter().find(|k| k.arg.as_ref().is_some_and(|a| a.as_str() == "autoescape")) else {
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
+    let Some(kw) = call
+        .arguments
+        .keywords
+        .iter()
+        .find(|k| k.arg.as_ref().is_some_and(|a| a.as_str() == "autoescape"))
+    else {
         return Ok(Some(IssueDraft::new(
             Rank::High,
             Rank::High,
@@ -28,7 +35,8 @@ pub fn jinja2_autoescape_false(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> P
             "By default, jinja2 sets autoescape to False. Consider using autoescape=True or use the select_autoescape function to mitigate XSS vulnerabilities.",
         )));
     };
-    let is_false = matches!(&kw.value, Expr::Name(n) if n.id.as_str() == "False") || matches!(&kw.value, Expr::BooleanLiteral(b) if !b.value);
+    let is_false = matches!(&kw.value, Expr::Name(n) if n.id.as_str() == "False")
+        || matches!(&kw.value, Expr::BooleanLiteral(b) if !b.value);
     if is_false {
         return Ok(Some(IssueDraft::new(
             Rank::High,
@@ -37,7 +45,8 @@ pub fn jinja2_autoescape_false(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> P
             "Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Use autoescape=True or use the select_autoescape function to mitigate XSS vulnerabilities.",
         )));
     }
-    let is_true = matches!(&kw.value, Expr::Name(n) if n.id.as_str() == "True") || matches!(&kw.value, Expr::BooleanLiteral(b) if b.value);
+    let is_true = matches!(&kw.value, Expr::Name(n) if n.id.as_str() == "True")
+        || matches!(&kw.value, Expr::BooleanLiteral(b) if b.value);
     if is_true {
         return Ok(None);
     }

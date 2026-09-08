@@ -88,7 +88,9 @@ pub enum ParseOutcome {
     Exit(i32),
 }
 
-const FORMAT_CHOICES: &[&str] = &["csv", "custom", "html", "json", "sarif", "screen", "txt", "xml", "yaml"];
+const FORMAT_CHOICES: &[&str] = &[
+    "csv", "custom", "html", "json", "sarif", "screen", "txt", "xml", "yaml",
+];
 const SEV_CONF_CHOICES: &[&str] = &["all", "low", "medium", "high"];
 
 fn error(message: &str) -> i32 {
@@ -141,7 +143,11 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                             i += 1;
                             match argv.get(i) {
                                 Some(v) => v.clone(),
-                                None => return ParseOutcome::Exit(error(&format!("argument --{name}: expected one argument"))),
+                                None => {
+                                    return ParseOutcome::Exit(error(&format!(
+                                        "argument --{name}: expected one argument"
+                                    )));
+                                }
                             }
                         }
                     }
@@ -152,7 +158,9 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 "aggregate" => {
                     let v = take_value!();
                     if !["file", "vuln"].contains(&v.as_str()) {
-                        return ParseOutcome::Exit(error(&format!("argument -a/--aggregate: invalid choice: '{v}' (choose from 'file', 'vuln')")));
+                        return ParseOutcome::Exit(error(&format!(
+                            "argument -a/--aggregate: invalid choice: '{v}' (choose from 'file', 'vuln')"
+                        )));
                     }
                     args.agg_type = v;
                 }
@@ -160,7 +168,11 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                     let v = take_value!();
                     match v.parse() {
                         Ok(n) => args.context_lines = n,
-                        Err(_) => return ParseOutcome::Exit(error(&format!("argument -n/--number: invalid int value: '{v}'"))),
+                        Err(_) => {
+                            return ParseOutcome::Exit(error(&format!(
+                                "argument -n/--number: invalid int value: '{v}'"
+                            )));
+                        }
                     }
                 }
                 "configfile" => args.config_file = Some(take_value!()),
@@ -169,22 +181,30 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 "skip" => args.skips = Some(take_value!()),
                 "severity-level" => {
                     if level_set {
-                        return ParseOutcome::Exit(error("argument --severity-level: not allowed with argument -l/--level"));
+                        return ParseOutcome::Exit(error(
+                            "argument --severity-level: not allowed with argument -l/--level",
+                        ));
                     }
                     let v = take_value!();
                     if !SEV_CONF_CHOICES.contains(&v.as_str()) {
-                        return ParseOutcome::Exit(error(&format!("argument --severity-level: invalid choice: '{v}' (choose from 'all', 'low', 'medium', 'high')")));
+                        return ParseOutcome::Exit(error(&format!(
+                            "argument --severity-level: invalid choice: '{v}' (choose from 'all', 'low', 'medium', 'high')"
+                        )));
                     }
                     severity_string = Some(v);
                     level_set = true;
                 }
                 "confidence-level" => {
                     if conf_set {
-                        return ParseOutcome::Exit(error("argument --confidence-level: not allowed with argument -i/--confidence"));
+                        return ParseOutcome::Exit(error(
+                            "argument --confidence-level: not allowed with argument -i/--confidence",
+                        ));
                     }
                     let v = take_value!();
                     if !SEV_CONF_CHOICES.contains(&v.as_str()) {
-                        return ParseOutcome::Exit(error(&format!("argument --confidence-level: invalid choice: '{v}' (choose from 'all', 'low', 'medium', 'high')")));
+                        return ParseOutcome::Exit(error(&format!(
+                            "argument --confidence-level: invalid choice: '{v}' (choose from 'all', 'low', 'medium', 'high')"
+                        )));
                     }
                     confidence_string = Some(v);
                     conf_set = true;
@@ -202,7 +222,9 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 "output" => args.output_file = OutputTarget::File(take_value!()),
                 "verbose" => {
                     if verbose_or_quiet == Some("quiet") {
-                        return ParseOutcome::Exit(error("argument -v/--verbose: not allowed with argument -q/--quiet"));
+                        return ParseOutcome::Exit(error(
+                            "argument -v/--verbose: not allowed with argument -q/--quiet",
+                        ));
                     }
                     args.verbose = true;
                     verbose_or_quiet = Some("verbose");
@@ -210,7 +232,9 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 "debug" => args.debug = true,
                 "quiet" | "silent" => {
                     if verbose_or_quiet == Some("verbose") {
-                        return ParseOutcome::Exit(error("argument -q/--quiet: not allowed with argument -v/--verbose"));
+                        return ParseOutcome::Exit(error(
+                            "argument -q/--quiet: not allowed with argument -v/--verbose",
+                        ));
                     }
                     args.quiet = true;
                     verbose_or_quiet = Some("quiet");
@@ -220,7 +244,9 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 "baseline" => args.baseline = Some(take_value!()),
                 "ini" => args.ini_path = Some(take_value!()),
                 "exit-zero" => args.exit_zero = true,
-                _ => return ParseOutcome::Exit(error(&format!("unrecognized arguments: --{name}"))),
+                _ => {
+                    return ParseOutcome::Exit(error(&format!("unrecognized arguments: --{name}")));
+                }
             }
             i += 1;
             continue;
@@ -237,21 +263,27 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 'd' => args.debug = true,
                 'v' => {
                     if verbose_or_quiet == Some("quiet") {
-                        return ParseOutcome::Exit(error("argument -v/--verbose: not allowed with argument -q/--quiet"));
+                        return ParseOutcome::Exit(error(
+                            "argument -v/--verbose: not allowed with argument -q/--quiet",
+                        ));
                     }
                     args.verbose = true;
                     verbose_or_quiet = Some("verbose");
                 }
                 'q' => {
                     if verbose_or_quiet == Some("verbose") {
-                        return ParseOutcome::Exit(error("argument -q/--quiet: not allowed with argument -v/--verbose"));
+                        return ParseOutcome::Exit(error(
+                            "argument -q/--quiet: not allowed with argument -v/--verbose",
+                        ));
                     }
                     args.quiet = true;
                     verbose_or_quiet = Some("quiet");
                 }
                 'l' => {
                     if level_set && severity_string.is_some() {
-                        return ParseOutcome::Exit(error("argument -l/--level: not allowed with argument --severity-level"));
+                        return ParseOutcome::Exit(error(
+                            "argument -l/--level: not allowed with argument --severity-level",
+                        ));
                     }
                     if !level_set {
                         args.severity = 0;
@@ -261,7 +293,9 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 }
                 'i' => {
                     if conf_set && confidence_string.is_some() {
-                        return ParseOutcome::Exit(error("argument -i/--confidence: not allowed with argument --confidence-level"));
+                        return ParseOutcome::Exit(error(
+                            "argument -i/--confidence: not allowed with argument --confidence-level",
+                        ));
                     }
                     if !conf_set {
                         args.confidence = 0;
@@ -276,7 +310,9 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                     } else if c == 'o' {
                         // nargs="?": only consume the next token if it doesn't look like another option.
                         match argv.get(i + 1) {
-                            Some(next) if !next.starts_with('-') || next == "-" => (Some(next.clone()), true),
+                            Some(next) if !next.starts_with('-') || next == "-" => {
+                                (Some(next.clone()), true)
+                            }
                             _ => (None, false),
                         }
                     } else {
@@ -287,14 +323,18 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                     };
                     if value.is_none() && c != 'o' {
                         let long = long_name_for(c);
-                        return ParseOutcome::Exit(error(&format!("argument -{c}/--{long}: expected one argument")));
+                        return ParseOutcome::Exit(error(&format!(
+                            "argument -{c}/--{long}: expected one argument"
+                        )));
                     }
                     match c {
                         'x' => args.excluded_paths = value.unwrap_or_default(),
                         'a' => {
                             let v = value.unwrap_or_default();
                             if !["file", "vuln"].contains(&v.as_str()) {
-                                return ParseOutcome::Exit(error(&format!("argument -a/--aggregate: invalid choice: '{v}' (choose from 'file', 'vuln')")));
+                                return ParseOutcome::Exit(error(&format!(
+                                    "argument -a/--aggregate: invalid choice: '{v}' (choose from 'file', 'vuln')"
+                                )));
                             }
                             args.agg_type = v;
                         }
@@ -302,7 +342,11 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                             let v = value.unwrap_or_default();
                             match v.parse() {
                                 Ok(n) => args.context_lines = n,
-                                Err(_) => return ParseOutcome::Exit(error(&format!("argument -n/--number: invalid int value: '{v}'"))),
+                                Err(_) => {
+                                    return ParseOutcome::Exit(error(&format!(
+                                        "argument -n/--number: invalid int value: '{v}'"
+                                    )));
+                                }
                             }
                         }
                         'c' => args.config_file = value,
@@ -318,7 +362,10 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                             }
                             args.output_format = Some(v);
                         }
-                        'o' => args.output_file = value.map(OutputTarget::File).unwrap_or(OutputTarget::Bare),
+                        'o' => {
+                            args.output_file =
+                                value.map(OutputTarget::File).unwrap_or(OutputTarget::Bare)
+                        }
                         'b' => args.baseline = value,
                         _ => unreachable!(),
                     }
@@ -328,7 +375,9 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                     ci = chars.len();
                     continue;
                 }
-                other => return ParseOutcome::Exit(error(&format!("unrecognized arguments: -{other}"))),
+                other => {
+                    return ParseOutcome::Exit(error(&format!("unrecognized arguments: -{other}")));
+                }
             }
             ci += 1;
         }

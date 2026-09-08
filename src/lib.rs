@@ -9,8 +9,8 @@
 pub mod ast;
 pub mod cli;
 pub mod constants;
-pub mod formatters;
 pub mod core;
+pub mod formatters;
 pub mod log;
 pub mod plugins;
 pub mod pycompat;

@@ -43,7 +43,9 @@ pub fn decode(data: &[u8]) -> Result<String, String> {
         };
         i += 1;
         let hex = |n: usize, i: &mut usize, kind: &str| -> Result<u32, String> {
-            let slice = data.get(*i..*i + n).ok_or_else(|| format!("truncated {kind} escape"))?;
+            let slice = data
+                .get(*i..*i + n)
+                .ok_or_else(|| format!("truncated {kind} escape"))?;
             let s = std::str::from_utf8(slice).map_err(|_| format!("truncated {kind} escape"))?;
             let v = u32::from_str_radix(s, 16).map_err(|_| format!("truncated {kind} escape"))?;
             *i += n;

@@ -91,7 +91,11 @@ impl<'a, 'w> State<'a, 'w> {
     /// `n`-th ancestor of the node being visited (1 = parent).
     fn ancestor(&self, n: usize) -> Option<VNode<'a>> {
         let len = self.ancestors.len();
-        if n == 0 || n > len { None } else { Some(self.ancestors[len - n]) }
+        if n == 0 || n > len {
+            None
+        } else {
+            Some(self.ancestors[len - n])
+        }
     }
 
     /// `visit_Import` bookkeeping; returns the last module name.
@@ -100,7 +104,8 @@ impl<'a, 'w> State<'a, 'w> {
         for alias in names {
             let name = alias.name.as_str();
             if let Some(asname) = &alias.asname {
-                self.import_aliases.insert(asname.as_str().to_string(), name.to_string());
+                self.import_aliases
+                    .insert(asname.as_str().to_string(), name.to_string());
             }
             self.imports.insert(name.to_string());
             module = Some(name);
@@ -117,14 +122,23 @@ pub struct Walker<'a, 'w, R> {
 }
 
 impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
-    pub fn new(file: &'w SourceFile, arena: &'a ViewArena<'a>, compat: PyCompat, runner: &'w mut R) -> Self
+    pub fn new(
+        file: &'w SourceFile,
+        arena: &'a ViewArena<'a>,
+        compat: PyCompat,
+        runner: &'w mut R,
+    ) -> Self
     where
         'w: 'a,
     {
         let namespace = match get_module_qualname_from_path(&file.name) {
             Ok(ns) => ns,
             Err(_) => {
-                crate::log_warning!("node_visitor", "Unable to find qualified name for module: {}", file.name);
+                crate::log_warning!(
+                    "node_visitor",
+                    "Unable to find qualified name for module: {}",
+                    file.name
+                );
                 String::new()
             }
         };
@@ -155,7 +169,14 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
         push_children(root, &st.ctx, &mut st.children);
         let count = st.children.len() - start;
         let ns_len = st.namespace.len();
-        st.frames.push(Frame { children_start: start, children_count: count, cursor: 0, ns_len, pops_namespace: false, sibling: None });
+        st.frames.push(Frame {
+            children_start: start,
+            children_count: count,
+            cursor: 0,
+            ns_len,
+            pops_namespace: false,
+            sibling: None,
+        });
         while let Some(frame) = self.state.frames.last_mut() {
             if frame.cursor < frame.children_count {
                 let child = self.state.children[frame.children_start + frame.cursor];
@@ -192,7 +213,12 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
                 node: None,
                 ancestors: &[],
                 sibling: None,
-                pos: Some(Pos { lineno: 0, col_offset: 0, end_lineno: 0, end_col_offset: 0 }),
+                pos: Some(Pos {
+                    lineno: 0,
+                    col_offset: 0,
+                    end_lineno: 0,
+                    end_col_offset: 0,
+                }),
                 linerange: LineRange::new(0, 1),
                 call: None,
                 function: None,
@@ -228,7 +254,9 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
                 (ns_len, true)
             }
             NodeKind::FunctionDef => {
-                let VNode::Stmt(Stmt::FunctionDef(f)) = node else { unreachable!() };
+                let VNode::Stmt(Stmt::FunctionDef(f)) = node else {
+                    unreachable!()
+                };
                 let qualname = format!("{}.{}", self.state.namespace, f.name.as_str());
                 let name = qualname.rsplit('.').next().unwrap_or("").to_string();
                 self.state.namespace.push('.');
@@ -246,7 +274,9 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
             }
             NodeKind::AsyncFunctionDef => {
                 if self.runner.wants(kind) {
-                    let VNode::Stmt(Stmt::FunctionDef(f)) = node else { unreachable!() };
+                    let VNode::Stmt(Stmt::FunctionDef(f)) = node else {
+                        unreachable!()
+                    };
                     let mut ctx = self.state.base_context(node, sibling);
                     ctx.function = Some(f);
                     let s = self.runner.run_tests(&ctx, kind);
@@ -257,7 +287,9 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
             }
             NodeKind::Call => {
                 if self.runner.wants(kind) {
-                    let VNode::Expr(Expr::Call(call)) = node else { unreachable!() };
+                    let VNode::Expr(Expr::Call(call)) = node else {
+                        unreachable!()
+                    };
                     let mut buf = std::mem::take(&mut self.qual_buf);
                     call_name_into(call, &self.state.import_aliases, &mut buf);
                     let s = {
@@ -274,13 +306,17 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
                 (ns_len, false)
             }
             NodeKind::Import => {
-                let VNode::Stmt(Stmt::Import(imp)) = node else { unreachable!() };
+                let VNode::Stmt(Stmt::Import(imp)) = node else {
+                    unreachable!()
+                };
                 let module = self.state.record_import(&imp.names);
                 self.run_import(node, sibling, module);
                 (ns_len, false)
             }
             NodeKind::ImportFrom => {
-                let VNode::Stmt(Stmt::ImportFrom(imp)) = node else { unreachable!() };
+                let VNode::Stmt(Stmt::ImportFrom(imp)) = node else {
+                    unreachable!()
+                };
                 match &imp.module {
                     None => {
                         // `from . import x` is handled like a plain import.
@@ -293,7 +329,9 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
                         for alias in &imp.names {
                             let qual = format!("{module}.{}", alias.name.as_str());
                             let key = alias.asname.as_ref().unwrap_or(&alias.name).as_str();
-                            self.state.import_aliases.insert(key.to_string(), qual.clone());
+                            self.state
+                                .import_aliases
+                                .insert(key.to_string(), qual.clone());
                             self.state.imports.insert(qual);
                             last_name = Some(alias.name.as_str());
                         }
@@ -321,7 +359,9 @@ impl<'a, 'w, R: TestRunner<'a>> Walker<'a, 'w, R> {
                         ctx.bytes_val = Some(if b.value.is_implicit_concatenated() {
                             Cow::Owned(b.value.bytes().collect())
                         } else {
-                            Cow::Borrowed(b.value.iter().next().map(|p| p.as_slice()).unwrap_or(&[]))
+                            Cow::Borrowed(
+                                b.value.iter().next().map(|p| p.as_slice()).unwrap_or(&[]),
+                            )
                         });
                     }
                     if let Some(p) = parent {

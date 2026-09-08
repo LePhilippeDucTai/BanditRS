@@ -11,7 +11,19 @@ use crate::core::manager::Manager;
 use crate::pycompat::path::{abspath, relpath};
 use crate::pycompat::pyformat::{Segment, format_int, format_str, parse_spec, parse_template};
 
-const KNOWN_TAGS: [&str; 11] = ["abspath", "relpath", "line", "col", "end_col", "test_id", "severity", "msg", "confidence", "range", "cwe"];
+const KNOWN_TAGS: [&str; 11] = [
+    "abspath",
+    "relpath",
+    "line",
+    "col",
+    "end_col",
+    "test_id",
+    "severity",
+    "msg",
+    "confidence",
+    "range",
+    "cwe",
+];
 
 /// Value produced by a tag for one issue, formatted with the field's spec.
 enum TagValue {
@@ -30,7 +42,15 @@ fn tag_value(tag: &str, issue: &Issue) -> Option<TagValue> {
         "severity" => TagValue::Str(issue.severity.as_str().to_string()),
         "msg" => TagValue::Str(issue.text.clone()),
         "confidence" => TagValue::Str(issue.confidence.as_str().to_string()),
-        "range" => TagValue::Str(format!("[{}]", issue.linerange.iter().map(|v| v.to_string()).collect::<Vec<_>>().join(", "))),
+        "range" => TagValue::Str(format!(
+            "[{}]",
+            issue
+                .linerange
+                .iter()
+                .map(|v| v.to_string())
+                .collect::<Vec<_>>()
+                .join(", ")
+        )),
         "cwe" => TagValue::Str(issue.cwe.to_string()),
         _ => return None,
     })
@@ -52,7 +72,13 @@ fn similar_tag(tag: &str) -> &'static str {
 }
 
 /// `report(manager, fileobj, sev_level, conf_level, template)`.
-pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_level: Rank, template: Option<&str>) -> io::Result<()> {
+pub fn report(
+    manager: &Manager,
+    out: &mut dyn Write,
+    sev_level: Rank,
+    conf_level: Rank,
+    template: Option<&str>,
+) -> io::Result<()> {
     let msg_template = template.unwrap_or("{abspath}:{line}: {test_id}[bandit]: {severity}: {msg}");
 
     let segments = match parse_template(msg_template) {
@@ -72,7 +98,11 @@ pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_leve
                     std::process::exit(2);
                 }
             };
-            let result = if matches!(name.as_str(), "line" | "col" | "end_col") { format_int(0, &parsed).map(|_| ()) } else { format_str("", &parsed).map(|_| ()) };
+            let result = if matches!(name.as_str(), "line" | "col" | "end_col") {
+                format_int(0, &parsed).map(|_| ())
+            } else {
+                format_str("", &parsed).map(|_| ())
+            };
             if let Err(e) = result {
                 crate::log_error!("custom", "Template is not in valid format: {}", e);
                 std::process::exit(2);
@@ -88,13 +118,21 @@ pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_leve
         })
         .collect();
     if tag_set.is_empty() {
-        crate::log_error!("custom", "No tags were found in the template. Are you missing '{{}}'?");
+        crate::log_error!(
+            "custom",
+            "No tags were found in the template. Are you missing '{{}}'?"
+        );
         std::process::exit(2);
     }
 
     for tag in &tag_set {
         if !KNOWN_TAGS.contains(tag) {
-            crate::log_warning!("custom", "Tag '{}' was not recognized and will be skipped, did you mean to use '{}'?", tag, similar_tag(tag));
+            crate::log_warning!(
+                "custom",
+                "Tag '{}' was not recognized and will be skipped, did you mean to use '{}'?",
+                tag,
+                similar_tag(tag)
+            );
         }
     }
 

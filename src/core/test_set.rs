@@ -43,7 +43,9 @@ pub struct TestSet {
 
 /// Build a [`BlacklistTable`] from the legacy `profile["blacklist"]` mapping
 /// (`{"Call": [...], "Import": [...], "ImportFrom": [...]}`).
-fn legacy_blacklist_table(map: &indexmap::IndexMap<String, Vec<crate::core::blacklist::BlacklistEntry>>) -> BlacklistTable {
+fn legacy_blacklist_table(
+    map: &indexmap::IndexMap<String, Vec<crate::core::blacklist::BlacklistEntry>>,
+) -> BlacklistTable {
     let get = |k: &str| map.get(k).cloned().unwrap_or_default();
     BlacklistTable::from_parts(get("Call"), get("Import"), get("ImportFrom"))
 }
@@ -51,7 +53,8 @@ fn legacy_blacklist_table(map: &indexmap::IndexMap<String, Vec<crate::core::blac
 impl TestSet {
     /// `BanditTestSet(config, profile)`.
     pub fn new(config: &BanditConfig, profile: &Profile) -> TestSet {
-        let all_blacklist_ids: IndexSet<String> = blacklist::all_entries().map(|e| e.id.to_string()).collect();
+        let all_blacklist_ids: IndexSet<String> =
+            blacklist::all_entries().map(|e| e.id.to_string()).collect();
 
         let mut inc: IndexSet<String> = profile.include.clone();
         let mut exc: IndexSet<String> = profile.exclude.clone();
@@ -76,7 +79,10 @@ impl TestSet {
             s.extend(all_blacklist_ids.iter().cloned());
             s
         };
-        let filtered: IndexSet<String> = filtered.into_iter().filter(|id| !exc.contains(id)).collect();
+        let filtered: IndexSet<String> = filtered
+            .into_iter()
+            .filter(|id| !exc.contains(id))
+            .collect();
 
         let mut tests: Vec<Vec<TestRef>> = (0..NodeKind::COUNT).map(|_| Vec::new()).collect();
         for plugin in PLUGINS.iter().filter(|p| filtered.contains(p.id)) {
@@ -104,12 +110,19 @@ impl TestSet {
             Some(table)
         };
 
-        TestSet { tests, blacklist, configs: PluginConfigs::from_config(config) }
+        TestSet {
+            tests,
+            blacklist,
+            configs: PluginConfigs::from_config(config),
+        }
     }
 
     /// `get_tests(checktype)`.
     pub fn get_tests(&self, kind: NodeKind) -> &[TestRef] {
-        self.tests.get(kind as usize).map(Vec::as_slice).unwrap_or(&[])
+        self.tests
+            .get(kind as usize)
+            .map(Vec::as_slice)
+            .unwrap_or(&[])
     }
 
     /// `not b_mgr.b_ts.tests` — whether no test at all would run.

@@ -13,7 +13,13 @@ use crate::pycompat::datetime::UtcDateTime;
 use crate::pycompat::yaml_emit::safe_dump_block;
 
 /// `report(manager, fileobj, sev_level, conf_level, lines)`.
-pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_level: Rank, lines: i64) -> io::Result<()> {
+pub fn report(
+    manager: &Manager,
+    out: &mut dyn Write,
+    sev_level: Rank,
+    conf_level: Rank,
+    lines: i64,
+) -> io::Result<()> {
     let mut machine_output = Map::new();
 
     let errors: Vec<Value> = manager
@@ -29,19 +35,29 @@ pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_leve
     machine_output.insert("errors".into(), Value::Array(errors));
 
     let mut collector = build_results(manager, sev_level, conf_level, lines, false);
-    let key = if manager.agg_type == AggType::Vuln { "test_name" } else { "filename" };
+    let key = if manager.agg_type == AggType::Vuln {
+        "test_name"
+    } else {
+        "filename"
+    };
     collector.sort_by(|a, b| a[key].as_str().cmp(&b[key].as_str()));
 
     for result in collector.iter_mut() {
         if let Some(Value::String(code)) = result.get("code") {
             let escaped = code.replace('\n', "\\n");
-            result.as_object_mut().unwrap().insert("code".into(), Value::from(escaped));
+            result
+                .as_object_mut()
+                .unwrap()
+                .insert("code".into(), Value::from(escaped));
         }
     }
     machine_output.insert("results".into(), Value::Array(collector));
 
     machine_output.insert("metrics".into(), manager.metrics.to_json());
-    machine_output.insert("generated_at".into(), Value::from(UtcDateTime::now().iso_z()));
+    machine_output.insert(
+        "generated_at".into(),
+        Value::from(UtcDateTime::now().iso_z()),
+    );
 
     out.write_all(safe_dump_block(&Value::Object(machine_output)).as_bytes())
 }

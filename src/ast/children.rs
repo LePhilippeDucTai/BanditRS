@@ -4,9 +4,9 @@
 
 use ruff_python_ast::{self as ast, Expr, Stmt};
 
+use super::PyCompat;
 use super::joined_str::{JoinedPart, JoinedStrView, ViewArena};
 use super::vnode::VNode;
-use super::PyCompat;
 
 /// A child node and its next sibling within the same list field (if any).
 #[derive(Clone, Copy)]
@@ -25,7 +25,11 @@ pub struct WalkCtx<'a, 'b> {
 
 impl<'a, 'b> WalkCtx<'a, 'b> {
     pub fn new(arena: &'a ViewArena<'a>, source: &'b str, compat: PyCompat) -> Self {
-        WalkCtx { arena, source, compat }
+        WalkCtx {
+            arena,
+            source,
+            compat,
+        }
     }
 }
 
@@ -35,7 +39,10 @@ impl<'a, 'b> WalkCtx<'a, 'b> {
 fn push_slots<'a>(out: &mut Vec<Child<'a>>, slots: &[Option<VNode<'a>>]) {
     for (i, slot) in slots.iter().enumerate() {
         if let Some(node) = slot {
-            out.push(Child { node: *node, sibling: slots.get(i + 1).copied().flatten() });
+            out.push(Child {
+                node: *node,
+                sibling: slots.get(i + 1).copied().flatten(),
+            });
         }
     }
 }
@@ -43,7 +50,10 @@ fn push_slots<'a>(out: &mut Vec<Child<'a>>, slots: &[Option<VNode<'a>>]) {
 fn push_list<'a>(out: &mut Vec<Child<'a>>, nodes: impl Iterator<Item = VNode<'a>>) {
     let start = out.len();
     for node in nodes {
-        out.push(Child { node, sibling: None });
+        out.push(Child {
+            node,
+            sibling: None,
+        });
     }
     let end = out.len();
     for i in start..end {
@@ -54,7 +64,10 @@ fn push_list<'a>(out: &mut Vec<Child<'a>>, nodes: impl Iterator<Item = VNode<'a>
 }
 
 fn push_single<'a>(out: &mut Vec<Child<'a>>, node: VNode<'a>) {
-    out.push(Child { node, sibling: None });
+    out.push(Child {
+        node,
+        sibling: None,
+    });
 }
 
 fn push_opt<'a>(out: &mut Vec<Child<'a>>, node: Option<VNode<'a>>) {
@@ -233,7 +246,11 @@ pub fn push_children<'a>(node: VNode<'a>, ctx: &WalkCtx<'a, '_>, out: &mut Vec<C
                 expr(out, &i.orelse);
             }
             Expr::Dict(d) => {
-                let keys: Vec<Option<VNode<'a>>> = d.items.iter().map(|it| it.key.as_ref().map(VNode::Expr)).collect();
+                let keys: Vec<Option<VNode<'a>>> = d
+                    .items
+                    .iter()
+                    .map(|it| it.key.as_ref().map(VNode::Expr))
+                    .collect();
                 push_slots(out, &keys);
                 exprs(out, d.items.iter().map(|it| &it.value));
             }
@@ -303,11 +320,20 @@ pub fn push_children<'a>(node: VNode<'a>, ctx: &WalkCtx<'a, '_>, out: &mut Vec<C
             push_list(out, p.args.iter().map(|a| VNode::Arg(&a.parameter)));
             push_opt(out, p.vararg.as_deref().map(VNode::Arg));
             push_list(out, p.kwonlyargs.iter().map(|a| VNode::Arg(&a.parameter)));
-            let kw_defaults: Vec<Option<VNode<'a>>> =
-                p.kwonlyargs.iter().map(|a| a.default.as_deref().map(VNode::Expr)).collect();
+            let kw_defaults: Vec<Option<VNode<'a>>> = p
+                .kwonlyargs
+                .iter()
+                .map(|a| a.default.as_deref().map(VNode::Expr))
+                .collect();
             push_slots(out, &kw_defaults);
             push_opt(out, p.kwarg.as_deref().map(VNode::Arg));
-            exprs(out, p.posonlyargs.iter().chain(p.args.iter()).filter_map(|a| a.default.as_deref()));
+            exprs(
+                out,
+                p.posonlyargs
+                    .iter()
+                    .chain(p.args.iter())
+                    .filter_map(|a| a.default.as_deref()),
+            );
         }
         VNode::EmptyArguments(_) => {}
         VNode::Arg(a) => opt_expr(out, a.annotation.as_deref()),
@@ -338,7 +364,13 @@ pub fn push_children<'a>(node: VNode<'a>, ctx: &WalkCtx<'a, '_>, out: &mut Vec<C
             ast::Pattern::MatchClass(c) => {
                 expr(out, &c.cls);
                 push_list(out, c.arguments.patterns.iter().map(VNode::Pattern));
-                push_list(out, c.arguments.keywords.iter().map(|k| VNode::Pattern(&k.pattern)));
+                push_list(
+                    out,
+                    c.arguments
+                        .keywords
+                        .iter()
+                        .map(|k| VNode::Pattern(&k.pattern)),
+                );
             }
             ast::Pattern::MatchAs(a) => push_opt(out, a.pattern.as_deref().map(VNode::Pattern)),
             ast::Pattern::MatchOr(o) => push_list(out, o.patterns.iter().map(VNode::Pattern)),

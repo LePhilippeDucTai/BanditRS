@@ -75,8 +75,14 @@ mod tests {
             fs::write(format!("{root}/{d}/__init__.py"), "").unwrap();
         }
         fs::write(format!("{good}/test_typical.py"), "").unwrap();
-        assert_eq!(get_module_qualname_from_path(&format!("{good}/test_typical.py")).unwrap(), "good.a.b.c.test_typical");
-        assert_eq!(get_module_qualname_from_path("./__init__.py").unwrap(), "__init__");
+        assert_eq!(
+            get_module_qualname_from_path(&format!("{good}/test_typical.py")).unwrap(),
+            "good.a.b.c.test_typical"
+        );
+        assert_eq!(
+            get_module_qualname_from_path("./__init__.py").unwrap(),
+            "__init__"
+        );
         // missing middle __init__.py
         let mid = format!("{root}/missingmid/a/b/c");
         fs::create_dir_all(&mid).unwrap();
@@ -84,7 +90,10 @@ mod tests {
             fs::write(format!("{root}/{d}/__init__.py"), "").unwrap();
         }
         fs::write(format!("{mid}/test_missingmid.py"), "").unwrap();
-        assert_eq!(get_module_qualname_from_path(&format!("{mid}/test_missingmid.py")).unwrap(), "b.c.test_missingmid");
+        assert_eq!(
+            get_module_qualname_from_path(&format!("{mid}/test_missingmid.py")).unwrap(),
+            "b.c.test_missingmid"
+        );
         // missing end __init__.py
         let end = format!("{root}/missingend/a/b/c");
         fs::create_dir_all(&end).unwrap();
@@ -92,7 +101,10 @@ mod tests {
             fs::write(format!("{root}/{d}/__init__.py"), "").unwrap();
         }
         fs::write(format!("{end}/test_missingend.py"), "").unwrap();
-        assert_eq!(get_module_qualname_from_path(&format!("{end}/test_missingend.py")).unwrap(), "test_missingend");
+        assert_eq!(
+            get_module_qualname_from_path(&format!("{end}/test_missingend.py")).unwrap(),
+            "test_missingend"
+        );
         // symlinks are not resolved
         let syms = format!("{root}/syms/a");
         fs::create_dir_all(&syms).unwrap();
@@ -100,23 +112,44 @@ mod tests {
             fs::write(format!("{root}/{d}/__init__.py"), "").unwrap();
         }
         std::os::unix::fs::symlink(format!("{root}/good/a/b"), format!("{syms}/bsym")).unwrap();
-        assert_eq!(get_module_qualname_from_path(&format!("{syms}/bsym/c/test_typical.py")).unwrap(), "syms.a.bsym.c.test_typical");
+        assert_eq!(
+            get_module_qualname_from_path(&format!("{syms}/bsym/c/test_typical.py")).unwrap(),
+            "syms.a.bsym.c.test_typical"
+        );
         // relative paths
         let cwd = std::env::current_dir().unwrap();
         std::env::set_current_dir(&root).unwrap();
-        assert_eq!(get_module_qualname_from_path("good/a/b/c/test_typical.py").unwrap(), "good.a.b.c.test_typical");
-        assert_eq!(get_module_qualname_from_path("missingmid/a/b/c/test_missingmid.py").unwrap(), "b.c.test_missingmid");
-        assert_eq!(get_module_qualname_from_path("syms/a/bsym/c/test_typical.py").unwrap(), "syms.a.bsym.c.test_typical");
+        assert_eq!(
+            get_module_qualname_from_path("good/a/b/c/test_typical.py").unwrap(),
+            "good.a.b.c.test_typical"
+        );
+        assert_eq!(
+            get_module_qualname_from_path("missingmid/a/b/c/test_missingmid.py").unwrap(),
+            "b.c.test_missingmid"
+        );
+        assert_eq!(
+            get_module_qualname_from_path("syms/a/bsym/c/test_typical.py").unwrap(),
+            "syms.a.bsym.c.test_typical"
+        );
         std::env::set_current_dir(cwd).unwrap();
         assert_eq!(get_module_qualname_from_path("/a/b/c/d/e.py").unwrap(), "e");
-        assert_eq!(get_module_qualname_from_path("/usr/lib/python3.11/os.py").unwrap(), "os");
+        assert_eq!(
+            get_module_qualname_from_path("/usr/lib/python3.11/os.py").unwrap(),
+            "os"
+        );
         assert!(get_module_qualname_from_path("/tmp/").is_err());
     }
 
     #[test]
     fn namespace_helpers() {
-        assert_eq!(namespace_path_join("base1.base2", "name"), "base1.base2.name");
-        assert_eq!(namespace_path_split("base1.base2.name"), ("base1.base2".into(), Some("name".into())));
+        assert_eq!(
+            namespace_path_join("base1.base2", "name"),
+            "base1.base2.name"
+        );
+        assert_eq!(
+            namespace_path_split("base1.base2.name"),
+            ("base1.base2".into(), Some("name".into()))
+        );
         assert_eq!(namespace_path_split("name"), ("name".into(), None));
     }
 
@@ -124,7 +157,13 @@ mod tests {
     fn escaped_representation() {
         assert_eq!(escaped_bytes_representation(b"ascii").unwrap(), b"ascii");
         assert_eq!(escaped_bytes_representation(b"\\u0000").unwrap(), b"\\x00");
-        assert_eq!(escaped_bytes_representation(b"\\uffff").unwrap(), b"\\uffff");
-        assert_eq!(escaped_bytes_representation(b"ascii\\u0000\\uffff").unwrap(), b"ascii\\x00\\uffff");
+        assert_eq!(
+            escaped_bytes_representation(b"\\uffff").unwrap(),
+            b"\\uffff"
+        );
+        assert_eq!(
+            escaped_bytes_representation(b"ascii\\u0000\\uffff").unwrap(),
+            b"ascii\\x00\\uffff"
+        );
     }
 }

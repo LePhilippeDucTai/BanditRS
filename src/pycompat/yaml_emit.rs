@@ -97,8 +97,7 @@ fn analyze(s: &str) -> Analysis {
         }
     }
     let mut preceded_by_ws = true;
-    for i in 0..n {
-        let c = chars[i];
+    for (i, &c) in chars.iter().enumerate() {
         if i > 0 {
             if c == ':' && followed_by_ws(i) {
                 block_indicator = true;
@@ -110,7 +109,15 @@ fn analyze(s: &str) -> Analysis {
         preceded_by_ws = matches!(c, ' ' | '\t' | '\r' | '\n');
     }
 
-    Analysis { special, leading_ws, trailing_ws, break_space, space_break, has_breaks, block_indicator }
+    Analysis {
+        special,
+        leading_ws,
+        trailing_ws,
+        break_space,
+        space_break,
+        has_breaks,
+        block_indicator,
+    }
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -121,8 +128,13 @@ enum Style {
 }
 
 fn choose_style(s: &str, a: &Analysis) -> Style {
-    let allow_block_plain =
-        !a.leading_ws && !a.trailing_ws && !a.break_space && !a.space_break && !a.special && !a.has_breaks && !a.block_indicator;
+    let allow_block_plain = !a.leading_ws
+        && !a.trailing_ws
+        && !a.break_space
+        && !a.space_break
+        && !a.special
+        && !a.has_breaks
+        && !a.block_indicator;
     let allow_single = !a.break_space && !a.space_break && !a.special;
     if allow_block_plain && !looks_like_non_string(s) {
         Style::Plain
@@ -140,7 +152,10 @@ struct Writer {
 
 impl Writer {
     fn new() -> Writer {
-        Writer { out: String::new(), column: 0 }
+        Writer {
+            out: String::new(),
+            column: 0,
+        }
     }
 
     fn push(&mut self, s: &str) {
@@ -246,8 +261,19 @@ fn write_single_quoted(w: &mut Writer, text: &str, indent: usize, foldable: bool
     w.push("'");
 }
 
-const DQ_ESCAPES: &[(char, char)] =
-    &[('\0', '0'), ('\u{07}', 'a'), ('\u{08}', 'b'), ('\t', 't'), ('\n', 'n'), ('\u{0b}', 'v'), ('\u{0c}', 'f'), ('\r', 'r'), ('\u{1b}', 'e'), ('"', '"'), ('\\', '\\')];
+const DQ_ESCAPES: &[(char, char)] = &[
+    ('\0', '0'),
+    ('\u{07}', 'a'),
+    ('\u{08}', 'b'),
+    ('\t', 't'),
+    ('\n', 'n'),
+    ('\u{0b}', 'v'),
+    ('\u{0c}', 'f'),
+    ('\r', 'r'),
+    ('\u{1b}', 'e'),
+    ('"', '"'),
+    ('\\', '\\'),
+];
 
 /// `write_double_quoted(text)`, without width-based folding (see module docs).
 fn write_double_quoted(w: &mut Writer, text: &str) {
@@ -296,7 +322,9 @@ fn emit_scalar_value(w: &mut Writer, value: &Value, fold_indent: usize) {
         Value::Bool(b) => w.push(if *b { "true" } else { "false" }),
         Value::Number(n) => w.push(&n.to_string()),
         Value::String(s) => emit_string(w, s, fold_indent, true),
-        Value::Array(_) | Value::Object(_) => unreachable!("emit_scalar_value called on a container"),
+        Value::Array(_) | Value::Object(_) => {
+            unreachable!("emit_scalar_value called on a container")
+        }
     }
 }
 
@@ -310,7 +338,12 @@ fn sorted_entries(map: &Map<String, Value>) -> Vec<(&String, &Value)> {
     v
 }
 
-fn emit_mapping_entries(w: &mut Writer, map: &Map<String, Value>, indent: usize, first_inline: bool) {
+fn emit_mapping_entries(
+    w: &mut Writer,
+    map: &Map<String, Value>,
+    indent: usize,
+    first_inline: bool,
+) {
     for (i, (k, v)) in sorted_entries(map).into_iter().enumerate() {
         if i > 0 || !first_inline {
             w.newline_and_indent(indent);
@@ -354,7 +387,9 @@ fn emit_sequence_item(w: &mut Writer, item: &Value, item_indent: usize) {
     match item {
         Value::Object(m) if !m.is_empty() => emit_mapping_entries(w, m, item_indent, true),
         Value::Object(_) => w.push("{}"),
-        Value::Array(items) if !items.is_empty() => emit_sequence_entries(w, items, item_indent, true),
+        Value::Array(items) if !items.is_empty() => {
+            emit_sequence_entries(w, items, item_indent, true)
+        }
         Value::Array(_) => w.push("[]"),
         scalar => {
             debug_assert!(is_scalar(scalar));
@@ -392,19 +427,34 @@ mod tests {
         assert_eq!(safe_dump_block(&json!({"a": "123"})), "a: '123'\n");
         assert_eq!(safe_dump_block(&json!({"a": "true"})), "a: 'true'\n");
         assert_eq!(safe_dump_block(&json!({"a": "null"})), "a: 'null'\n");
-        assert_eq!(safe_dump_block(&json!({"a": "it's a test"})), "a: it's a test\n");
-        assert_eq!(safe_dump_block(&json!({"a": "has \"quotes\""})), "a: has \"quotes\"\n");
+        assert_eq!(
+            safe_dump_block(&json!({"a": "it's a test"})),
+            "a: it's a test\n"
+        );
+        assert_eq!(
+            safe_dump_block(&json!({"a": "has \"quotes\""})),
+            "a: has \"quotes\"\n"
+        );
         assert_eq!(safe_dump_block(&json!({"a": "abc "})), "a: 'abc '\n");
         assert_eq!(safe_dump_block(&json!({"a": "- item"})), "a: '- item'\n");
-        assert_eq!(safe_dump_block(&json!({"a": "value # not a comment"})), "a: 'value # not a comment'\n");
+        assert_eq!(
+            safe_dump_block(&json!({"a": "value # not a comment"})),
+            "a: 'value # not a comment'\n"
+        );
         assert_eq!(safe_dump_block(&json!({"a": null})), "a: null\n");
         assert_eq!(safe_dump_block(&json!({"a": true})), "a: true\n");
         assert_eq!(safe_dump_block(&json!({"a": 5})), "a: 5\n");
         assert_eq!(safe_dump_block(&json!({"a": []})), "a: []\n");
         assert_eq!(safe_dump_block(&json!({"a": {}})), "a: {}\n");
-        assert_eq!(safe_dump_block(&json!({"a": [1, 2, 3]})), "a:\n- 1\n- 2\n- 3\n");
+        assert_eq!(
+            safe_dump_block(&json!({"a": [1, 2, 3]})),
+            "a:\n- 1\n- 2\n- 3\n"
+        );
         assert_eq!(safe_dump_block(&json!({"a": "café"})), "a: \"caf\\xE9\"\n");
-        assert_eq!(safe_dump_block(&json!({"a": "tab\ttab"})), "a: \"tab\\ttab\"\n");
+        assert_eq!(
+            safe_dump_block(&json!({"a": "tab\ttab"})),
+            "a: \"tab\\ttab\"\n"
+        );
     }
 
     #[test]

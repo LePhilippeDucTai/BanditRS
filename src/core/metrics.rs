@@ -143,7 +143,10 @@ impl Metrics {
     pub fn new() -> Metrics {
         Metrics {
             files: IndexMap::new(),
-            totals: FileMetrics { issues: Some([[0; 4]; 2]), ..FileMetrics::default() },
+            totals: FileMetrics {
+                issues: Some([[0; 4]; 2]),
+                ..FileMetrics::default()
+            },
         }
     }
 
@@ -160,7 +163,10 @@ impl Metrics {
 
     /// Recompute the totals from the per-file blocks.
     pub fn aggregate(&mut self) {
-        let mut totals = FileMetrics { issues: Some([[0; 4]; 2]), ..FileMetrics::default() };
+        let mut totals = FileMetrics {
+            issues: Some([[0; 4]; 2]),
+            ..FileMetrics::default()
+        };
         for fm in self.files.values() {
             totals.loc += fm.loc;
             totals.nosec += fm.nosec;

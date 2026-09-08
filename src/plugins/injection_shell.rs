@@ -15,7 +15,12 @@ fn qual_in(list: &ListOpt, key: &str, qual: &str) -> Result<bool, PyErr> {
 
 /// `has_shell(context)`.
 fn has_shell(call: &ExprCall) -> bool {
-    let Some(kw) = call.arguments.keywords.iter().find(|k| k.arg.as_ref().is_some_and(|a| a.as_str() == "shell")) else {
+    let Some(kw) = call
+        .arguments
+        .keywords
+        .iter()
+        .find(|k| k.arg.as_ref().is_some_and(|a| a.as_str() == "shell"))
+    else {
         return false;
     };
     match &kw.value {
@@ -55,10 +60,18 @@ fn full_path_match(s: &str) -> bool {
 }
 
 /// `subprocess_popen_with_shell_equals_true` (B602).
-pub fn subprocess_popen_with_shell_equals_true(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
-    let Some(call) = ctx.call else { return Ok(None) };
+pub fn subprocess_popen_with_shell_equals_true(
+    ctx: &Context<'_, '_>,
+    cfg: &PluginConfigs,
+) -> PluginResult {
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
     let qual = ctx.call_function_name_qual().unwrap_or("");
-    if !qual_in(&cfg.shell_injection.subprocess, "subprocess", qual)? || !has_shell(call) || call.arguments.args.is_empty() {
+    if !qual_in(&cfg.shell_injection.subprocess, "subprocess", qual)?
+        || !has_shell(call)
+        || call.arguments.args.is_empty()
+    {
         return Ok(None);
     }
     let lineno = ctx.get_lineno_for_call_arg("shell");
@@ -74,31 +87,57 @@ pub fn subprocess_popen_with_shell_equals_true(ctx: &Context<'_, '_>, cfg: &Plug
         ));
     }
     Ok(Some(
-        IssueDraft::new(Rank::High, Rank::High, Cwe::OS_COMMAND_INJECTION, "subprocess call with shell=True identified, security issue.").with_lineno(lineno),
+        IssueDraft::new(
+            Rank::High,
+            Rank::High,
+            Cwe::OS_COMMAND_INJECTION,
+            "subprocess call with shell=True identified, security issue.",
+        )
+        .with_lineno(lineno),
     ))
 }
 
 /// `subprocess_without_shell_equals_true` (B603).
-pub fn subprocess_without_shell_equals_true(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
-    let Some(call) = ctx.call else { return Ok(None) };
+pub fn subprocess_without_shell_equals_true(
+    ctx: &Context<'_, '_>,
+    cfg: &PluginConfigs,
+) -> PluginResult {
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
     let qual = ctx.call_function_name_qual().unwrap_or("");
     if qual_in(&cfg.shell_injection.subprocess, "subprocess", qual)? && !has_shell(call) {
         return Ok(Some(
-            IssueDraft::new(Rank::Low, Rank::High, Cwe::OS_COMMAND_INJECTION, "subprocess call - check for execution of untrusted input.")
-                .with_lineno(ctx.get_lineno_for_call_arg("shell")),
+            IssueDraft::new(
+                Rank::Low,
+                Rank::High,
+                Cwe::OS_COMMAND_INJECTION,
+                "subprocess call - check for execution of untrusted input.",
+            )
+            .with_lineno(ctx.get_lineno_for_call_arg("shell")),
         ));
     }
     Ok(None)
 }
 
 /// `any_other_function_with_shell_equals_true` (B604).
-pub fn any_other_function_with_shell_equals_true(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
-    let Some(call) = ctx.call else { return Ok(None) };
+pub fn any_other_function_with_shell_equals_true(
+    ctx: &Context<'_, '_>,
+    cfg: &PluginConfigs,
+) -> PluginResult {
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
     let qual = ctx.call_function_name_qual().unwrap_or("");
     if !qual_in(&cfg.shell_injection.subprocess, "subprocess", qual)? && has_shell(call) {
         return Ok(Some(
-            IssueDraft::new(Rank::Medium, Rank::Low, Cwe::OS_COMMAND_INJECTION, "Function call with shell=True parameter identified, possible security issue.")
-                .with_lineno(ctx.get_lineno_for_call_arg("shell")),
+            IssueDraft::new(
+                Rank::Medium,
+                Rank::Low,
+                Cwe::OS_COMMAND_INJECTION,
+                "Function call with shell=True parameter identified, possible security issue.",
+            )
+            .with_lineno(ctx.get_lineno_for_call_arg("shell")),
         ));
     }
     Ok(None)
@@ -106,7 +145,9 @@ pub fn any_other_function_with_shell_equals_true(ctx: &Context<'_, '_>, cfg: &Pl
 
 /// `start_process_with_a_shell` (B605).
 pub fn start_process_with_a_shell(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
-    let Some(call) = ctx.call else { return Ok(None) };
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
     let qual = ctx.call_function_name_qual().unwrap_or("");
     if qual_in(&cfg.shell_injection.shell, "shell", qual)? && !call.arguments.args.is_empty() {
         if evaluate_shell_call(call) == Rank::Low {
@@ -131,14 +172,21 @@ pub fn start_process_with_a_shell(ctx: &Context<'_, '_>, cfg: &PluginConfigs) ->
 pub fn start_process_with_no_shell(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
     let qual = ctx.call_function_name_qual().unwrap_or("");
     if qual_in(&cfg.shell_injection.no_shell, "no_shell", qual)? {
-        return Ok(Some(IssueDraft::new(Rank::Low, Rank::Medium, Cwe::OS_COMMAND_INJECTION, "Starting a process without a shell.")));
+        return Ok(Some(IssueDraft::new(
+            Rank::Low,
+            Rank::Medium,
+            Cwe::OS_COMMAND_INJECTION,
+            "Starting a process without a shell.",
+        )));
     }
     Ok(None)
 }
 
 /// `start_process_with_partial_path` (B607).
 pub fn start_process_with_partial_path(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
-    let Some(call) = ctx.call else { return Ok(None) };
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
     if call.arguments.args.is_empty() {
         return Ok(None);
     }
@@ -150,15 +198,20 @@ pub fn start_process_with_partial_path(ctx: &Context<'_, '_>, cfg: &PluginConfig
         return Ok(None);
     }
     let mut node = &call.arguments.args[0];
-    if let Expr::List(l) = node {
-        if let Some(first) = l.elts.first() {
-            node = first;
-        }
+    if let Expr::List(l) = node
+        && let Some(first) = l.elts.first()
+    {
+        node = first;
     }
-    if let Expr::StringLiteral(s) = node {
-        if !full_path_match(s.value.to_str()) {
-            return Ok(Some(IssueDraft::new(Rank::Low, Rank::High, Cwe::OS_COMMAND_INJECTION, "Starting a process with a partial executable path")));
-        }
+    if let Expr::StringLiteral(s) = node
+        && !full_path_match(s.value.to_str())
+    {
+        return Ok(Some(IssueDraft::new(
+            Rank::Low,
+            Rank::High,
+            Cwe::OS_COMMAND_INJECTION,
+            "Starting a process with a partial executable path",
+        )));
     }
     Ok(None)
 }

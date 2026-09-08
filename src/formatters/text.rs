@@ -21,7 +21,10 @@ pub fn get_verbose_details(manager: &Manager) -> String {
             score.confidence_total()
         ));
     }
-    bits.push(format!("Files excluded ({}):", manager.excluded_files.len()));
+    bits.push(format!(
+        "Files excluded ({}):",
+        manager.excluded_files.len()
+    ));
     for fname in &manager.excluded_files {
         bits.push(format!("\t{fname}"));
     }
@@ -34,7 +37,11 @@ pub fn get_metrics(manager: &Manager) -> String {
     for criteria in CRITERIA {
         bits.push(format!("\tTotal issues (by {}):", criteria.to_lowercase()));
         for rank in RANKING {
-            let value = manager.metrics.totals.get(&format!("{criteria}.{rank}")).unwrap_or(0);
+            let value = manager
+                .metrics
+                .totals
+                .get(&format!("{criteria}.{rank}"))
+                .unwrap_or(0);
             bits.push(format!("\t\t{}: {}", capitalize(rank), value));
         }
     }
@@ -49,14 +56,34 @@ fn capitalize(s: &str) -> String {
     }
 }
 
-fn output_issue_str(issue: &Issue, indent: &str, show_lineno: bool, show_code: bool, lines: i64) -> String {
+fn output_issue_str(
+    issue: &Issue,
+    indent: &str,
+    show_lineno: bool,
+    show_code: bool,
+    lines: i64,
+) -> String {
     let mut bits = Vec::new();
-    bits.push(format!("{indent}>> Issue: [{}:{}] {}", issue.test_id, issue.test, issue.text));
-    bits.push(format!("{indent}   Severity: {}   Confidence: {}", issue.severity.capitalize(), issue.confidence.capitalize()));
+    bits.push(format!(
+        "{indent}>> Issue: [{}:{}] {}",
+        issue.test_id, issue.test, issue.text
+    ));
+    bits.push(format!(
+        "{indent}   Severity: {}   Confidence: {}",
+        issue.severity.capitalize(),
+        issue.confidence.capitalize()
+    ));
     bits.push(format!("{indent}   CWE: {}", issue.cwe));
     bits.push(format!("{indent}   More Info: {}", get_url(&issue.test_id)));
-    let (lineno_s, col_s) = if show_lineno { (issue.lineno.to_string(), issue.col_offset.to_string()) } else { (String::new(), String::new()) };
-    bits.push(format!("{indent}   Location: {}:{}:{}", issue.fname, lineno_s, col_s));
+    let (lineno_s, col_s) = if show_lineno {
+        (issue.lineno.to_string(), issue.col_offset.to_string())
+    } else {
+        (String::new(), String::new())
+    };
+    bits.push(format!(
+        "{indent}   Location: {}:{}:{}",
+        issue.fname, lineno_s, col_s
+    ));
     if show_code {
         for line in issue.get_code(lines, true).split('\n') {
             bits.push(format!("{indent}{line}"));
@@ -87,7 +114,13 @@ pub fn get_results(manager: &Manager, sev_level: Rank, conf_level: Rank, lines: 
                     bits.push(output_issue_str(issue, "", false, false, lines));
                     bits.push("\n-- Candidate Issues --".to_string());
                     for candidate in candidates {
-                        bits.push(output_issue_str(candidate, &candidate_indent, true, true, lines));
+                        bits.push(output_issue_str(
+                            candidate,
+                            &candidate_indent,
+                            true,
+                            true,
+                            lines,
+                        ));
                         bits.push("\n".to_string());
                     }
                 }
@@ -99,7 +132,13 @@ pub fn get_results(manager: &Manager, sev_level: Rank, conf_level: Rank, lines: 
 }
 
 /// `report(manager, fileobj, sev_level, conf_level, lines)`.
-pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_level: Rank, lines: i64) -> io::Result<()> {
+pub fn report(
+    manager: &Manager,
+    out: &mut dyn Write,
+    sev_level: Rank,
+    conf_level: Rank,
+    lines: i64,
+) -> io::Result<()> {
     if !manager.quiet || manager.results_count(sev_level, conf_level) > 0 {
         let mut bits = Vec::new();
         bits.push(format!("Run started:{}", UtcDateTime::now().python_str()));
@@ -109,8 +148,14 @@ pub fn report(manager: &Manager, out: &mut dyn Write, sev_level: Rank, conf_leve
         bits.push("\nTest results:".to_string());
         bits.push(get_results(manager, sev_level, conf_level, lines));
         bits.push("\nCode scanned:".to_string());
-        bits.push(format!("\tTotal lines of code: {}", manager.metrics.totals.loc));
-        bits.push(format!("\tTotal lines skipped (#nosec): {}", manager.metrics.totals.nosec));
+        bits.push(format!(
+            "\tTotal lines of code: {}",
+            manager.metrics.totals.loc
+        ));
+        bits.push(format!(
+            "\tTotal lines skipped (#nosec): {}",
+            manager.metrics.totals.nosec
+        ));
         bits.push(format!(
             "\tTotal potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): {}",
             manager.metrics.totals.skipped_tests

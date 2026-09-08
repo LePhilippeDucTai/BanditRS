@@ -14,7 +14,12 @@ const HF_MODULES: &[&str] = &["transformers", "datasets", "huggingface_hub"];
 fn is_constant(e: &Expr) -> bool {
     matches!(
         e,
-        Expr::StringLiteral(_) | Expr::NumberLiteral(_) | Expr::BooleanLiteral(_) | Expr::NoneLiteral(_) | Expr::BytesLiteral(_) | Expr::EllipsisLiteral(_)
+        Expr::StringLiteral(_)
+            | Expr::NumberLiteral(_)
+            | Expr::BooleanLiteral(_)
+            | Expr::NoneLiteral(_)
+            | Expr::BytesLiteral(_)
+            | Expr::EllipsisLiteral(_)
     )
 }
 
@@ -39,10 +44,11 @@ pub fn huggingface_unsafe_download(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) 
     }
     if let Some(call) = ctx.call {
         for kw in &call.arguments.keywords {
-            if let Some(arg) = &kw.arg {
-                if (arg.as_str() == "revision" || arg.as_str() == "commit_id") && !is_constant(&kw.value) {
-                    return Ok(None);
-                }
+            if let Some(arg) = &kw.arg
+                && (arg.as_str() == "revision" || arg.as_str() == "commit_id")
+                && !is_constant(&kw.value)
+            {
+                return Ok(None);
             }
         }
     }
@@ -59,12 +65,11 @@ pub fn huggingface_unsafe_download(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) 
             return Ok(None);
         }
     }
-    if let Some(first) = ctx.get_call_arg_at_position(0)? {
-        if let Some(s) = first.as_str() {
-            if s.starts_with("./") || s.starts_with('/') || s.starts_with("../") {
-                return Ok(None);
-            }
-        }
+    if let Some(first) = ctx.get_call_arg_at_position(0)?
+        && let Some(s) = first.as_str()
+        && (s.starts_with("./") || s.starts_with('/') || s.starts_with("../"))
+    {
+        return Ok(None);
     }
     Ok(Some(
         IssueDraft::new(

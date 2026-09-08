@@ -7,7 +7,11 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum Segment {
     Literal(String),
-    Field { name: String, spec: String, conv: Option<char> },
+    Field {
+        name: String,
+        spec: String,
+        conv: Option<char>,
+    },
 }
 
 /// `string.Formatter().parse(template)`, tokenizing `{{`/`}}` escapes and
@@ -59,7 +63,11 @@ pub fn parse_template(template: &str) -> Result<Vec<Segment>, String> {
                     }
                     _ => (name_conv, None),
                 };
-                out.push(Segment::Field { name: name.to_string(), spec, conv });
+                out.push(Segment::Field {
+                    name: name.to_string(),
+                    spec,
+                    conv,
+                });
             }
             '}' => {
                 if i + 1 < n && chars[i + 1] == '}' {
@@ -130,7 +138,11 @@ pub fn parse_spec(spec: &str) -> Result<FormatSpec, String> {
     while i < n && chars[i].is_ascii_digit() {
         i += 1;
     }
-    let width = if i > start { Some(chars[start..i].iter().collect::<String>().parse().unwrap()) } else { None };
+    let width = if i > start {
+        Some(chars[start..i].iter().collect::<String>().parse().unwrap())
+    } else {
+        None
+    };
     let mut grouping = None;
     if i < n && (chars[i] == ',' || chars[i] == '_') {
         grouping = Some(chars[i]);
@@ -158,7 +170,16 @@ pub fn parse_spec(spec: &str) -> Result<FormatSpec, String> {
     if i != n {
         return Err(format!("Invalid format specifier '{spec}'"));
     }
-    Ok(FormatSpec { fill, align, sign, zero, width, grouping, precision, ty })
+    Ok(FormatSpec {
+        fill,
+        align,
+        sign,
+        zero,
+        width,
+        grouping,
+        precision,
+        ty,
+    })
 }
 
 fn pad(s: &str, width: usize, align: char, fill: char) -> String {
@@ -173,7 +194,11 @@ fn pad(s: &str, width: usize, align: char, fill: char) -> String {
         '^' => {
             let left = padding / 2;
             let right = padding - left;
-            format!("{}{s}{}", fill.to_string().repeat(left), fill.to_string().repeat(right))
+            format!(
+                "{}{s}{}",
+                fill.to_string().repeat(left),
+                fill.to_string().repeat(right)
+            )
         }
         _ => format!("{}{s}", fill.to_string().repeat(padding)),
     }
@@ -181,10 +206,12 @@ fn pad(s: &str, width: usize, align: char, fill: char) -> String {
 
 /// Apply a format spec to a string value (`str.__format__`).
 pub fn format_str(value: &str, spec: &FormatSpec) -> Result<String, String> {
-    if let Some(ty) = spec.ty {
-        if ty != 's' {
-            return Err(format!("Unknown format code '{ty}' for object of type 'str'"));
-        }
+    if let Some(ty) = spec.ty
+        && ty != 's'
+    {
+        return Err(format!(
+            "Unknown format code '{ty}' for object of type 'str'"
+        ));
     }
     if spec.align == Some('=') {
         return Err("'=' alignment not allowed in string format specifier".to_string());
@@ -199,10 +226,12 @@ pub fn format_str(value: &str, spec: &FormatSpec) -> Result<String, String> {
 
 /// Apply a format spec to an integer value (`int.__format__`).
 pub fn format_int(value: i64, spec: &FormatSpec) -> Result<String, String> {
-    if let Some(ty) = spec.ty {
-        if ty != 'd' {
-            return Err(format!("Unknown format code '{ty}' for object of type 'int'"));
-        }
+    if let Some(ty) = spec.ty
+        && ty != 'd'
+    {
+        return Err(format!(
+            "Unknown format code '{ty}' for object of type 'int'"
+        ));
     }
     let neg = value < 0;
     let mut digits = value.unsigned_abs().to_string();
@@ -231,7 +260,11 @@ pub fn format_int(value: i64, spec: &FormatSpec) -> Result<String, String> {
         '^' => {
             let left = padding / 2;
             let right = padding - left;
-            format!("{}{sign_str}{digits}{}", fill.to_string().repeat(left), fill.to_string().repeat(right))
+            format!(
+                "{}{sign_str}{digits}{}",
+                fill.to_string().repeat(left),
+                fill.to_string().repeat(right)
+            )
         }
         _ => format!("{}{sign_str}{digits}", fill.to_string().repeat(padding)),
     })
@@ -256,9 +289,17 @@ mod tests {
 
     #[test]
     fn parses_literal_and_fields() {
-        let segs = parse_template("{abspath}:{line}: {test_id}[bandit]: {severity}: {msg}").unwrap();
+        let segs =
+            parse_template("{abspath}:{line}: {test_id}[bandit]: {severity}: {msg}").unwrap();
         assert_eq!(segs.len(), 9);
-        assert_eq!(segs[0], Segment::Field { name: "abspath".into(), spec: "".into(), conv: None });
+        assert_eq!(
+            segs[0],
+            Segment::Field {
+                name: "abspath".into(),
+                spec: "".into(),
+                conv: None
+            }
+        );
         assert_eq!(segs[1], Segment::Literal(":".into()));
     }
 
@@ -266,13 +307,26 @@ mod tests {
     fn handles_doubled_braces_and_conv_spec() {
         let segs = parse_template("{{lit}} {a!r:>5}").unwrap();
         assert_eq!(segs[0], Segment::Literal("{lit} ".into()));
-        assert_eq!(segs[1], Segment::Field { name: "a".into(), spec: ">5".into(), conv: Some('r') });
+        assert_eq!(
+            segs[1],
+            Segment::Field {
+                name: "a".into(),
+                spec: ">5".into(),
+                conv: Some('r')
+            }
+        );
     }
 
     #[test]
     fn unmatched_braces_error() {
-        assert_eq!(parse_template("{abc").unwrap_err(), "expected '}' before end of string");
-        assert_eq!(parse_template("abc}").unwrap_err(), "Single '}' encountered in format string");
+        assert_eq!(
+            parse_template("{abc").unwrap_err(),
+            "expected '}' before end of string"
+        );
+        assert_eq!(
+            parse_template("abc}").unwrap_err(),
+            "Single '}' encountered in format string"
+        );
     }
 
     #[test]
@@ -282,8 +336,14 @@ mod tests {
         let spec = parse_spec("^8").unwrap();
         assert_eq!(format_str("ab", &spec).unwrap(), "   ab   ");
         let spec = parse_spec("20.20s").unwrap();
-        assert_eq!(format_str("hi", &spec).unwrap(), format!("hi{}", " ".repeat(18)));
+        assert_eq!(
+            format_str("hi", &spec).unwrap(),
+            format!("hi{}", " ".repeat(18))
+        );
         let spec = parse_spec(">20").unwrap();
-        assert_eq!(format_str("hi", &spec).unwrap(), format!("{}hi", " ".repeat(18)));
+        assert_eq!(
+            format_str("hi", &spec).unwrap(),
+            format!("{}hi", " ".repeat(18))
+        );
     }
 }

@@ -9,7 +9,11 @@ pub fn write_row(fields: &[&str]) -> String {
         if i > 0 {
             out.push(',');
         }
-        if field.contains(',') || field.contains('"') || field.contains('\r') || field.contains('\n') {
+        if field.contains(',')
+            || field.contains('"')
+            || field.contains('\r')
+            || field.contains('\n')
+        {
             out.push('"');
             out.push_str(&field.replace('"', "\"\""));
             out.push('"');
@@ -27,7 +31,10 @@ mod tests {
 
     #[test]
     fn quotes_only_when_needed() {
-        assert_eq!(write_row(&["a", "b,c", "d\"e", "f\ng"]), "a,\"b,c\",\"d\"\"e\",\"f\ng\"\r\n");
+        assert_eq!(
+            write_row(&["a", "b,c", "d\"e", "f\ng"]),
+            "a,\"b,c\",\"d\"\"e\",\"f\ng\"\r\n"
+        );
         assert_eq!(write_row(&["plain", "text"]), "plain,text\r\n");
     }
 }

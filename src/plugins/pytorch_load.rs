@@ -19,8 +19,13 @@ pub fn pytorch_load(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginResult
             return Ok(None);
         }
         return Ok(Some(
-            IssueDraft::new(Rank::Medium, Rank::High, Cwe::DESERIALIZATION_OF_UNTRUSTED_DATA, "Use of unsafe PyTorch load")
-                .with_lineno(ctx.get_lineno_for_call_arg("load")),
+            IssueDraft::new(
+                Rank::Medium,
+                Rank::High,
+                Cwe::DESERIALIZATION_OF_UNTRUSTED_DATA,
+                "Use of unsafe PyTorch load",
+            )
+            .with_lineno(ctx.get_lineno_for_call_arg("load")),
         ));
     }
     Ok(None)

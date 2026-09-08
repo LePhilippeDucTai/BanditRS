@@ -10,11 +10,17 @@ use crate::plugins::PluginResult;
 
 /// `ssh_no_host_key_verification` (B507).
 pub fn ssh_no_host_key_verification(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginResult {
-    if !ctx.is_module_imported_like("paramiko") || ctx.call_function_name() != Some("set_missing_host_key_policy") {
+    if !ctx.is_module_imported_like("paramiko")
+        || ctx.call_function_name() != Some("set_missing_host_key_policy")
+    {
         return Ok(None);
     }
-    let Some(call) = ctx.call else { return Ok(None) };
-    let Some(first) = call.arguments.args.first() else { return Ok(None) };
+    let Some(call) = ctx.call else {
+        return Ok(None);
+    };
+    let Some(first) = call.arguments.args.first() else {
+        return Ok(None);
+    };
     let val: Option<&str> = match first {
         Expr::Attribute(a) => Some(a.attr.as_str()),
         Expr::Name(n) => Some(n.id.as_str()),

@@ -47,10 +47,18 @@ const SYNTAX_ERROR: &str = "syntax error while parsing AST from file";
 
 type ScanOk = (FileMetrics, Scores, Vec<Issue>, Arc<SourceFile>, Vec<Entry>);
 
-fn run_scan(name: &str, bytes: &[u8], test_set: &TestSet, ignore_nosec: bool, compat: PyCompat, mut metrics: FileMetrics) -> Result<ScanOk, String> {
+fn run_scan(
+    name: &str,
+    bytes: &[u8],
+    test_set: &TestSet,
+    ignore_nosec: bool,
+    compat: PyCompat,
+    mut metrics: FileMetrics,
+) -> Result<ScanOk, String> {
     let text = encoding::decode_source(bytes).map_err(|_| SYNTAX_ERROR.to_string())?;
     let file = Arc::new(SourceFile::new(name, text));
-    let parsed = crate::source::parse::parse_module(&file.text, compat).map_err(|_| SYNTAX_ERROR.to_string())?;
+    let parsed = crate::source::parse::parse_module(&file.text, compat)
+        .map_err(|_| SYNTAX_ERROR.to_string())?;
 
     let nosec = if ignore_nosec {
         NosecLines::default()
@@ -64,7 +72,13 @@ fn run_scan(name: &str, bytes: &[u8], test_set: &TestSet, ignore_nosec: bool, co
     };
 
     let arena = ViewArena::new();
-    let mut tester = Tester { test_set, nosec: &nosec, metrics: &mut metrics, results: Vec::new(), source: file.clone() };
+    let mut tester = Tester {
+        test_set,
+        nosec: &nosec,
+        metrics: &mut metrics,
+        results: Vec::new(),
+        source: file.clone(),
+    };
     let (scores, logs) = crate::log::with_buffer(|| {
         let mut walker = Walker::new(&file, &arena, compat, &mut tester);
         walker.process(parsed.syntax())
@@ -76,15 +90,35 @@ fn run_scan(name: &str, bytes: &[u8], test_set: &TestSet, ignore_nosec: bool, co
 }
 
 /// Scan the bytes of `name` (`BanditManager._parse_file` + `_execute_ast_visitor`).
-pub fn scan_file(name: &str, bytes: &[u8], test_set: &TestSet, ignore_nosec: bool, compat: PyCompat) -> FileOutcome {
+pub fn scan_file(
+    name: &str,
+    bytes: &[u8],
+    test_set: &TestSet,
+    ignore_nosec: bool,
+    compat: PyCompat,
+) -> FileOutcome {
     let mut metrics = FileMetrics::default();
     metrics.count_locs(bytes);
 
-    match catch_unwind(AssertUnwindSafe(|| run_scan(name, bytes, test_set, ignore_nosec, compat, metrics.clone()))) {
-        Ok(Ok((metrics, scores, issues, source, logs))) => {
-            FileOutcome { metrics, scores, issues, source: Some(source), skipped: None, logs }
-        }
-        Ok(Err(reason)) => FileOutcome { metrics, scores: Scores::default(), issues: Vec::new(), source: None, skipped: Some(reason), logs: Vec::new() },
+    match catch_unwind(AssertUnwindSafe(|| {
+        run_scan(name, bytes, test_set, ignore_nosec, compat, metrics.clone())
+    })) {
+        Ok(Ok((metrics, scores, issues, source, logs))) => FileOutcome {
+            metrics,
+            scores,
+            issues,
+            source: Some(source),
+            skipped: None,
+            logs,
+        },
+        Ok(Err(reason)) => FileOutcome {
+            metrics,
+            scores: Scores::default(),
+            issues: Vec::new(),
+            source: None,
+            skipped: Some(reason),
+            logs: Vec::new(),
+        },
         Err(_) => FileOutcome {
             metrics,
             scores: Scores::default(),

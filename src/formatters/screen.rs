@@ -28,7 +28,10 @@ fn header(text: &str) -> String {
 
 pub fn get_verbose_details(manager: &Manager) -> String {
     let mut bits = Vec::new();
-    bits.push(header(&format!("Files in scope ({}):", manager.files_list.len())));
+    bits.push(header(&format!(
+        "Files in scope ({}):",
+        manager.files_list.len()
+    )));
     for (item, score) in manager.files_list.iter().zip(manager.scores.iter()) {
         bits.push(format!(
             "\t{} (score: {{SEVERITY: {}, CONFIDENCE: {}}})",
@@ -37,7 +40,10 @@ pub fn get_verbose_details(manager: &Manager) -> String {
             score.confidence_total()
         ));
     }
-    bits.push(header(&format!("Files excluded ({}):", manager.excluded_files.len())));
+    bits.push(header(&format!(
+        "Files excluded ({}):",
+        manager.excluded_files.len()
+    )));
     for fname in &manager.excluded_files {
         bits.push(format!("\t{fname}"));
     }
@@ -50,7 +56,11 @@ pub fn get_metrics(manager: &Manager) -> String {
     for criteria in CRITERIA {
         bits.push(format!("\tTotal issues (by {}):", criteria.to_lowercase()));
         for rank in RANKING {
-            let value = manager.metrics.totals.get(&format!("{criteria}.{rank}")).unwrap_or(0);
+            let value = manager
+                .metrics
+                .totals
+                .get(&format!("{criteria}.{rank}"))
+                .unwrap_or(0);
             bits.push(format!("\t\t{}: {}", capitalize(rank), value));
         }
     }
@@ -65,14 +75,37 @@ fn capitalize(s: &str) -> String {
     }
 }
 
-fn output_issue_str(issue: &Issue, indent: &str, show_lineno: bool, show_code: bool, lines: i64) -> String {
+fn output_issue_str(
+    issue: &Issue,
+    indent: &str,
+    show_lineno: bool,
+    show_code: bool,
+    lines: i64,
+) -> String {
     let mut bits = Vec::new();
-    bits.push(format!("{indent}{}>> Issue: [{}:{}] {}", color_for(issue.severity), issue.test_id, issue.test, issue.text));
-    bits.push(format!("{indent}   Severity: {}   Confidence: {}", issue.severity.capitalize(), issue.confidence.capitalize()));
+    bits.push(format!(
+        "{indent}{}>> Issue: [{}:{}] {}",
+        color_for(issue.severity),
+        issue.test_id,
+        issue.test,
+        issue.text
+    ));
+    bits.push(format!(
+        "{indent}   Severity: {}   Confidence: {}",
+        issue.severity.capitalize(),
+        issue.confidence.capitalize()
+    ));
     bits.push(format!("{indent}   CWE: {}", issue.cwe));
     bits.push(format!("{indent}   More Info: {}", get_url(&issue.test_id)));
-    let (lineno_s, col_s) = if show_lineno { (issue.lineno.to_string(), issue.col_offset.to_string()) } else { (String::new(), String::new()) };
-    bits.push(format!("{indent}   Location: {}:{}:{}{DEFAULT}", issue.fname, lineno_s, col_s));
+    let (lineno_s, col_s) = if show_lineno {
+        (issue.lineno.to_string(), issue.col_offset.to_string())
+    } else {
+        (String::new(), String::new())
+    };
+    bits.push(format!(
+        "{indent}   Location: {}:{}:{}{DEFAULT}",
+        issue.fname, lineno_s, col_s
+    ));
     if show_code {
         for line in issue.get_code(lines, true).split('\n') {
             bits.push(format!("{indent}{line}"));
@@ -103,7 +136,13 @@ pub fn get_results(manager: &Manager, sev_level: Rank, conf_level: Rank, lines: 
                     bits.push(output_issue_str(issue, "", false, false, lines));
                     bits.push("\n-- Candidate Issues --".to_string());
                     for candidate in candidates {
-                        bits.push(output_issue_str(candidate, &candidate_indent, true, true, lines));
+                        bits.push(output_issue_str(
+                            candidate,
+                            &candidate_indent,
+                            true,
+                            true,
+                            lines,
+                        ));
                         bits.push("\n".to_string());
                     }
                 }
@@ -117,20 +156,38 @@ pub fn get_results(manager: &Manager, sev_level: Rank, conf_level: Rank, lines: 
 /// `report(manager, out, sev_level, conf_level, lines, out_name)`. `out_name`
 /// is the `-o` file name (if any); screen always writes ANSI text to real
 /// stdout and only logs a hint when `-o` was given.
-pub fn report(manager: &Manager, sev_level: Rank, conf_level: Rank, lines: i64, out_name: Option<&str>) -> io::Result<()> {
+pub fn report(
+    manager: &Manager,
+    sev_level: Rank,
+    conf_level: Rank,
+    lines: i64,
+    out_name: Option<&str>,
+) -> io::Result<()> {
     if !manager.quiet || manager.results_count(sev_level, conf_level) > 0 {
         let mut bits = Vec::new();
-        bits.push(header(&format!("Run started:{}", UtcDateTime::now().python_str())));
+        bits.push(header(&format!(
+            "Run started:{}",
+            UtcDateTime::now().python_str()
+        )));
         if manager.verbose {
             bits.push(get_verbose_details(manager));
         }
         bits.push(header("\nTest results:"));
         bits.push(get_results(manager, sev_level, conf_level, lines));
         bits.push(header("\nCode scanned:"));
-        bits.push(format!("\tTotal lines of code: {}", manager.metrics.totals.loc));
-        bits.push(format!("\tTotal lines skipped (#nosec): {}", manager.metrics.totals.nosec));
+        bits.push(format!(
+            "\tTotal lines of code: {}",
+            manager.metrics.totals.loc
+        ));
+        bits.push(format!(
+            "\tTotal lines skipped (#nosec): {}",
+            manager.metrics.totals.nosec
+        ));
         bits.push(get_metrics(manager));
-        bits.push(header(&format!("Files skipped ({}):", manager.skipped.len())));
+        bits.push(header(&format!(
+            "Files skipped ({}):",
+            manager.skipped.len()
+        )));
         for (fname, reason) in &manager.skipped {
             bits.push(format!("\t{fname} ({reason})"));
         }
@@ -138,7 +195,11 @@ pub fn report(manager: &Manager, sev_level: Rank, conf_level: Rank, lines: i64, 
         writeln!(stdout, "{}", bits.join("\n"))?;
     }
     if let Some(name) = out_name {
-        crate::log_info!("screen", "Screen formatter output was not written to file: {}, consider '-f txt'", name);
+        crate::log_info!(
+            "screen",
+            "Screen formatter output was not written to file: {}, consider '-f txt'",
+            name
+        );
     }
     Ok(())
 }

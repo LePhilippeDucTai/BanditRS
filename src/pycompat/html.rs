@@ -22,6 +22,9 @@ mod tests {
 
     #[test]
     fn escapes_all_five() {
-        assert_eq!(escape(r#"<tag a="b" c='d'>&</tag>"#), "&lt;tag a=&quot;b&quot; c=&#x27;d&#x27;&gt;&amp;&lt;/tag&gt;");
+        assert_eq!(
+            escape(r#"<tag a="b" c='d'>&</tag>"#),
+            "&lt;tag a=&quot;b&quot; c=&#x27;d&#x27;&gt;&amp;&lt;/tag&gt;"
+        );
     }
 }

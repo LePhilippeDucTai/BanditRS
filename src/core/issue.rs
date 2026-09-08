@@ -104,7 +104,10 @@ impl LineRange {
 
     /// A single line.
     pub const fn single(line: u32) -> LineRange {
-        LineRange { start: line, end: line }
+        LineRange {
+            start: line,
+            end: line,
+        }
     }
 
     pub const fn is_empty(self) -> bool {
@@ -113,7 +116,11 @@ impl LineRange {
 
     /// Number of lines (`len(linerange)`).
     pub const fn len(self) -> usize {
-        if self.end < self.start { 0 } else { (self.end - self.start + 1) as usize }
+        if self.end < self.start {
+            0
+        } else {
+            (self.end - self.start + 1) as usize
+        }
     }
 
     /// Iterate over the line numbers.
@@ -310,7 +317,10 @@ impl Issue {
         m.insert("test_id".into(), Value::from(&*self.test_id));
         m.insert("issue_severity".into(), Value::from(self.severity.as_str()));
         m.insert("issue_cwe".into(), self.cwe.as_dict());
-        m.insert("issue_confidence".into(), Value::from(self.confidence.as_str()));
+        m.insert(
+            "issue_confidence".into(),
+            Value::from(self.confidence.as_str()),
+        );
         m.insert("issue_text".into(), Value::from(self.text.as_str()));
         m.insert("line_number".into(), Value::from(self.lineno));
         m.insert("line_range".into(), self.linerange.to_json());
@@ -372,7 +382,8 @@ impl fmt::Display for BaselineError {
 }
 
 fn required<'a>(data: &'a Map<String, Value>, key: &str) -> Result<&'a Value, BaselineError> {
-    data.get(key).ok_or_else(|| BaselineError(format!("'{key}'")))
+    data.get(key)
+        .ok_or_else(|| BaselineError(format!("'{key}'")))
 }
 
 fn as_opt_string(v: &Value) -> Option<String> {
@@ -395,13 +406,15 @@ pub fn cwe_from_dict(data: &Value) -> Result<Cwe, BaselineError> {
                 Err(BaselineError("invalid literal for int()".into()))
             }
         }
-        Some(Value::String(s)) => s
-            .trim()
-            .parse::<u32>()
-            .map(Cwe)
-            .map_err(|_| BaselineError(format!("invalid literal for int() with base 10: '{s}'"))),
+        Some(Value::String(s)) => {
+            s.trim().parse::<u32>().map(Cwe).map_err(|_| {
+                BaselineError(format!("invalid literal for int() with base 10: '{s}'"))
+            })
+        }
         Some(Value::Bool(b)) => Ok(Cwe(*b as u32)),
-        Some(_) => Err(BaselineError("int() argument must be a string or a number".into())),
+        Some(_) => Err(BaselineError(
+            "int() argument must be a string or a number".into(),
+        )),
     }
 }
 
@@ -464,7 +477,10 @@ mod tests {
         assert_eq!(d["test_id"], "B999");
         assert_eq!(d["issue_severity"], "MEDIUM");
         assert_eq!(d["issue_cwe"]["id"], 605);
-        assert_eq!(d["issue_cwe"]["link"], "https://cwe.mitre.org/data/definitions/605.html");
+        assert_eq!(
+            d["issue_cwe"]["link"],
+            "https://cwe.mitre.org/data/definitions/605.html"
+        );
         assert_eq!(d["issue_confidence"], "MEDIUM");
         assert_eq!(d["issue_text"], "Test issue");
         assert_eq!(d["line_number"], 1);
@@ -508,7 +524,10 @@ mod tests {
     #[test]
     fn get_code_with_control_chars() {
         let mut i = issue();
-        i.source = Some(Arc::new(SourceFile::new("code.py", "\x08\x30\nsecond\nthird\n")));
+        i.source = Some(Arc::new(SourceFile::new(
+            "code.py",
+            "\x08\x30\nsecond\nthird\n",
+        )));
         i.linerange = LineRange::single(1);
         assert_eq!(i.get_code(3, false), "1 \x08\x30\n2 second\n3 third\n");
         assert_eq!(i.get_code(-1, true), "1\t\x08\x30\n");
@@ -530,6 +549,9 @@ mod tests {
         assert_eq!(b.severity.as_deref(), Some("low"));
         assert!(BaselineIssue::from_dict(&serde_json::json!({"data": "bad"})).is_err());
         assert_eq!(cwe_from_dict(&serde_json::json!({})).unwrap(), Cwe::NOTSET);
-        assert_eq!(cwe_from_dict(&serde_json::json!({"id": "78"})).unwrap(), Cwe(78));
+        assert_eq!(
+            cwe_from_dict(&serde_json::json!({"id": "78"})).unwrap(),
+            Cwe(78)
+        );
     }
 }

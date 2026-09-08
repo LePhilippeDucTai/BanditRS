@@ -64,11 +64,19 @@ pub fn parse_nosec_comment(comment: &str) -> Option<FxHashSet<String>> {
     let caps = NOSEC_COMMENT.captures(comment)?;
     let mut ids = FxHashSet::default();
     if let Some(tests) = caps.name("tests") {
-        for token in tests.as_str().split(|c: char| c == ',' || c.is_whitespace()).filter(|t| !t.is_empty()) {
+        for token in tests
+            .as_str()
+            .split(|c: char| c == ',' || c.is_whitespace())
+            .filter(|t| !t.is_empty())
+        {
             if let Some(id) = crate::core::registry::resolve_test_token(token) {
                 ids.insert(id);
             } else {
-                crate::log_warning!("manager", "Test in comment: {} is not a test name or id, ignoring", token);
+                crate::log_warning!(
+                    "manager",
+                    "Test in comment: {} is not a test name or id, ignoring",
+                    token
+                );
             }
         }
     }
@@ -89,10 +97,17 @@ mod tests {
         let ids = parse_nosec_comment("# nosec B101, B102").unwrap();
         assert!(ids.contains("B101") && ids.contains("B102"));
         let ids = parse_nosec_comment("# nosec B101,B102").unwrap();
-        assert_eq!(ids.len(), 2, "deliberate deviation: comma without space keeps both ids");
+        assert_eq!(
+            ids.len(),
+            2,
+            "deliberate deviation: comma without space keeps both ids"
+        );
         let ids = parse_nosec_comment("# type: ... # nosec B607 # noqa: E501").unwrap();
         assert!(ids.contains("B607") && ids.len() == 1);
-        assert_eq!(parse_nosec_comment("#nosec (on the line)").unwrap().len(), 0);
+        assert_eq!(
+            parse_nosec_comment("#nosec (on the line)").unwrap().len(),
+            0
+        );
         let ids = parse_nosec_comment("# nosec import_subprocess").unwrap();
         assert!(ids.contains("B404"));
     }

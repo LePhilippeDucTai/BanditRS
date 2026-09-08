@@ -17,7 +17,9 @@ pub struct UtcDateTime {
 impl UtcDateTime {
     /// Current time.
     pub fn now() -> UtcDateTime {
-        let d = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default();
+        let d = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default();
         UtcDateTime::from_unix(d.as_secs() as i64, d.subsec_micros())
     }
 
@@ -56,7 +58,13 @@ impl UtcDateTime {
         } else {
             format!(
                 "{:04}-{:02}-{:02} {:02}:{:02}:{:02}.{:06}+00:00",
-                self.year, self.month, self.day, self.hour, self.minute, self.second, self.microsecond
+                self.year,
+                self.month,
+                self.day,
+                self.hour,
+                self.minute,
+                self.second,
+                self.microsecond
             )
         }
     }

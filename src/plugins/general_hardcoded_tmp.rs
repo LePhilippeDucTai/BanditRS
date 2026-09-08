@@ -13,7 +13,11 @@ const DEFAULT_TMP_DIRS: &[&str] = &["/tmp", "/var/tmp", "/dev/shm"];
 pub fn hardcoded_tmp_directory(ctx: &Context<'_, '_>, cfg: &PluginConfigs) -> PluginResult {
     let tmp_dirs: Vec<&str> = match &cfg.hardcoded_tmp_directory.tmp_dirs {
         ListOpt::Missing => DEFAULT_TMP_DIRS.to_vec(),
-        ListOpt::Null => return Err(PyErr::type_error("argument of type 'NoneType' is not iterable")),
+        ListOpt::Null => {
+            return Err(PyErr::type_error(
+                "argument of type 'NoneType' is not iterable",
+            ));
+        }
         ListOpt::Items(items) => items.iter().map(String::as_str).collect(),
     };
     let value = ctx.string_val().unwrap_or("");

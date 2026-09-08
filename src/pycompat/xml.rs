@@ -4,7 +4,9 @@
 
 /// Escape element text (`_escape_cdata`).
 pub fn escape_cdata(text: &str) -> String {
-    text.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+    text.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
 }
 
 /// Escape an attribute value (`_escape_attrib`).
@@ -24,11 +26,17 @@ mod tests {
 
     #[test]
     fn cdata_escapes_three() {
-        assert_eq!(escape_cdata("a & b < c > d \" e"), "a &amp; b &lt; c &gt; d \" e");
+        assert_eq!(
+            escape_cdata("a & b < c > d \" e"),
+            "a &amp; b &lt; c &gt; d \" e"
+        );
     }
 
     #[test]
     fn attrib_escapes_all() {
-        assert_eq!(escape_attrib("a&b<c>d\"e\rf\ng\th"), "a&amp;b&lt;c&gt;d&quot;e&#13;f&#10;g&#09;h");
+        assert_eq!(
+            escape_attrib("a&b<c>d\"e\rf\ng\th"),
+            "a&amp;b&lt;c&gt;d&quot;e&#13;f&#10;g&#09;h"
+        );
     }
 }

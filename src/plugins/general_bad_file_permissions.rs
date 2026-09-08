@@ -22,11 +22,16 @@ pub fn set_bad_file_permissions(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> 
     let Some(mode) = ctx.get_call_arg_at_position(1)?.and_then(|v| v.as_int()) else {
         return Ok(None);
     };
-    let dangerous = mode & S_IWOTH != 0 || mode & S_IWGRP != 0 || mode & S_IXGRP != 0 || mode & S_IXOTH != 0;
+    let dangerous =
+        mode & S_IWOTH != 0 || mode & S_IWGRP != 0 || mode & S_IXGRP != 0 || mode & S_IXOTH != 0;
     if !dangerous {
         return Ok(None);
     }
-    let severity = if mode & S_IWOTH != 0 { Rank::High } else { Rank::Medium };
+    let severity = if mode & S_IWOTH != 0 {
+        Rank::High
+    } else {
+        Rank::Medium
+    };
     let filename = match ctx.get_call_arg_at_position(0)? {
         Some(v) if v.truthy() => v.py_str(),
         _ => "NOT PARSED".to_string(),

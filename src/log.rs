@@ -99,7 +99,9 @@ pub fn set_format(format: &str) {
 
 fn format_entry(module: &str, level: Level, message: &str) -> String {
     let default = crate::constants::LOG_FORMAT_STRING;
-    let fmt_guard = FORMAT.get().map(|m| m.lock().unwrap_or_else(|e| e.into_inner()));
+    let fmt_guard = FORMAT
+        .get()
+        .map(|m| m.lock().unwrap_or_else(|e| e.into_inner()));
     let fmt = fmt_guard.as_deref().map(String::as_str).unwrap_or(default);
     if fmt == default {
         return format!("[{module}]\t{}\t{message}", level.name());
@@ -143,7 +145,11 @@ pub fn log(module: &'static str, level: Level, args: fmt::Arguments<'_>) {
     let message = args.to_string();
     let buffered = SINK.with(|sink| {
         if let Some(buf) = sink.borrow_mut().as_mut() {
-            buf.push(Entry { module, level, message: message.clone() });
+            buf.push(Entry {
+                module,
+                level,
+                message: message.clone(),
+            });
             true
         } else {
             false
@@ -226,6 +232,9 @@ mod tests {
 
     #[test]
     fn default_format() {
-        assert_eq!(format_entry("manager", Level::Warning, "msg"), "[manager]\tWARNING\tmsg");
+        assert_eq!(
+            format_entry("manager", Level::Warning, "msg"),
+            "[manager]\tWARNING\tmsg"
+        );
     }
 }

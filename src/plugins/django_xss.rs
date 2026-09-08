@@ -19,23 +19,37 @@ use crate::core::plugin_config::PluginConfigs;
 use crate::plugins::PluginResult;
 use crate::source::SourceFile;
 
-const MARK_SAFE_NAMES: &[&str] = &["mark_safe", "SafeText", "SafeUnicode", "SafeString", "SafeBytes"];
+const MARK_SAFE_NAMES: &[&str] = &[
+    "mark_safe",
+    "SafeText",
+    "SafeUnicode",
+    "SafeString",
+    "SafeBytes",
+];
 
 /// The enclosing function's parameters and body, or the module body when the
 /// call is not nested in a function.
-fn enclosing_scope<'a>(ctx: &Context<'a, '_>) -> (&'a [Stmt], Option<&'a ruff_python_ast::Parameters>) {
+fn enclosing_scope<'a>(
+    ctx: &Context<'a, '_>,
+) -> (&'a [Stmt], Option<&'a ruff_python_ast::Parameters>) {
     for anc in ctx.ancestors.iter().rev() {
         if let VNode::Stmt(Stmt::FunctionDef(f)) = anc {
             return (&f.body, Some(&f.parameters));
         }
     }
-    let VNode::Module(m) = ctx.ancestors[0] else { unreachable!("ancestors[0] is always Module") };
+    let VNode::Module(m) = ctx.ancestors[0] else {
+        unreachable!("ancestors[0] is always Module")
+    };
     (&m.body, None)
 }
 
 fn is_param(params: Option<&ruff_python_ast::Parameters>, name: &str) -> bool {
     let Some(p) = params else { return false };
-    p.posonlyargs.iter().chain(p.args.iter()).chain(p.kwonlyargs.iter()).any(|a| a.name().as_str() == name)
+    p.posonlyargs
+        .iter()
+        .chain(p.args.iter())
+        .chain(p.kwonlyargs.iter())
+        .any(|a| a.name().as_str() == name)
         || p.vararg.as_ref().is_some_and(|a| a.name.as_str() == name)
         || p.kwarg.as_ref().is_some_and(|a| a.name.as_str() == name)
 }
@@ -52,11 +66,13 @@ fn evaluate_var(file: &SourceFile, body: &[Stmt], name: &str, until: u32) -> boo
         if file.line_index(stmt.start().to_u32()) >= until {
             break;
         }
-        if let Stmt::Assign(a) = stmt {
-            if a.targets.iter().any(|t| matches!(t, Expr::Name(n) if n.id.as_str() == name)) {
-                secure = is_secure_value(file, &a.value, body, file.line_index(stmt.start().to_u32()));
-                found = true;
-            }
+        if let Stmt::Assign(a) = stmt
+            && a.targets
+                .iter()
+                .any(|t| matches!(t, Expr::Name(n) if n.id.as_str() == name))
+        {
+            secure = is_secure_value(file, &a.value, body, file.line_index(stmt.start().to_u32()));
+            found = true;
         }
     }
     found && secure
@@ -74,9 +90,19 @@ fn is_secure_value(file: &SourceFile, expr: &Expr, body: &[Stmt], until: u32) ->
 }
 
 /// `evaluate_call`: only `"...".format(...)` calls without keyword arguments.
-fn evaluate_call(file: &SourceFile, call: &ruff_python_ast::ExprCall, body: &[Stmt], until: u32) -> bool {
-    let Expr::Attribute(a) = &*call.func else { return false };
-    if a.attr.as_str() != "format" || !matches!(&*a.value, Expr::StringLiteral(_)) || !call.arguments.keywords.is_empty() {
+fn evaluate_call(
+    file: &SourceFile,
+    call: &ruff_python_ast::ExprCall,
+    body: &[Stmt],
+    until: u32,
+) -> bool {
+    let Expr::Attribute(a) = &*call.func else {
+        return false;
+    };
+    if a.attr.as_str() != "format"
+        || !matches!(&*a.value, Expr::StringLiteral(_))
+        || !call.arguments.keywords.is_empty()
+    {
         return false;
     }
     let mut total = 0usize;
@@ -128,7 +154,10 @@ fn check_risk(ctx: &Context<'_, '_>, xss: &Expr, call_lineno: u32) -> bool {
             // our purposes: a tuple right-hand side supplies several values,
             // anything else supplies one.
             match &*b.right {
-                Expr::Tuple(t) => t.elts.iter().all(|e| is_secure_value(file, e, body, call_lineno)),
+                Expr::Tuple(t) => t
+                    .elts
+                    .iter()
+                    .all(|e| is_secure_value(file, e, body, call_lineno)),
                 other => is_secure_value(file, other, body, call_lineno),
             }
         }
@@ -141,7 +170,10 @@ pub fn django_mark_safe(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginRe
     if !ctx.is_module_imported_like("django.utils.safestring") {
         return Ok(None);
     }
-    if !ctx.call_function_name().is_some_and(|n| MARK_SAFE_NAMES.contains(&n)) {
+    if !ctx
+        .call_function_name()
+        .is_some_and(|n| MARK_SAFE_NAMES.contains(&n))
+    {
         return Ok(None);
     }
     let call = ctx.call.expect("Call context always carries a call");
@@ -154,7 +186,12 @@ pub fn django_mark_safe(ctx: &Context<'_, '_>, _cfg: &PluginConfigs) -> PluginRe
     let call_lineno = ctx.file.line_index(call.start().to_u32());
     let secure = check_risk(ctx, xss, call_lineno);
     if !secure {
-        return Ok(Some(IssueDraft::new(Rank::Medium, Rank::High, Cwe::BASIC_XSS, "Potential XSS on mark_safe function.")));
+        return Ok(Some(IssueDraft::new(
+            Rank::Medium,
+            Rank::High,
+            Cwe::BASIC_XSS,
+            "Potential XSS on mark_safe function.",
+        )));
     }
     Ok(None)
 }
