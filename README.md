@@ -12,7 +12,7 @@ with **57% less memory**.
 [![Tests](https://img.shields.io/badge/tests-354%20✓%20(0%20ignored)-success)](#5-how-parity-is-proven)
 [![Parity](https://img.shields.io/badge/parity-75%2F75%20tests%20B1xx–B7xx-success)](#52-functional-coverage-75-test-ids-out-of-75)
 [![Differential](https://img.shields.io/badge/differential-21k%20files%20of%20real%20code%20%C2%B7%200%20unexpected%20diff-success)](#55-real-third-party-code-and-the-whole-command-line-surface)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational)](Cargo.toml)
+[![PyPI](https://img.shields.io/pypi/v/banditrs.svg)](https://pypi.org/project/banditrs/)
 
 </div>
 
@@ -20,30 +20,28 @@ with **57% less memory**.
 
 ## Install
 
-Fastest way to try it, no Rust toolchain needed: [`scripts/install.sh`](scripts/install.sh) resolves
-the *latest* [GitHub Release](https://github.com/LePhilippeDucTai/BanditRS/releases) and has `pip`
-grab the prebuilt wheel that matches your platform automatically — no version number and no wheel
-filename to pick by hand, and nothing to edit here when a new version ships:
+BanditRS is on [PyPI](https://pypi.org/project/banditrs/) as prebuilt wheels for six
+platforms — no Rust toolchain needed, nothing to compile. Fastest way to try it, nothing
+installed permanently:
 
 ```bash
-curl -LsSf https://raw.githubusercontent.com/LePhilippeDucTai/BanditRS/main/scripts/install.sh | sh
+uvx banditrs -r .
+```
+
+To keep it around — `bandit`, `banditrs`, `bandit-baseline` and `bandit-config-generator` all
+land on your `PATH`:
+
+```bash
+uv tool install banditrs
 bandit -r .
 ```
 
-Prefer building from source with `uv`? `uvx`/`uv tool install` clone the repo and compile on the spot
-— no version-selection problem either, but they need `rustc` ≥ 1.96 and take a couple of minutes the
-first time:
+`pip` and `pipx` work the same way:
 
 ```bash
-uvx --from git+https://github.com/LePhilippeDucTai/BanditRS bandit -r .          # on the fly
-uv tool install git+https://github.com/LePhilippeDucTai/BanditRS && bandit -r .  # keep it around
+pip install banditrs      # or: pipx install banditrs
+bandit -r .
 ```
-
-> **Why not `uvx` for the prebuilt wheel too?** It should be able to install directly from the
-> release URL, but as of `uv` 0.8 its downloader returns a spurious `401 Unauthorized` on the signed
-> `objects.githubusercontent.com` redirect that GitHub Release downloads go through — `pip` fetches
-> the identical URL without issue. `scripts/install.sh` therefore shells out to `pip`; switch to `uv`
-> there once this is fixed upstream.
 
 Platform wheel names, coexisting with the PyCQA `bandit` command, `pre-commit`, and building from
 source: [§7](#7-usage-and-installation-details).
@@ -649,28 +647,28 @@ commands are at the [top of this README](#install); here is the full matrix.
 
 | Method | Command | Needs a Rust toolchain? |
 | --- | --- | --- |
-| **Prebuilt wheel, latest, auto-detected** (recommended) | `curl -LsSf https://raw.githubusercontent.com/LePhilippeDucTai/BanditRS/main/scripts/install.sh \| sh` | **No** |
-| **Prebuilt wheel, a specific version or platform** | `pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>` | **No** |
-| **uv, on the fly** | `uvx --from git+https://github.com/LePhilippeDucTai/BanditRS bandit -r .` | **Yes** |
-| **uv, as a tool** | `uv tool install git+https://github.com/LePhilippeDucTai/BanditRS` | **Yes** |
-| **From git** | `pip install git+https://github.com/LePhilippeDucTai/BanditRS` | **Yes** |
+| **uv, on the fly** (recommended) | `uvx banditrs -r .` | **No** |
+| **uv, as a tool** | `uv tool install banditrs` | **No** |
+| **pip** | `pip install banditrs` | **No** |
+| **pipx** | `pipx install banditrs` | **No** |
+| **A specific version or platform** | `pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>` | **No** |
+| **From git (unreleased/dev)** | `pip install git+https://github.com/LePhilippeDucTai/BanditRS` | Yes |
 | **From source** | `cargo build --release` | Yes |
 
-> **Why `git+` needs Rust.** `pip install git+…` and `uvx --from git+…` always
-> build from source: the tool clones the repository and builds a wheel from the
-> checkout on the spot. No prebuilt artifact is involved, so `rustc` ≥ 1.96 and
-> `cargo` must be present, and the build takes a couple of minutes. That is
-> inherent to the `git+` syntax, not a limitation of this package. The prebuilt
-> wheels attached to each
-> [release](https://github.com/LePhilippeDucTai/BanditRS/releases) exist precisely
-> to avoid it — `scripts/install.sh` picks the right one automatically, or pick
-> one yourself from the table below.
+> **Why `git+` needs Rust.** `pip install git+…` always builds from source: the
+> tool clones the repository and builds a wheel from the checkout on the spot.
+> No prebuilt artifact is involved, so `rustc` ≥ 1.96 and `cargo` must be
+> present, and the build takes a couple of minutes. That is inherent to the
+> `git+` syntax, not a limitation of this package — use it only to try an
+> unreleased commit; every tagged release ships as a prebuilt wheel on PyPI,
+> which is what the methods above install.
 
-> **Why `--from`.** The distribution is named `banditrs`, but the command you
-> usually want is `bandit`. `uvx` assumes the two match, so plain `uvx bandit`
-> would look for a *different* project; `--from` names the package explicitly and
-> lets you pick any of the four commands it ships. `uvx --from git+… banditrs -r .`
-> runs the same program under the non-conflicting alias.
+> **Why `uvx banditrs` needs no `--from`.** The distribution is named
+> `banditrs`, and so is one of the four commands it installs (an alias for
+> `bandit` — see below), so `uvx` finds it directly. To run the `bandit` name
+> itself without installing anything, name the package explicitly:
+> `uvx --from banditrs bandit -r .` — plain `uvx bandit` would instead look for
+> the unrelated PyCQA `bandit` package on PyPI.
 
 Every release publishes one wheel per platform. Because the wheels contain native
 executables that do not link against libpython, each one is tagged
