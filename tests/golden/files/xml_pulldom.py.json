@@ -1,0 +1,114 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/xml_pulldom.py": {
+      "CONFIDENCE.HIGH": 4,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 4,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 from xml.dom.pulldom import parseString as badParseString\n2 from defusedxml.pulldom import parseString as goodParseString\n3 a = badParseString(\"<myxml>Some data some more data</myxml>\")\n",
+      "col_offset": 0,
+      "end_col_offset": 57,
+      "filename": "./examples/xml_pulldom.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 20,
+        "link": "https://cwe.mitre.org/data/definitions/20.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Using parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace parseString with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.",
+      "line_number": 1,
+      "line_range": [
+        1
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b409-import-xml-pulldom",
+      "test_id": "B409",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "2 from defusedxml.pulldom import parseString as goodParseString\n3 a = badParseString(\"<myxml>Some data some more data</myxml>\")\n4 print(a)\n",
+      "col_offset": 4,
+      "end_col_offset": 61,
+      "filename": "./examples/xml_pulldom.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 20,
+        "link": "https://cwe.mitre.org/data/definitions/20.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Using xml.dom.pulldom.parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.pulldom.parseString with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called",
+      "line_number": 3,
+      "line_range": [
+        3
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b313-b320-xml-bad-pulldom",
+      "test_id": "B319",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "8 \n9 from xml.dom.pulldom import parse as badParse\n10 from defusedxml.pulldom import parse as goodParse\n",
+      "col_offset": 0,
+      "end_col_offset": 45,
+      "filename": "./examples/xml_pulldom.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 20,
+        "link": "https://cwe.mitre.org/data/definitions/20.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Using parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace parse with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.",
+      "line_number": 9,
+      "line_range": [
+        9
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b409-import-xml-pulldom",
+      "test_id": "B409",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "10 from defusedxml.pulldom import parse as goodParse\n11 a = badParse(\"somfilethatdoesntexist.xml\")\n12 print(a)\n",
+      "col_offset": 4,
+      "end_col_offset": 42,
+      "filename": "./examples/xml_pulldom.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 20,
+        "link": "https://cwe.mitre.org/data/definitions/20.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Using xml.dom.pulldom.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.pulldom.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b313-b320-xml-bad-pulldom",
+      "test_id": "B319",
+      "test_name": "blacklist"
+    }
+  ]
+}

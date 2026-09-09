@@ -1,0 +1,534 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/requests-missing-timeout.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 25,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 25,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 64,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 25,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 25,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 64,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "5 # Errors\n6 requests.get('https://gmail.com')\n7 requests.get('https://gmail.com', timeout=None)\n",
+      "col_offset": 0,
+      "end_col_offset": 33,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests without timeout",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "6 requests.get('https://gmail.com')\n7 requests.get('https://gmail.com', timeout=None)\n8 requests.post('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 47,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests with timeout set to None",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "7 requests.get('https://gmail.com', timeout=None)\n8 requests.post('https://gmail.com')\n9 requests.post('https://gmail.com', timeout=None)\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests without timeout",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "8 requests.post('https://gmail.com')\n9 requests.post('https://gmail.com', timeout=None)\n10 requests.put('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 48,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests with timeout set to None",
+      "line_number": 9,
+      "line_range": [
+        9
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "9 requests.post('https://gmail.com', timeout=None)\n10 requests.put('https://gmail.com')\n11 requests.put('https://gmail.com', timeout=None)\n",
+      "col_offset": 0,
+      "end_col_offset": 33,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests without timeout",
+      "line_number": 10,
+      "line_range": [
+        10
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "10 requests.put('https://gmail.com')\n11 requests.put('https://gmail.com', timeout=None)\n12 requests.delete('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 47,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests with timeout set to None",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "11 requests.put('https://gmail.com', timeout=None)\n12 requests.delete('https://gmail.com')\n13 requests.delete('https://gmail.com', timeout=None)\n",
+      "col_offset": 0,
+      "end_col_offset": 36,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests without timeout",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "12 requests.delete('https://gmail.com')\n13 requests.delete('https://gmail.com', timeout=None)\n14 requests.patch('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 50,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests with timeout set to None",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "13 requests.delete('https://gmail.com', timeout=None)\n14 requests.patch('https://gmail.com')\n15 requests.patch('https://gmail.com', timeout=None)\n",
+      "col_offset": 0,
+      "end_col_offset": 35,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests without timeout",
+      "line_number": 14,
+      "line_range": [
+        14
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "14 requests.patch('https://gmail.com')\n15 requests.patch('https://gmail.com', timeout=None)\n16 requests.options('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 49,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests with timeout set to None",
+      "line_number": 15,
+      "line_range": [
+        15
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "15 requests.patch('https://gmail.com', timeout=None)\n16 requests.options('https://gmail.com')\n17 requests.options('https://gmail.com', timeout=None)\n",
+      "col_offset": 0,
+      "end_col_offset": 37,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests without timeout",
+      "line_number": 16,
+      "line_range": [
+        16
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "16 requests.options('https://gmail.com')\n17 requests.options('https://gmail.com', timeout=None)\n18 requests.head('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 51,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests with timeout set to None",
+      "line_number": 17,
+      "line_range": [
+        17
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "17 requests.options('https://gmail.com', timeout=None)\n18 requests.head('https://gmail.com')\n19 requests.head('https://gmail.com', timeout=None)\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests without timeout",
+      "line_number": 18,
+      "line_range": [
+        18
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "18 requests.head('https://gmail.com')\n19 requests.head('https://gmail.com', timeout=None)\n20 httpx.get('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 48,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to requests with timeout set to None",
+      "line_number": 19,
+      "line_range": [
+        19
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "20 httpx.get('https://gmail.com')\n21 httpx.get('https://gmail.com', timeout=None)\n22 httpx.post('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 44,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 21,
+      "line_range": [
+        21
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "22 httpx.post('https://gmail.com')\n23 httpx.post('https://gmail.com', timeout=None)\n24 httpx.put('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 45,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 23,
+      "line_range": [
+        23
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "24 httpx.put('https://gmail.com')\n25 httpx.put('https://gmail.com', timeout=None)\n26 httpx.delete('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 44,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 25,
+      "line_range": [
+        25
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "26 httpx.delete('https://gmail.com')\n27 httpx.delete('https://gmail.com', timeout=None)\n28 httpx.patch('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 47,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 27,
+      "line_range": [
+        27
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "28 httpx.patch('https://gmail.com')\n29 httpx.patch('https://gmail.com', timeout=None)\n30 httpx.options('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 46,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 29,
+      "line_range": [
+        29
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "30 httpx.options('https://gmail.com')\n31 httpx.options('https://gmail.com', timeout=None)\n32 httpx.head('https://gmail.com')\n",
+      "col_offset": 0,
+      "end_col_offset": 48,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 31,
+      "line_range": [
+        31
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "32 httpx.head('https://gmail.com')\n33 httpx.head('https://gmail.com', timeout=None)\n34 httpx.Client()\n",
+      "col_offset": 0,
+      "end_col_offset": 45,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 33,
+      "line_range": [
+        33
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "34 httpx.Client()\n35 httpx.Client(timeout=None)\n36 httpx.AsyncClient()\n",
+      "col_offset": 0,
+      "end_col_offset": 26,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 35,
+      "line_range": [
+        35
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "36 httpx.AsyncClient()\n37 httpx.AsyncClient(timeout=None)\n38 with httpx.Client() as client:\n",
+      "col_offset": 0,
+      "end_col_offset": 31,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 37,
+      "line_range": [
+        37
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "39     client.get('https://gmail.com')\n40 with httpx.Client(timeout=None) as client:\n41     client.get('https://gmail.com')\n",
+      "col_offset": 5,
+      "end_col_offset": 31,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 40,
+      "line_range": [
+        40
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    },
+    {
+      "code": "43     await client.get('https://gmail.com')\n44 async with httpx.AsyncClient(timeout=None) as client:\n45     await client.get('https://gmail.com')\n",
+      "col_offset": 11,
+      "end_col_offset": 42,
+      "filename": "./examples/requests-missing-timeout.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 400,
+        "link": "https://cwe.mitre.org/data/definitions/400.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Call to httpx with timeout set to None",
+      "line_number": 44,
+      "line_range": [
+        44
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html",
+      "test_id": "B113",
+      "test_name": "request_without_timeout"
+    }
+  ]
+}

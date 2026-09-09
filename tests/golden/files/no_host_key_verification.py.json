@@ -1,0 +1,194 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/no_host_key_verification.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 8,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 8,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 8,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 8,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "5 ssh_client = client.SSHClient()\n6 ssh_client.set_missing_host_key_policy(client.AutoAddPolicy)\n7 ssh_client.set_missing_host_key_policy(client.WarningPolicy)\n",
+      "col_offset": 0,
+      "end_col_offset": 60,
+      "filename": "./examples/no_host_key_verification.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Paramiko call with policy set to automatically trust the unknown host key.",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b507_ssh_no_host_key_verification.html",
+      "test_id": "B507",
+      "test_name": "ssh_no_host_key_verification"
+    },
+    {
+      "code": "6 ssh_client.set_missing_host_key_policy(client.AutoAddPolicy)\n7 ssh_client.set_missing_host_key_policy(client.WarningPolicy)\n8 ssh_client.set_missing_host_key_policy(client.AutoAddPolicy())\n",
+      "col_offset": 0,
+      "end_col_offset": 60,
+      "filename": "./examples/no_host_key_verification.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Paramiko call with policy set to automatically trust the unknown host key.",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b507_ssh_no_host_key_verification.html",
+      "test_id": "B507",
+      "test_name": "ssh_no_host_key_verification"
+    },
+    {
+      "code": "7 ssh_client.set_missing_host_key_policy(client.WarningPolicy)\n8 ssh_client.set_missing_host_key_policy(client.AutoAddPolicy())\n9 ssh_client.set_missing_host_key_policy(client.WarningPolicy())\n",
+      "col_offset": 0,
+      "end_col_offset": 62,
+      "filename": "./examples/no_host_key_verification.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Paramiko call with policy set to automatically trust the unknown host key.",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b507_ssh_no_host_key_verification.html",
+      "test_id": "B507",
+      "test_name": "ssh_no_host_key_verification"
+    },
+    {
+      "code": "8 ssh_client.set_missing_host_key_policy(client.AutoAddPolicy())\n9 ssh_client.set_missing_host_key_policy(client.WarningPolicy())\n10 \n",
+      "col_offset": 0,
+      "end_col_offset": 62,
+      "filename": "./examples/no_host_key_verification.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Paramiko call with policy set to automatically trust the unknown host key.",
+      "line_number": 9,
+      "line_range": [
+        9
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b507_ssh_no_host_key_verification.html",
+      "test_id": "B507",
+      "test_name": "ssh_no_host_key_verification"
+    },
+    {
+      "code": "10 \n11 ssh_client.set_missing_host_key_policy(AutoAddPolicy)\n12 ssh_client.set_missing_host_key_policy(WarningPolicy)\n",
+      "col_offset": 0,
+      "end_col_offset": 53,
+      "filename": "./examples/no_host_key_verification.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Paramiko call with policy set to automatically trust the unknown host key.",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b507_ssh_no_host_key_verification.html",
+      "test_id": "B507",
+      "test_name": "ssh_no_host_key_verification"
+    },
+    {
+      "code": "11 ssh_client.set_missing_host_key_policy(AutoAddPolicy)\n12 ssh_client.set_missing_host_key_policy(WarningPolicy)\n13 ssh_client.set_missing_host_key_policy(AutoAddPolicy())\n",
+      "col_offset": 0,
+      "end_col_offset": 53,
+      "filename": "./examples/no_host_key_verification.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Paramiko call with policy set to automatically trust the unknown host key.",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b507_ssh_no_host_key_verification.html",
+      "test_id": "B507",
+      "test_name": "ssh_no_host_key_verification"
+    },
+    {
+      "code": "12 ssh_client.set_missing_host_key_policy(WarningPolicy)\n13 ssh_client.set_missing_host_key_policy(AutoAddPolicy())\n14 ssh_client.set_missing_host_key_policy(WarningPolicy())\n",
+      "col_offset": 0,
+      "end_col_offset": 55,
+      "filename": "./examples/no_host_key_verification.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Paramiko call with policy set to automatically trust the unknown host key.",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b507_ssh_no_host_key_verification.html",
+      "test_id": "B507",
+      "test_name": "ssh_no_host_key_verification"
+    },
+    {
+      "code": "13 ssh_client.set_missing_host_key_policy(AutoAddPolicy())\n14 ssh_client.set_missing_host_key_policy(WarningPolicy())\n",
+      "col_offset": 0,
+      "end_col_offset": 55,
+      "filename": "./examples/no_host_key_verification.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Paramiko call with policy set to automatically trust the unknown host key.",
+      "line_number": 14,
+      "line_range": [
+        14
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b507_ssh_no_host_key_verification.html",
+      "test_id": "B507",
+      "test_name": "ssh_no_host_key_verification"
+    }
+  ]
+}

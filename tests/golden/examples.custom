@@ -1,0 +1,597 @@
+<ROOT>/examples/assert.py:1: B101[bandit]: LOW: Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+<ROOT>/examples/binding.py:4: B104[bandit]: MEDIUM: Possible binding to all interfaces.
+<ROOT>/examples/cipher-modes.py:6: B305[bandit]: MEDIUM: Use of insecure cipher mode cryptography.hazmat.primitives.ciphers.modes.ECB.
+<ROOT>/examples/ciphers.py:1: B413[bandit]: HIGH: The pyCrypto library and its module ARC2 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/ciphers.py:2: B413[bandit]: HIGH: The pyCrypto library and its module ARC4 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/ciphers.py:3: B413[bandit]: HIGH: The pyCrypto library and its module Blowfish are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/ciphers.py:4: B413[bandit]: HIGH: The pyCrypto library and its module DES are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/ciphers.py:5: B413[bandit]: HIGH: The pyCrypto library and its module XOR are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/ciphers.py:11: B413[bandit]: HIGH: The pyCrypto library and its module SHA are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/ciphers.py:12: B413[bandit]: HIGH: The pyCrypto library and its module Random are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/ciphers.py:13: B413[bandit]: HIGH: The pyCrypto library and its module Counter are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/ciphers.py:22: B304[bandit]: HIGH: Use of insecure cipher Crypto.Cipher.ARC2.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:24: B304[bandit]: HIGH: Use of insecure cipher Cryptodome.Cipher.ARC2.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:29: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/ciphers.py:30: B304[bandit]: HIGH: Use of insecure cipher Crypto.Cipher.ARC4.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:32: B304[bandit]: HIGH: Use of insecure cipher Cryptodome.Cipher.ARC4.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:42: B304[bandit]: HIGH: Use of insecure cipher Crypto.Cipher.Blowfish.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:45: B304[bandit]: HIGH: Use of insecure cipher Cryptodome.Cipher.Blowfish.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:52: B304[bandit]: HIGH: Use of insecure cipher Crypto.Cipher.DES.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:56: B304[bandit]: HIGH: Use of insecure cipher Cryptodome.Cipher.DES.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:61: B304[bandit]: HIGH: Use of insecure cipher Crypto.Cipher.XOR.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:63: B304[bandit]: HIGH: Use of insecure cipher Cryptodome.Cipher.XOR.new. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:66: B304[bandit]: HIGH: Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.ARC4. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:70: B304[bandit]: HIGH: Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.Blowfish. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:74: B304[bandit]: HIGH: Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.CAST5. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:78: B304[bandit]: HIGH: Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.IDEA. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:82: B304[bandit]: HIGH: Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.SEED. Replace with a known secure cipher such as AES.
+<ROOT>/examples/ciphers.py:86: B304[bandit]: HIGH: Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.TripleDES. Replace with a known secure cipher such as AES.
+<ROOT>/examples/crypto-md5.py:2: B413[bandit]: HIGH: The pyCrypto library and its module MD2 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/crypto-md5.py:3: B413[bandit]: HIGH: The pyCrypto library and its module MD4 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/crypto-md5.py:4: B413[bandit]: HIGH: The pyCrypto library and its module MD5 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/crypto-md5.py:5: B413[bandit]: HIGH: The pyCrypto library and its module SHA are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/crypto-md5.py:13: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/crypto-md5.py:14: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/crypto-md5.py:16: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/crypto-md5.py:18: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/crypto-md5.py:20: B324[bandit]: HIGH: Use of weak SHA1 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/crypto-md5.py:24: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:25: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:26: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:27: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:29: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:30: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:31: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:32: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:34: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:35: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<ROOT>/examples/crypto-md5.py:37: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_CRYPT hash function.
+<ROOT>/examples/crypto-md5.py:38: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_MD5 hash function.
+<ROOT>/examples/crypto-md5.py:39: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_BLOWFISH hash function.
+<ROOT>/examples/crypto-md5.py:44: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_CRYPT hash function.
+<ROOT>/examples/crypto-md5.py:45: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_MD5 hash function.
+<ROOT>/examples/crypto-md5.py:46: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_BLOWFISH hash function.
+<ROOT>/examples/dill.py:1: B403[bandit]: LOW: Consider possible security implications associated with dill module.
+<ROOT>/examples/dill.py:6: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/dill.py:11: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/dill.py:14: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/django_sql_injection_extra.py:12: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:13: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:15: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:16: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:17: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:20: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:22: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:23: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:24: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:27: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_extra.py:29: B610[bandit]: MEDIUM: Use of extra potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_raw.py:5: B611[bandit]: MEDIUM: Use of RawSQL potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_raw.py:6: B611[bandit]: MEDIUM: Use of RawSQL potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_raw.py:8: B611[bandit]: MEDIUM: Use of RawSQL potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_raw.py:11: B611[bandit]: MEDIUM: Use of RawSQL potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_raw.py:12: B611[bandit]: MEDIUM: Use of RawSQL potential SQL attack vector.
+<ROOT>/examples/django_sql_injection_raw.py:13: B611[bandit]: MEDIUM: Use of RawSQL potential SQL attack vector.
+<ROOT>/examples/eval.py:3: B307[bandit]: MEDIUM: Use of possibly insecure function - consider using safer ast.literal_eval.
+<ROOT>/examples/eval.py:4: B307[bandit]: MEDIUM: Use of possibly insecure function - consider using safer ast.literal_eval.
+<ROOT>/examples/eval.py:5: B307[bandit]: MEDIUM: Use of possibly insecure function - consider using safer ast.literal_eval.
+<ROOT>/examples/exec.py:1: B102[bandit]: MEDIUM: Use of exec detected.
+<ROOT>/examples/flask_debug.py:10: B201[bandit]: HIGH: A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+<ROOT>/examples/ftplib.py:1: B402[bandit]: HIGH: A FTP-related module is being imported.  FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.
+<ROOT>/examples/ftplib.py:2: B402[bandit]: HIGH: A FTP-related module is being imported.  FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.
+<ROOT>/examples/ftplib.py:6: B321[bandit]: HIGH: FTP-related functions are being called. FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.
+<ROOT>/examples/hardcoded-passwords.py:4: B105[bandit]: LOW: Possible hardcoded password: 'class_password'
+<ROOT>/examples/hardcoded-passwords.py:8: B107[bandit]: LOW: Possible hardcoded password: 'Admin'
+<ROOT>/examples/hardcoded-passwords.py:14: B105[bandit]: LOW: Possible hardcoded password: 'root'
+<ROOT>/examples/hardcoded-passwords.py:20: B105[bandit]: LOW: Possible hardcoded password: ''
+<ROOT>/examples/hardcoded-passwords.py:26: B105[bandit]: LOW: Possible hardcoded password: 'ajklawejrkl42348swfgkg'
+<ROOT>/examples/hardcoded-passwords.py:33: B105[bandit]: LOW: Possible hardcoded password: 'this cool password'
+<ROOT>/examples/hardcoded-passwords.py:38: B107[bandit]: LOW: Possible hardcoded password: 'blerg'
+<ROOT>/examples/hardcoded-passwords.py:46: B106[bandit]: LOW: Possible hardcoded password: 'blerg'
+<ROOT>/examples/hardcoded-passwords.py:50: B105[bandit]: LOW: Possible hardcoded password: 'blerg'
+<ROOT>/examples/hardcoded-passwords.py:54: B105[bandit]: LOW: Possible hardcoded password: 'blerg'
+<ROOT>/examples/hardcoded-passwords.py:58: B105[bandit]: LOW: Possible hardcoded password: 'secret'
+<ROOT>/examples/hardcoded-passwords.py:62: B105[bandit]: LOW: Possible hardcoded password: 'emails_secret'
+<ROOT>/examples/hardcoded-passwords.py:66: B105[bandit]: LOW: Possible hardcoded password: 'd6s$f9g!j8mg7hw?n&2'
+<ROOT>/examples/hardcoded-passwords.py:70: B105[bandit]: LOW: Possible hardcoded password: '1234'
+<ROOT>/examples/hardcoded-passwords.py:94: B105[bandit]: LOW: Possible hardcoded password: 'pass'
+<ROOT>/examples/hardcoded-passwords.py:102: B105[bandit]: LOW: Possible hardcoded password: '12345'
+<ROOT>/examples/hardcoded-tmp.py:1: B108[bandit]: MEDIUM: Probable insecure usage of temp file/directory.
+<ROOT>/examples/hardcoded-tmp.py:8: B108[bandit]: MEDIUM: Probable insecure usage of temp file/directory.
+<ROOT>/examples/hardcoded-tmp.py:11: B108[bandit]: MEDIUM: Probable insecure usage of temp file/directory.
+<ROOT>/examples/hashlib_new_insecure_functions.py:3: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/hashlib_new_insecure_functions.py:5: B324[bandit]: HIGH: Use of weak MD4 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/hashlib_new_insecure_functions.py:7: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/hashlib_new_insecure_functions.py:9: B324[bandit]: HIGH: Use of weak MD4 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/hashlib_new_insecure_functions.py:11: B324[bandit]: HIGH: Use of weak SHA1 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/hashlib_new_insecure_functions.py:13: B324[bandit]: HIGH: Use of weak SHA1 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/hashlib_new_insecure_functions.py:15: B324[bandit]: HIGH: Use of weak SHA hash for security. Consider usedforsecurity=False
+<ROOT>/examples/hashlib_new_insecure_functions.py:17: B324[bandit]: HIGH: Use of weak SHA hash for security. Consider usedforsecurity=False
+<ROOT>/examples/hashlib_new_insecure_functions.py:19: B324[bandit]: HIGH: Use of weak SHA1 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/httpoxy_cgihandler.py:10: B412[bandit]: HIGH: Consider possible security implications associated with wsgiref.handlers.CGIHandler module.
+<ROOT>/examples/httpoxy_twisted_directory.py:5: B412[bandit]: HIGH: Consider possible security implications associated with twisted.web.twcgi.CGIDirectory module.
+<ROOT>/examples/httpoxy_twisted_script.py:5: B412[bandit]: HIGH: Consider possible security implications associated with twisted.web.twcgi.CGIScript module.
+<ROOT>/examples/huggingface_unsafe_download.py:10: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in from_pretrained()
+<ROOT>/examples/huggingface_unsafe_download.py:13: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in from_pretrained()
+<ROOT>/examples/huggingface_unsafe_download.py:19: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in from_pretrained()
+<ROOT>/examples/huggingface_unsafe_download.py:28: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in from_pretrained()
+<ROOT>/examples/huggingface_unsafe_download.py:31: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in from_pretrained()
+<ROOT>/examples/huggingface_unsafe_download.py:37: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in from_pretrained()
+<ROOT>/examples/huggingface_unsafe_download.py:46: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in load_dataset()
+<ROOT>/examples/huggingface_unsafe_download.py:49: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in load_dataset()
+<ROOT>/examples/huggingface_unsafe_download.py:52: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in load_dataset()
+<ROOT>/examples/huggingface_unsafe_download.py:58: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in hf_hub_download()
+<ROOT>/examples/huggingface_unsafe_download.py:64: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in hf_hub_download()
+<ROOT>/examples/huggingface_unsafe_download.py:71: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in hf_hub_download()
+<ROOT>/examples/huggingface_unsafe_download.py:81: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in snapshot_download()
+<ROOT>/examples/huggingface_unsafe_download.py:84: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in snapshot_download()
+<ROOT>/examples/huggingface_unsafe_download.py:90: B615[bandit]: MEDIUM: Unsafe Hugging Face Hub download without revision pinning in snapshot_download()
+<ROOT>/examples/imports-aliases.py:1: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/imports-aliases.py:6: B403[bandit]: LOW: Consider possible security implications associated with loads module.
+<ROOT>/examples/imports-aliases.py:7: B403[bandit]: LOW: Consider possible security implications associated with pickle module.
+<ROOT>/examples/imports-aliases.py:9: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/imports-aliases.py:11: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/imports-aliases.py:12: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/imports-aliases.py:13: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/imports-aliases.py:14: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<ROOT>/examples/imports-aliases.py:15: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/imports-from.py:1: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/imports-from.py:6: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/imports-from.py:7: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/imports-function.py:2: B403[bandit]: LOW: Consider possible security implications associated with pickle module.
+<ROOT>/examples/imports-function.py:4: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/imports-with-importlib.py:3: B403[bandit]: LOW: Consider possible security implications associated with pickle module.
+<ROOT>/examples/imports-with-importlib.py:5: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/imports-with-importlib.py:13: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/imports-with-importlib.py:14: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/imports.py:2: B403[bandit]: LOW: Consider possible security implications associated with pickle module.
+<ROOT>/examples/imports.py:4: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/jinja2_templating.py:9: B701[bandit]: HIGH: Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Ensure autoescape=True or use the select_autoescape function to mitigate XSS vulnerabilities.
+<ROOT>/examples/jinja2_templating.py:10: B701[bandit]: HIGH: Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Use autoescape=True or use the select_autoescape function to mitigate XSS vulnerabilities.
+<ROOT>/examples/jinja2_templating.py:11: B701[bandit]: HIGH: Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Use autoescape=True or use the select_autoescape function to mitigate XSS vulnerabilities.
+<ROOT>/examples/jinja2_templating.py:15: B701[bandit]: HIGH: By default, jinja2 sets autoescape to False. Consider using autoescape=True or use the select_autoescape function to mitigate XSS vulnerabilities.
+<ROOT>/examples/jinja2_templating.py:29: B701[bandit]: HIGH: Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Ensure autoescape=True or use the select_autoescape function to mitigate XSS vulnerabilities.
+<ROOT>/examples/jsonpickle.py:6: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/jsonpickle.py:8: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/jsonpickle.py:10: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/logging_config_insecure_listen.py:3: B612[bandit]: MEDIUM: Use of insecure logging.config.listen detected.
+<ROOT>/examples/mako_templating.py:6: B702[bandit]: MEDIUM: Mako templates allow HTML/JS rendering by default and are inherently open to XSS attacks. Ensure variables in all templates are properly sanitized via the 'n', 'h' or 'x' flags (depending on context). For example, to HTML escape the variable 'data' do ${ data |h }.
+<ROOT>/examples/mako_templating.py:10: B702[bandit]: MEDIUM: Mako templates allow HTML/JS rendering by default and are inherently open to XSS attacks. Ensure variables in all templates are properly sanitized via the 'n', 'h' or 'x' flags (depending on context). For example, to HTML escape the variable 'data' do ${ data |h }.
+<ROOT>/examples/mako_templating.py:11: B702[bandit]: MEDIUM: Mako templates allow HTML/JS rendering by default and are inherently open to XSS attacks. Ensure variables in all templates are properly sanitized via the 'n', 'h' or 'x' flags (depending on context). For example, to HTML escape the variable 'data' do ${ data |h }.
+<ROOT>/examples/mark_safe.py:4: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:10: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:10: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:11: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:12: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:13: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:14: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:22: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:22: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:30: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:30: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:41: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:41: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:54: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:54: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:59: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:59: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:64: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:64: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:69: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:69: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:74: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:74: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:79: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:79: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:84: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:84: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:89: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:89: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:94: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:94: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:99: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:99: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:104: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:104: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:109: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:109: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:114: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:114: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:119: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:119: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:126: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:126: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:133: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:133: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:143: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:143: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:149: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:149: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:153: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:153: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:159: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:159: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_insecure.py:167: B703[bandit]: MEDIUM: Potential XSS on mark_safe function.
+<ROOT>/examples/mark_safe_insecure.py:167: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:4: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:11: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:14: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:17: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:29: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:33: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:35: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:36: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:37: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:41: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:45: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:47: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:48: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:54: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:62: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:65: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/mark_safe_secure.py:75: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<ROOT>/examples/markupsafe_markup_xss.py:5: B704[bandit]: MEDIUM: Potential XSS with ``markupsafe.Markup`` detected. Do not use ``Markup`` on untrusted data.
+<ROOT>/examples/markupsafe_markup_xss.py:6: B704[bandit]: MEDIUM: Potential XSS with ``flask.Markup`` detected. Do not use ``Markup`` on untrusted data.
+<ROOT>/examples/markupsafe_markup_xss.py:10: B704[bandit]: MEDIUM: Potential XSS with ``markupsafe.Markup`` detected. Do not use ``Markup`` on untrusted data.
+<ROOT>/examples/markupsafe_markup_xss.py:11: B704[bandit]: MEDIUM: Potential XSS with ``flask.Markup`` detected. Do not use ``Markup`` on untrusted data.
+<ROOT>/examples/markupsafe_markup_xss_allowed_calls.py:5: B704[bandit]: MEDIUM: Potential XSS with ``markupsafe.Markup`` detected. Do not use ``Markup`` on untrusted data.
+<ROOT>/examples/markupsafe_markup_xss_allowed_calls.py:9: B704[bandit]: MEDIUM: Potential XSS with ``markupsafe.Markup`` detected. Do not use ``Markup`` on untrusted data.
+<ROOT>/examples/markupsafe_markup_xss_extend_markup_names.py:5: B704[bandit]: MEDIUM: Potential XSS with ``markupsafe.Markup`` detected. Do not use ``Markup`` on untrusted data.
+<ROOT>/examples/marshal_deserialize.py:6: B302[bandit]: MEDIUM: Deserialization with the marshal module is possibly dangerous.
+<ROOT>/examples/marshal_deserialize.py:11: B302[bandit]: MEDIUM: Deserialization with the marshal module is possibly dangerous.
+<ROOT>/examples/mktemp.py:7: B306[bandit]: MEDIUM: Use of insecure and deprecated function (mktemp).
+<ROOT>/examples/mktemp.py:8: B306[bandit]: MEDIUM: Use of insecure and deprecated function (mktemp).
+<ROOT>/examples/mktemp.py:9: B306[bandit]: MEDIUM: Use of insecure and deprecated function (mktemp).
+<ROOT>/examples/mktemp.py:10: B306[bandit]: MEDIUM: Use of insecure and deprecated function (mktemp).
+<ROOT>/examples/multiline_statement.py:1: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/multiline_statement.py:5: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/multiline_statement.py:11: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/new_candidates-all.py:7: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/new_candidates-all.py:15: B506[bandit]: MEDIUM: Use of unsafe yaml load. Allows instantiation of arbitrary objects. Consider yaml.safe_load().
+<ROOT>/examples/new_candidates-all.py:22: B317[bandit]: MEDIUM: Using xml.sax.make_parser to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.make_parser with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/new_candidates-some.py:7: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/no_host_key_verification.py:6: B507[bandit]: HIGH: Paramiko call with policy set to automatically trust the unknown host key.
+<ROOT>/examples/no_host_key_verification.py:7: B507[bandit]: HIGH: Paramiko call with policy set to automatically trust the unknown host key.
+<ROOT>/examples/no_host_key_verification.py:8: B507[bandit]: HIGH: Paramiko call with policy set to automatically trust the unknown host key.
+<ROOT>/examples/no_host_key_verification.py:9: B507[bandit]: HIGH: Paramiko call with policy set to automatically trust the unknown host key.
+<ROOT>/examples/no_host_key_verification.py:11: B507[bandit]: HIGH: Paramiko call with policy set to automatically trust the unknown host key.
+<ROOT>/examples/no_host_key_verification.py:12: B507[bandit]: HIGH: Paramiko call with policy set to automatically trust the unknown host key.
+<ROOT>/examples/no_host_key_verification.py:13: B507[bandit]: HIGH: Paramiko call with policy set to automatically trust the unknown host key.
+<ROOT>/examples/no_host_key_verification.py:14: B507[bandit]: HIGH: Paramiko call with policy set to automatically trust the unknown host key.
+<ROOT>/examples/nosec.py:9: B607[bandit]: LOW: Starting a process with a partial executable path
+<ROOT>/examples/nosec.py:9: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/nosec.py:11: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/nosec.py:17: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/nosec.py:18: B607[bandit]: LOW: Starting a process with a partial executable path
+<ROOT>/examples/os-chmod.py:6: B103[bandit]: HIGH: Chmod setting a permissive mask 0o227 on file (/etc/passwd).
+<ROOT>/examples/os-chmod.py:7: B103[bandit]: HIGH: Chmod setting a permissive mask 0o7 on file (/etc/passwd).
+<ROOT>/examples/os-chmod.py:8: B103[bandit]: MEDIUM: Chmod setting a permissive mask 0o664 on file (/etc/passwd).
+<ROOT>/examples/os-chmod.py:9: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (/etc/passwd).
+<ROOT>/examples/os-chmod.py:10: B103[bandit]: MEDIUM: Chmod setting a permissive mask 0o770 on file (/etc/passwd).
+<ROOT>/examples/os-chmod.py:11: B103[bandit]: HIGH: Chmod setting a permissive mask 0o776 on file (/etc/passwd).
+<ROOT>/examples/os-chmod.py:12: B103[bandit]: MEDIUM: Chmod setting a permissive mask 0o760 on file (/etc/passwd).
+<ROOT>/examples/os-chmod.py:13: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (~/.bashrc).
+<ROOT>/examples/os-chmod.py:14: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (/etc/hosts).
+<ROOT>/examples/os-chmod.py:15: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (/tmp/oh_hai).
+<ROOT>/examples/os-chmod.py:15: B108[bandit]: MEDIUM: Probable insecure usage of temp file/directory.
+<ROOT>/examples/os-chmod.py:17: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (keyfile).
+<ROOT>/examples/os-exec.py:3: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-exec.py:4: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-exec.py:5: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-exec.py:6: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-exec.py:7: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-exec.py:8: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-exec.py:9: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-exec.py:10: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-popen.py:6: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/os-popen.py:7: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/os-popen.py:8: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/os-popen.py:9: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/os-popen.py:10: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/os-popen.py:11: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/os-popen.py:12: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/os-popen.py:14: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/os-popen.py:15: B605[bandit]: HIGH: Starting a process with a shell, possible injection detected, security issue.
+<ROOT>/examples/os-spawn.py:3: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-spawn.py:4: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-spawn.py:5: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-spawn.py:6: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-spawn.py:7: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-spawn.py:8: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-spawn.py:9: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-spawn.py:10: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-startfile.py:3: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-startfile.py:4: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os-startfile.py:5: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/os_system.py:3: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/pandas_read_pickle.py:1: B403[bandit]: LOW: Consider possible security implications associated with pickle module.
+<ROOT>/examples/pandas_read_pickle.py:12: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/paramiko_injection.py:7: B601[bandit]: MEDIUM: Possible shell injection via Paramiko call, check inputs are properly sanitized.
+<ROOT>/examples/partial_path_process.py:1: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/partial_path_process.py:3: B607[bandit]: LOW: Starting a process with a partial executable path
+<ROOT>/examples/partial_path_process.py:3: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/partial_path_process.py:4: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/partial_path_process.py:5: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/partial_path_process.py:7: B607[bandit]: LOW: Starting a process with a partial executable path
+<ROOT>/examples/partial_path_process.py:7: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/partial_path_process.py:8: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/partial_path_process.py:10: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/partial_path_process.py:12: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/partial_path_process.py:13: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/pickle_deserialize.py:2: B403[bandit]: LOW: Consider possible security implications associated with pickle module.
+<ROOT>/examples/pickle_deserialize.py:7: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/pickle_deserialize.py:12: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/pickle_deserialize.py:15: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/popen_wrappers.py:5: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/popen_wrappers.py:6: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/popen_wrappers.py:11: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/popen_wrappers.py:12: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/popen_wrappers.py:13: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/popen_wrappers.py:14: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/popen_wrappers.py:15: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/pycrypto.py:1: B413[bandit]: HIGH: The pyCrypto library and its module AES are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/pycrypto.py:2: B413[bandit]: HIGH: The pyCrypto library and its module Random are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/pyghmi.py:1: B415[bandit]: HIGH: An IPMI-related module is being imported. IPMI is considered insecure. Use an encrypted protocol.
+<ROOT>/examples/pyghmi.py:5: B106[bandit]: LOW: Possible hardcoded password: 'ZjE4ZjI0NTE4YmI2NGJjZDliOGY3ZmJiY2UyN2IzODQK'
+<ROOT>/examples/pytorch_load.py:10: B614[bandit]: MEDIUM: Use of unsafe PyTorch load
+<ROOT>/examples/pytorch_load.py:18: B614[bandit]: MEDIUM: Use of unsafe PyTorch load
+<ROOT>/examples/pytorch_load.py:22: B614[bandit]: MEDIUM: Use of unsafe PyTorch load
+<ROOT>/examples/random_module.py:5: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:6: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:7: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:8: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:9: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:10: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:11: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:12: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:13: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:14: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:15: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/random_module.py:16: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+<ROOT>/examples/requests-missing-timeout.py:6: B113[bandit]: MEDIUM: Call to requests without timeout
+<ROOT>/examples/requests-missing-timeout.py:7: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:8: B113[bandit]: MEDIUM: Call to requests without timeout
+<ROOT>/examples/requests-missing-timeout.py:9: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:10: B113[bandit]: MEDIUM: Call to requests without timeout
+<ROOT>/examples/requests-missing-timeout.py:11: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:12: B113[bandit]: MEDIUM: Call to requests without timeout
+<ROOT>/examples/requests-missing-timeout.py:13: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:14: B113[bandit]: MEDIUM: Call to requests without timeout
+<ROOT>/examples/requests-missing-timeout.py:15: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:16: B113[bandit]: MEDIUM: Call to requests without timeout
+<ROOT>/examples/requests-missing-timeout.py:17: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:18: B113[bandit]: MEDIUM: Call to requests without timeout
+<ROOT>/examples/requests-missing-timeout.py:19: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:21: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:23: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:25: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:27: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:29: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:31: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:33: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:35: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:37: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:40: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-missing-timeout.py:44: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<ROOT>/examples/requests-ssl-verify-disabled.py:6: B501[bandit]: HIGH: Call to requests with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:8: B501[bandit]: HIGH: Call to requests with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:10: B501[bandit]: HIGH: Call to requests with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:12: B501[bandit]: HIGH: Call to requests with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:14: B501[bandit]: HIGH: Call to requests with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:16: B501[bandit]: HIGH: Call to requests with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:18: B501[bandit]: HIGH: Call to requests with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:22: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:24: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:26: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:28: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:30: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:32: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:34: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:36: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:38: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:40: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/requests-ssl-verify-disabled.py:42: B501[bandit]: HIGH: Call to httpx with verify=False disabling SSL certificate checks, security issue.
+<ROOT>/examples/shelve_open.py:2: B403[bandit]: LOW: Consider possible security implications associated with shelve module.
+<ROOT>/examples/shelve_open.py:8: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/shelve_open.py:11: B301[bandit]: MEDIUM: Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+<ROOT>/examples/skip.py:1: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/skip.py:2: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/skip.py:3: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/skip.py:5: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/skip.py:7: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/snmp.py:4: B508[bandit]: MEDIUM: The use of SNMPv1 and SNMPv2 is insecure. You should use SNMPv3 if able.
+<ROOT>/examples/snmp.py:6: B509[bandit]: MEDIUM: You should not use SNMPv3 without encryption. noAuthNoPriv & authNoPriv is insecure
+<ROOT>/examples/snmp.py:8: B509[bandit]: MEDIUM: You should not use SNMPv3 without encryption. noAuthNoPriv & authNoPriv is insecure
+<ROOT>/examples/sql_multiline_statements.py:4: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:6: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:8: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:10: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:13: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:16: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:19: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:23: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:30: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:33: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:35: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:37: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:41: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:44: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:49: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:54: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:60: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:64: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:69: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:75: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:81: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:85: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:90: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:95: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:98: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_multiline_statements.py:122: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:4: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:5: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:6: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:7: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:8: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:9: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:12: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:13: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:14: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:17: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:18: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:19: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:20: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:21: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:23: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:24: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:25: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:28: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:29: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:30: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:31: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:32: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/sql_statements.py:47: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<ROOT>/examples/ssl-insecure-version.py:4: B502[bandit]: HIGH: ssl.wrap_socket call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:5: B502[bandit]: HIGH: SSL.Context call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:6: B502[bandit]: HIGH: SSL.Context call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:8: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:9: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:10: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:13: B502[bandit]: HIGH: ssl.wrap_socket call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:14: B502[bandit]: HIGH: ssl.wrap_socket call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:15: B502[bandit]: HIGH: SSL.Context call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:16: B502[bandit]: HIGH: SSL.Context call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:18: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:19: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:20: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:21: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:23: B502[bandit]: HIGH: ssl.wrap_socket call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:24: B502[bandit]: HIGH: SSL.Context call with insecure SSL/TLS protocol version identified, security issue.
+<ROOT>/examples/ssl-insecure-version.py:26: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:27: B502[bandit]: MEDIUM: Function call with insecure SSL/TLS protocol identified, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:30: B504[bandit]: LOW: ssl.wrap_socket call with no SSL/TLS protocol version specified, the default SSLv23 could be insecure, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:32: B503[bandit]: MEDIUM: Function definition identified with insecure SSL/TLS protocol version by default, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:35: B503[bandit]: MEDIUM: Function definition identified with insecure SSL/TLS protocol version by default, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:38: B503[bandit]: MEDIUM: Function definition identified with insecure SSL/TLS protocol version by default, possible security issue.
+<ROOT>/examples/ssl-insecure-version.py:41: B503[bandit]: MEDIUM: Function definition identified with insecure SSL/TLS protocol version by default, possible security issue.
+<ROOT>/examples/subprocess_shell.py:1: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/subprocess_shell.py:2: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/subprocess_shell.py:11: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:12: B604[bandit]: MEDIUM: Function call with shell=True parameter identified, possible security issue.
+<ROOT>/examples/subprocess_shell.py:14: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:15: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:16: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:18: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:21: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:23: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:24: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:26: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:27: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:28: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:30: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:31: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:33: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:34: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:36: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:37: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:38: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:41: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:43: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/subprocess_shell.py:46: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:47: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:48: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:49: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:51: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:52: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:53: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:54: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<ROOT>/examples/subprocess_shell.py:56: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:57: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:58: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:59: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/subprocess_shell.py:60: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/tarfile_extractall.py:8: B202[bandit]: HIGH: tarfile.extractall used without any validation. Please check and discard dangerous members.
+<ROOT>/examples/tarfile_extractall.py:14: B202[bandit]: LOW: Usage of tarfile.extractall(members=function(tarfile)). Make sure your function properly discards dangerous members {'Function': 'members_filter'}).
+<ROOT>/examples/tarfile_extractall.py:26: B202[bandit]: HIGH: tarfile.extractall used without any validation. Please check and discard dangerous members.
+<ROOT>/examples/tarfile_extractall.py:32: B202[bandit]: MEDIUM: Found tarfile.extractall(members=?) but couldn't identify the type of members. Check if the members were properly validated {'Other': <ast.List object at 0x0>}).
+<ROOT>/examples/tarfile_extractall.py:38: B202[bandit]: MEDIUM: Found tarfile.extractall(members=?) but couldn't identify the type of members. Check if the members were properly validated {'Other': 'tar'}).
+<ROOT>/examples/telnetlib.py:1: B401[bandit]: HIGH: A telnet-related module is being imported.  Telnet is considered insecure. Use SSH or some other encrypted protocol.
+<ROOT>/examples/telnetlib.py:8: B312[bandit]: HIGH: Telnet-related functions are being called. Telnet is considered insecure. Use SSH or some other encrypted protocol.
+<ROOT>/examples/trojansource.py:4: B613[bandit]: HIGH: A Python source file contains bidirectional control characters ('\u202e').
+<ROOT>/examples/try_except_continue.py:5: B112[bandit]: LOW: Try, Except, Continue detected.
+<ROOT>/examples/try_except_continue.py:13: B112[bandit]: LOW: Try, Except, Continue detected.
+<ROOT>/examples/try_except_pass.py:4: B110[bandit]: LOW: Try, Except, Pass detected.
+<ROOT>/examples/try_except_pass.py:11: B110[bandit]: LOW: Try, Except, Pass detected.
+<ROOT>/examples/unverified_context.py:7: B323[bandit]: MEDIUM: By default, Python will create a secure, verified ssl context for use in such classes as HTTPSConnection. However, it still allows using an insecure context via the _create_unverified_context that  reverts to the previous behavior that does not validate certificates or perform hostname checks.
+<ROOT>/examples/urlopen.py:17: B310[bandit]: MEDIUM: Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+<ROOT>/examples/urlopen.py:18: B310[bandit]: MEDIUM: Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+<ROOT>/examples/urlopen.py:19: B310[bandit]: MEDIUM: Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+<ROOT>/examples/urlopen.py:22: B310[bandit]: MEDIUM: Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+<ROOT>/examples/urlopen.py:27: B310[bandit]: MEDIUM: Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+<ROOT>/examples/urlopen.py:28: B310[bandit]: MEDIUM: Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+<ROOT>/examples/urlopen.py:29: B310[bandit]: MEDIUM: Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+<ROOT>/examples/urlopen.py:32: B310[bandit]: MEDIUM: Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+<ROOT>/examples/weak_cryptographic_key_sizes.py:5: B413[bandit]: HIGH: The pyCrypto library and its module DSA are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/weak_cryptographic_key_sizes.py:6: B413[bandit]: HIGH: The pyCrypto library and its module RSA are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<ROOT>/examples/weak_cryptographic_key_sizes.py:38: B505[bandit]: MEDIUM: DSA key sizes below 2048 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:40: B505[bandit]: MEDIUM: EC key sizes below 224 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:42: B505[bandit]: MEDIUM: RSA key sizes below 2048 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:45: B505[bandit]: MEDIUM: DSA key sizes below 2048 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:46: B505[bandit]: MEDIUM: RSA key sizes below 2048 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:47: B505[bandit]: MEDIUM: DSA key sizes below 2048 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:48: B505[bandit]: MEDIUM: RSA key sizes below 2048 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:51: B505[bandit]: HIGH: DSA key sizes below 1024 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:53: B505[bandit]: MEDIUM: EC key sizes below 224 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:55: B505[bandit]: HIGH: RSA key sizes below 1024 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:58: B505[bandit]: HIGH: DSA key sizes below 1024 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:59: B505[bandit]: HIGH: RSA key sizes below 1024 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:60: B505[bandit]: HIGH: DSA key sizes below 1024 bits are considered breakable. 
+<ROOT>/examples/weak_cryptographic_key_sizes.py:61: B505[bandit]: HIGH: RSA key sizes below 1024 bits are considered breakable. 
+<ROOT>/examples/wildcard-injection.py:2: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<ROOT>/examples/wildcard-injection.py:5: B609[bandit]: HIGH: Possible wildcard injection in call: os.system
+<ROOT>/examples/wildcard-injection.py:5: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/wildcard-injection.py:6: B609[bandit]: HIGH: Possible wildcard injection in call: os.system
+<ROOT>/examples/wildcard-injection.py:6: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/wildcard-injection.py:7: B609[bandit]: HIGH: Possible wildcard injection in call: os.popen2
+<ROOT>/examples/wildcard-injection.py:7: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/wildcard-injection.py:8: B609[bandit]: HIGH: Possible wildcard injection in call: subprocess.Popen
+<ROOT>/examples/wildcard-injection.py:8: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<ROOT>/examples/wildcard-injection.py:11: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/wildcard-injection.py:12: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/wildcard-injection.py:13: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/wildcard-injection.py:14: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<ROOT>/examples/wildcard-injection.py:16: B606[bandit]: LOW: Starting a process without a shell.
+<ROOT>/examples/xml_etree_celementtree.py:1: B405[bandit]: LOW: Using xml.etree.cElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.cElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_etree_celementtree.py:7: B313[bandit]: MEDIUM: Using xml.etree.cElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.cElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_etree_celementtree.py:9: B313[bandit]: MEDIUM: Using xml.etree.cElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.cElementTree.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_etree_celementtree.py:10: B313[bandit]: MEDIUM: Using xml.etree.cElementTree.iterparse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.cElementTree.iterparse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_etree_celementtree.py:11: B313[bandit]: MEDIUM: Using xml.etree.cElementTree.XMLParser to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.cElementTree.XMLParser with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_etree_elementtree.py:1: B405[bandit]: LOW: Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_etree_elementtree.py:7: B314[bandit]: MEDIUM: Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_etree_elementtree.py:9: B314[bandit]: MEDIUM: Using xml.etree.ElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_etree_elementtree.py:10: B314[bandit]: MEDIUM: Using xml.etree.ElementTree.iterparse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.iterparse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_etree_elementtree.py:11: B314[bandit]: MEDIUM: Using xml.etree.ElementTree.XMLParser to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.XMLParser with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_expatbuilder.py:1: B407[bandit]: LOW: Using xml.dom.expatbuilder to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.expatbuilder with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_expatbuilder.py:4: B316[bandit]: MEDIUM: Using xml.dom.expatbuilder.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.expatbuilder.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_expatbuilder.py:9: B316[bandit]: MEDIUM: Using xml.dom.expatbuilder.parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.expatbuilder.parseString with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_expatreader.py:1: B406[bandit]: LOW: Using xml.sax.expatreader to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.expatreader with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_expatreader.py:4: B315[bandit]: MEDIUM: Using xml.sax.expatreader.create_parser to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.expatreader.create_parser with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_minidom.py:1: B408[bandit]: LOW: Using parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace parseString with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_minidom.py:3: B318[bandit]: MEDIUM: Using xml.dom.minidom.parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.minidom.parseString with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_minidom.py:9: B408[bandit]: LOW: Using parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace parse with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_minidom.py:11: B318[bandit]: MEDIUM: Using xml.dom.minidom.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.minidom.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_pulldom.py:1: B409[bandit]: LOW: Using parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace parseString with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_pulldom.py:3: B319[bandit]: MEDIUM: Using xml.dom.pulldom.parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.pulldom.parseString with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_pulldom.py:9: B409[bandit]: LOW: Using parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace parse with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_pulldom.py:11: B319[bandit]: MEDIUM: Using xml.dom.pulldom.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.pulldom.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_sax.py:1: B406[bandit]: LOW: Using xml.sax to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_sax.py:2: B406[bandit]: LOW: Using sax to parse untrusted XML data is known to be vulnerable to XML attacks. Replace sax with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+<ROOT>/examples/xml_sax.py:21: B317[bandit]: MEDIUM: Using xml.sax.parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.parseString with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_sax.py:22: B317[bandit]: MEDIUM: Using xml.sax.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_sax.py:23: B317[bandit]: MEDIUM: Using xml.sax.parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.parseString with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_sax.py:24: B317[bandit]: MEDIUM: Using xml.sax.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_sax.py:30: B317[bandit]: MEDIUM: Using xml.sax.make_parser to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.make_parser with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_sax.py:31: B317[bandit]: MEDIUM: Using xml.sax.make_parser to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.sax.make_parser with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+<ROOT>/examples/xml_xmlrpc.py:1: B411[bandit]: HIGH: Using xmlrpc to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities.
+<ROOT>/examples/yaml_load.py:9: B506[bandit]: MEDIUM: Use of unsafe yaml load. Allows instantiation of arbitrary objects. Consider yaml.safe_load().
+<ROOT>/examples/yaml_load.py:22: B506[bandit]: MEDIUM: Use of unsafe yaml load. Allows instantiation of arbitrary objects. Consider yaml.safe_load().

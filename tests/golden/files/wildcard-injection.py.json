@@ -1,0 +1,315 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/wildcard-injection.py": {
+      "CONFIDENCE.HIGH": 9,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 5,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 4,
+      "SEVERITY.LOW": 10,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 9,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 5,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 4,
+      "SEVERITY.LOW": 10,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 import os as o\n2 import subprocess as subp\n3 \n",
+      "col_offset": 0,
+      "end_col_offset": 25,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 2,
+      "line_range": [
+        2
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "4 # Vulnerable to wildcard injection\n5 o.system(\"/bin/tar xvzf *\")\n6 o.system('/bin/chown *')\n",
+      "col_offset": 0,
+      "end_col_offset": 27,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 155,
+        "link": "https://cwe.mitre.org/data/definitions/155.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Possible wildcard injection in call: os.system",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b609_linux_commands_wildcard_injection.html",
+      "test_id": "B609",
+      "test_name": "linux_commands_wildcard_injection"
+    },
+    {
+      "code": "4 # Vulnerable to wildcard injection\n5 o.system(\"/bin/tar xvzf *\")\n6 o.system('/bin/chown *')\n",
+      "col_offset": 0,
+      "end_col_offset": 27,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b605_start_process_with_a_shell.html",
+      "test_id": "B605",
+      "test_name": "start_process_with_a_shell"
+    },
+    {
+      "code": "5 o.system(\"/bin/tar xvzf *\")\n6 o.system('/bin/chown *')\n7 o.popen2('/bin/chmod *')\n",
+      "col_offset": 0,
+      "end_col_offset": 24,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 155,
+        "link": "https://cwe.mitre.org/data/definitions/155.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Possible wildcard injection in call: os.system",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b609_linux_commands_wildcard_injection.html",
+      "test_id": "B609",
+      "test_name": "linux_commands_wildcard_injection"
+    },
+    {
+      "code": "5 o.system(\"/bin/tar xvzf *\")\n6 o.system('/bin/chown *')\n7 o.popen2('/bin/chmod *')\n",
+      "col_offset": 0,
+      "end_col_offset": 24,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b605_start_process_with_a_shell.html",
+      "test_id": "B605",
+      "test_name": "start_process_with_a_shell"
+    },
+    {
+      "code": "6 o.system('/bin/chown *')\n7 o.popen2('/bin/chmod *')\n8 subp.Popen('/bin/chown *', shell=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 24,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 155,
+        "link": "https://cwe.mitre.org/data/definitions/155.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Possible wildcard injection in call: os.popen2",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b609_linux_commands_wildcard_injection.html",
+      "test_id": "B609",
+      "test_name": "linux_commands_wildcard_injection"
+    },
+    {
+      "code": "6 o.system('/bin/chown *')\n7 o.popen2('/bin/chmod *')\n8 subp.Popen('/bin/chown *', shell=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 24,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b605_start_process_with_a_shell.html",
+      "test_id": "B605",
+      "test_name": "start_process_with_a_shell"
+    },
+    {
+      "code": "7 o.popen2('/bin/chmod *')\n8 subp.Popen('/bin/chown *', shell=True)\n9 \n",
+      "col_offset": 0,
+      "end_col_offset": 38,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 155,
+        "link": "https://cwe.mitre.org/data/definitions/155.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Possible wildcard injection in call: subprocess.Popen",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b609_linux_commands_wildcard_injection.html",
+      "test_id": "B609",
+      "test_name": "linux_commands_wildcard_injection"
+    },
+    {
+      "code": "7 o.popen2('/bin/chmod *')\n8 subp.Popen('/bin/chown *', shell=True)\n9 \n",
+      "col_offset": 0,
+      "end_col_offset": 38,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+      "test_id": "B602",
+      "test_name": "subprocess_popen_with_shell_equals_true"
+    },
+    {
+      "code": "10 # Not vulnerable to wildcard injection\n11 subp.Popen('/bin/rsync *')\n12 subp.Popen(\"/bin/chmod *\")\n",
+      "col_offset": 0,
+      "end_col_offset": 26,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "11 subp.Popen('/bin/rsync *')\n12 subp.Popen(\"/bin/chmod *\")\n13 subp.Popen(['/bin/chown', '*'])\n",
+      "col_offset": 0,
+      "end_col_offset": 26,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "12 subp.Popen(\"/bin/chmod *\")\n13 subp.Popen(['/bin/chown', '*'])\n14 subp.Popen([\"/bin/chmod\", sys.argv[1], \"*\"],\n",
+      "col_offset": 0,
+      "end_col_offset": 31,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "13 subp.Popen(['/bin/chown', '*'])\n14 subp.Popen([\"/bin/chmod\", sys.argv[1], \"*\"],\n15                  stdin=subprocess.PIPE, stdout=subprocess.PIPE)\n16 o.spawnvp(os.P_WAIT, 'tar', ['tar', 'xvzf', '*'])\n",
+      "col_offset": 0,
+      "end_col_offset": 63,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 14,
+      "line_range": [
+        14,
+        15
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "15                  stdin=subprocess.PIPE, stdout=subprocess.PIPE)\n16 o.spawnvp(os.P_WAIT, 'tar', ['tar', 'xvzf', '*'])\n",
+      "col_offset": 0,
+      "end_col_offset": 49,
+      "filename": "./examples/wildcard-injection.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process without a shell.",
+      "line_number": 16,
+      "line_range": [
+        16
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b606_start_process_with_no_shell.html",
+      "test_id": "B606",
+      "test_name": "start_process_with_no_shell"
+    }
+  ]
+}

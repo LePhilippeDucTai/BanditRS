@@ -1,0 +1,274 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/os-chmod.py": {
+      "CONFIDENCE.HIGH": 11,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 8,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 4,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 17,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 11,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 8,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 4,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 17,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "5 \n6 os.chmod('/etc/passwd', 0o227)\n7 os.chmod('/etc/passwd', 0o7)\n",
+      "col_offset": 0,
+      "end_col_offset": 30,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Chmod setting a permissive mask 0o227 on file (/etc/passwd).",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "6 os.chmod('/etc/passwd', 0o227)\n7 os.chmod('/etc/passwd', 0o7)\n8 os.chmod('/etc/passwd', 0o664)\n",
+      "col_offset": 0,
+      "end_col_offset": 28,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Chmod setting a permissive mask 0o7 on file (/etc/passwd).",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "7 os.chmod('/etc/passwd', 0o7)\n8 os.chmod('/etc/passwd', 0o664)\n9 os.chmod('/etc/passwd', 0o777)\n",
+      "col_offset": 0,
+      "end_col_offset": 30,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Chmod setting a permissive mask 0o664 on file (/etc/passwd).",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "8 os.chmod('/etc/passwd', 0o664)\n9 os.chmod('/etc/passwd', 0o777)\n10 os.chmod('/etc/passwd', 0o770)\n",
+      "col_offset": 0,
+      "end_col_offset": 30,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Chmod setting a permissive mask 0o777 on file (/etc/passwd).",
+      "line_number": 9,
+      "line_range": [
+        9
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "9 os.chmod('/etc/passwd', 0o777)\n10 os.chmod('/etc/passwd', 0o770)\n11 os.chmod('/etc/passwd', 0o776)\n",
+      "col_offset": 0,
+      "end_col_offset": 30,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Chmod setting a permissive mask 0o770 on file (/etc/passwd).",
+      "line_number": 10,
+      "line_range": [
+        10
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "10 os.chmod('/etc/passwd', 0o770)\n11 os.chmod('/etc/passwd', 0o776)\n12 os.chmod('/etc/passwd', 0o760)\n",
+      "col_offset": 0,
+      "end_col_offset": 30,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Chmod setting a permissive mask 0o776 on file (/etc/passwd).",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "11 os.chmod('/etc/passwd', 0o776)\n12 os.chmod('/etc/passwd', 0o760)\n13 os.chmod('~/.bashrc', 511)\n",
+      "col_offset": 0,
+      "end_col_offset": 30,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Chmod setting a permissive mask 0o760 on file (/etc/passwd).",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "12 os.chmod('/etc/passwd', 0o760)\n13 os.chmod('~/.bashrc', 511)\n14 os.chmod('/etc/hosts', 0o777)\n",
+      "col_offset": 0,
+      "end_col_offset": 26,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Chmod setting a permissive mask 0o777 on file (~/.bashrc).",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "13 os.chmod('~/.bashrc', 511)\n14 os.chmod('/etc/hosts', 0o777)\n15 os.chmod('/tmp/oh_hai', 0x0)\n",
+      "col_offset": 0,
+      "end_col_offset": 29,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Chmod setting a permissive mask 0o777 on file (/etc/hosts).",
+      "line_number": 14,
+      "line_range": [
+        14
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "14 os.chmod('/etc/hosts', 0o777)\n15 os.chmod('/tmp/oh_hai', 0x0)\n16 os.chmod('/etc/passwd', stat.S_IRWXU)\n",
+      "col_offset": 0,
+      "end_col_offset": 30,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Chmod setting a permissive mask 0o777 on file (/tmp/oh_hai).",
+      "line_number": 15,
+      "line_range": [
+        15
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    },
+    {
+      "code": "14 os.chmod('/etc/hosts', 0o777)\n15 os.chmod('/tmp/oh_hai', 0x0)\n16 os.chmod('/etc/passwd', stat.S_IRWXU)\n",
+      "col_offset": 9,
+      "end_col_offset": 22,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 15,
+      "line_range": [
+        15
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "16 os.chmod('/etc/passwd', stat.S_IRWXU)\n17 os.chmod(keyfile, 0o777)\n18 os.chmod('~/hidden_exec', stat.S_IXGRP)\n",
+      "col_offset": 0,
+      "end_col_offset": 24,
+      "filename": "./examples/os-chmod.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 732,
+        "link": "https://cwe.mitre.org/data/definitions/732.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Chmod setting a permissive mask 0o777 on file (keyfile).",
+      "line_number": 17,
+      "line_range": [
+        17
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html",
+      "test_id": "B103",
+      "test_name": "set_bad_file_permissions"
+    }
+  ]
+}

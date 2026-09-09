@@ -1,0 +1,134 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/tarfile_extractall.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 1,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 2,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 45,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 1,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 2,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 45,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "7     tar = tarfile.open(filename)\n8     tar.extractall(path=tempfile.mkdtemp())\n9     tar.close()\n",
+      "col_offset": 4,
+      "end_col_offset": 43,
+      "filename": "./examples/tarfile_extractall.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "tarfile.extractall used without any validation. Please check and discard dangerous members.",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b202_tarfile_unsafe_members.html",
+      "test_id": "B202",
+      "test_name": "tarfile_unsafe_members"
+    },
+    {
+      "code": "13     tar = tarfile.open(filename)\n14     tar.extractall(path=tempfile.mkdtemp(), members=members_filter(tar))\n15     tar.close()\n",
+      "col_offset": 4,
+      "end_col_offset": 72,
+      "filename": "./examples/tarfile_extractall.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Usage of tarfile.extractall(members=function(tarfile)). Make sure your function properly discards dangerous members {'Function': 'members_filter'}).",
+      "line_number": 14,
+      "line_range": [
+        14
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b202_tarfile_unsafe_members.html",
+      "test_id": "B202",
+      "test_name": "tarfile_unsafe_members"
+    },
+    {
+      "code": "25     tar = tarfile.open(filename)\n26     tar.extractall(path=tempfile.mkdtemp(), filter=\"fully_trusted\")\n27     tar.close()\n",
+      "col_offset": 4,
+      "end_col_offset": 67,
+      "filename": "./examples/tarfile_extractall.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "tarfile.extractall used without any validation. Please check and discard dangerous members.",
+      "line_number": 26,
+      "line_range": [
+        26
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b202_tarfile_unsafe_members.html",
+      "test_id": "B202",
+      "test_name": "tarfile_unsafe_members"
+    },
+    {
+      "code": "31     tar = tarfile.open(filename)\n32     tar.extractall(path=tempfile.mkdtemp(), members=[])\n33     tar.close()\n",
+      "col_offset": 4,
+      "end_col_offset": 55,
+      "filename": "./examples/tarfile_extractall.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Found tarfile.extractall(members=?) but couldn't identify the type of members. Check if the members were properly validated {'Other': <ast.List object at 0x0>}).",
+      "line_number": 32,
+      "line_range": [
+        32
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b202_tarfile_unsafe_members.html",
+      "test_id": "B202",
+      "test_name": "tarfile_unsafe_members"
+    },
+    {
+      "code": "37     tar = tarfile.open(filename)\n38     tarfile.extractall(path=tempfile.mkdtemp(), members=tar)\n39     tar.close()\n",
+      "col_offset": 4,
+      "end_col_offset": 60,
+      "filename": "./examples/tarfile_extractall.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Found tarfile.extractall(members=?) but couldn't identify the type of members. Check if the members were properly validated {'Other': 'tar'}).",
+      "line_number": 38,
+      "line_range": [
+        38
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b202_tarfile_unsafe_members.html",
+      "test_id": "B202",
+      "test_name": "tarfile_unsafe_members"
+    }
+  ]
+}

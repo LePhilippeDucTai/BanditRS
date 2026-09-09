@@ -1,0 +1,394 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/requests-ssl-verify-disabled.py": {
+      "CONFIDENCE.HIGH": 18,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 18,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 38,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 18,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 18,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 38,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "5 requests.get('https://gmail.com', timeout=30, verify=True)\n6 requests.get('https://gmail.com', timeout=30, verify=False)\n7 requests.post('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 59,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to requests with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "7 requests.post('https://gmail.com', timeout=30, verify=True)\n8 requests.post('https://gmail.com', timeout=30, verify=False)\n9 requests.put('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 60,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to requests with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "9 requests.put('https://gmail.com', timeout=30, verify=True)\n10 requests.put('https://gmail.com', timeout=30, verify=False)\n11 requests.delete('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 59,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to requests with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 10,
+      "line_range": [
+        10
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "11 requests.delete('https://gmail.com', timeout=30, verify=True)\n12 requests.delete('https://gmail.com', timeout=30, verify=False)\n13 requests.patch('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 62,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to requests with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "13 requests.patch('https://gmail.com', timeout=30, verify=True)\n14 requests.patch('https://gmail.com', timeout=30, verify=False)\n15 requests.options('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 61,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to requests with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 14,
+      "line_range": [
+        14
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "15 requests.options('https://gmail.com', timeout=30, verify=True)\n16 requests.options('https://gmail.com', timeout=30, verify=False)\n17 requests.head('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 63,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to requests with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 16,
+      "line_range": [
+        16
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "17 requests.head('https://gmail.com', timeout=30, verify=True)\n18 requests.head('https://gmail.com', timeout=30, verify=False)\n19 \n",
+      "col_offset": 0,
+      "end_col_offset": 60,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to requests with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 18,
+      "line_range": [
+        18
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "21 httpx.request('GET', 'https://gmail.com', timeout=30, verify=True)\n22 httpx.request('GET', 'https://gmail.com', timeout=30, verify=False)\n23 httpx.get('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 67,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 22,
+      "line_range": [
+        22
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "23 httpx.get('https://gmail.com', timeout=30, verify=True)\n24 httpx.get('https://gmail.com', timeout=30, verify=False)\n25 httpx.options('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 56,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 24,
+      "line_range": [
+        24
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "25 httpx.options('https://gmail.com', timeout=30, verify=True)\n26 httpx.options('https://gmail.com', timeout=30, verify=False)\n27 httpx.head('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 60,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 26,
+      "line_range": [
+        26
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "27 httpx.head('https://gmail.com', timeout=30, verify=True)\n28 httpx.head('https://gmail.com', timeout=30, verify=False)\n29 httpx.post('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 57,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 28,
+      "line_range": [
+        28
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "29 httpx.post('https://gmail.com', timeout=30, verify=True)\n30 httpx.post('https://gmail.com', timeout=30, verify=False)\n31 httpx.put('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 57,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 30,
+      "line_range": [
+        30
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "31 httpx.put('https://gmail.com', timeout=30, verify=True)\n32 httpx.put('https://gmail.com', timeout=30, verify=False)\n33 httpx.patch('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 56,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 32,
+      "line_range": [
+        32
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "33 httpx.patch('https://gmail.com', timeout=30, verify=True)\n34 httpx.patch('https://gmail.com', timeout=30, verify=False)\n35 httpx.delete('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 58,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 34,
+      "line_range": [
+        34
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "35 httpx.delete('https://gmail.com', timeout=30, verify=True)\n36 httpx.delete('https://gmail.com', timeout=30, verify=False)\n37 httpx.stream('https://gmail.com', timeout=30, verify=True)\n",
+      "col_offset": 0,
+      "end_col_offset": 59,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 36,
+      "line_range": [
+        36
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "37 httpx.stream('https://gmail.com', timeout=30, verify=True)\n38 httpx.stream('https://gmail.com', timeout=30, verify=False)\n39 httpx.Client(timeout=30)\n",
+      "col_offset": 0,
+      "end_col_offset": 59,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 38,
+      "line_range": [
+        38
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "39 httpx.Client(timeout=30)\n40 httpx.Client(timeout=30, verify=False)\n41 httpx.AsyncClient(timeout=30)\n",
+      "col_offset": 0,
+      "end_col_offset": 38,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 40,
+      "line_range": [
+        40
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    },
+    {
+      "code": "41 httpx.AsyncClient(timeout=30)\n42 httpx.AsyncClient(timeout=30, verify=False)\n",
+      "col_offset": 0,
+      "end_col_offset": 43,
+      "filename": "./examples/requests-ssl-verify-disabled.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 295,
+        "link": "https://cwe.mitre.org/data/definitions/295.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Call to httpx with verify=False disabling SSL certificate checks, security issue.",
+      "line_number": 42,
+      "line_range": [
+        42
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b501_request_with_no_cert_validation.html",
+      "test_id": "B501",
+      "test_name": "request_with_no_cert_validation"
+    }
+  ]
+}
