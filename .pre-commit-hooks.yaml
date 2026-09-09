@@ -7,7 +7,8 @@
 #
 # `language: python` makes pre-commit build the wheel from this repository in
 # its own isolated environment, which requires a Rust toolchain (rustc >= 1.96)
-# on the machine running the hook. See README §7 for the trade-offs.
+# on the machine running the hook. See the README's "Usage" section for the
+# trade-offs; the prebuilt wheels on PyPI (`pip install banditrs`) need none.
 - id: banditrs
   name: banditrs
   description: "Scan Python code for common security issues (bandit, reimplemented in Rust)"
