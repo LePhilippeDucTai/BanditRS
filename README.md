@@ -3,15 +3,15 @@
 # BanditRS
 
 **The Python security scanner [`bandit`](https://github.com/PyCQA/bandit), rewritten in pure Rust.**
-Same tests, same options, same outputs, same exit codes — **17× to 87× faster**,
+Same tests, same options, same outputs, same exit codes — **17× to 86× faster**,
 with **57% less memory**.
 
 [![CI](https://github.com/LePhilippeDucTai/BanditRS/actions/workflows/ci.yml/badge.svg)](https://github.com/LePhilippeDucTai/BanditRS/actions/workflows/ci.yml)
 [![Rust](https://img.shields.io/badge/rust-1.96%2B-B7410E?logo=rust&logoColor=white)](rust-toolchain.toml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-351%20✓%20(0%20ignored)-success)](#5-how-parity-is-proven)
+[![Tests](https://img.shields.io/badge/tests-354%20✓%20(0%20ignored)-success)](#5-how-parity-is-proven)
 [![Parity](https://img.shields.io/badge/parity-75%2F75%20tests%20B1xx–B7xx-success)](#52-functional-coverage-75-test-ids-out-of-75)
-[![Differential](https://img.shields.io/badge/differential-835%20files%20%C2%B7%200%20unexpected%20diff-success)](#53-differential-against-python-bandit)
+[![Differential](https://img.shields.io/badge/differential-21k%20files%20of%20real%20code%20%C2%B7%200%20unexpected%20diff-success)](#55-real-third-party-code-and-the-whole-command-line-surface)
 [![Version](https://img.shields.io/badge/version-0.2.0-informational)](Cargo.toml)
 
 </div>
@@ -282,6 +282,7 @@ The full protocol, the non-regression thresholds and the `callgrind` profile are
 
 | Target | Files | Lines | `bandit` (Python) | **BanditRS** | Factor |
 |---|---:|---:|---:|---:|---:|
+| 36 real libraries ([§5.5](#55-real-third-party-code-and-the-whole-command-line-surface)) | 21,536 | 7,170,763 | 506.9 s | **8.3 s** | **61.0×** |
 | `/usr/lib/python3.11` (CPython stdlib) | 672 | 307,504 | 18.40 s | **0.214 s** | **86.0×** |
 | `examples/` (bandit fixtures) | 94 | 9,534 | 6.497 s | **0.341 s** | **19.0×** |
 | `examples/long_set.py` (the largest, 65 KiB) | 1 | 7,279 | 6.247 s | **0.359 s** | **17.4×** |
@@ -388,13 +389,15 @@ a validated entry in `DEVIATIONS.md`. **Parity outranks speed.**
 
 ## 5. How parity is proven
 
-Relying on a single mode of proof means relying on its blind spots. BanditRS layers three of them, sharing no
-assumptions: one reads the specification, one queries the living oracle, one freezes the past.
+Relying on a single mode of proof means relying on its blind spots. BanditRS layers four of them, sharing no
+assumptions: one reads the specification, one queries the living oracle, one freezes the past, and one takes
+the tool out of the laboratory.
 
-> **Analogy.** A new scale can be checked in three ways: by re-reading its manual (the test suite), by
-> comparing it against a reference scale (the differential), and by re-weighing every morning the same
-> reference weight kept in the drawer (the golden corpus). The third is the only one that still works when
-> the reference scale is no longer in the room.
+> **Analogy.** A new scale can be checked in four ways: by re-reading its manual (the test suite), by
+> comparing it against a reference scale (the differential), by re-weighing every morning the same reference
+> weight kept in the drawer (the golden corpus), and by weighing the crates the warehouse actually ships
+> (real third-party code). The third is the only one that still works when the reference scale is no longer
+> in the room; the fourth is the only one that weighs what a customer will.
 
 ### 5.1 The Python test suite, ported test by test
 
@@ -407,8 +410,8 @@ test ⇒ one Rust test with the same name, in a mirror file*.
 | → ported as-is | 225 |
 | → adapted (Python mocks replaced by real fixtures) | 38 |
 | → not portable (pure Python introspection: `deepgetattr`, `meta_ast`…) | 10 |
-| Rust tests **without** a Python counterpart (`argparse` emulation — see [§5.2](#52-functional-coverage-75-test-ids-out-of-75)) | 1 |
-| **Total Rust tests** (67 unit + 284 integration) | **351** |
+| Rust tests **without** a Python counterpart (`argparse` emulation, and the CLI matrix replay of [§5.5](#55-real-third-party-code-and-the-whole-command-line-surface)) | 4 |
+| **Total Rust tests** (67 unit + 287 integration) | **354** |
 | Remaining `#[ignore]` tests | **0** |
 
 The line-by-line inventory is in [`docs/plan/test-inventory.md`](docs/plan/test-inventory.md); the 10
@@ -514,6 +517,56 @@ cargo test --test golden       # 9 tests, replays the whole corpus, no Python re
 This test is what turns parity from a *one-off observation* into a **regression invariant**: any change to the
 engine that would move an issue, a column or a byte of a report makes the suite fail.
 
+### 5.5 Real third-party code, and the whole command-line surface
+
+The three modes above share a blind spot: `examples/`, the stdlib and bandit's own source are all code that
+was *written to test bandit* or that bandit's authors already ran. And all three compare a single thing — the
+`-f json` report on stdout, from the default invocation. A drop-in replacement has to match more than that.
+
+**Real libraries.** [`tests/corpus/manifest.tsv`](tests/corpus/manifest.tsv) pins 38 PyPI source
+distributions by sha256 (they are never committed; `scripts/corpus.py fetch` downloads and verifies them).
+Both tools scan each package with `bandit -r <pkg> -f json -q`, and *identical* means the same issues in the
+same order, with the same file, line, column range, severity, confidence and message; the same `errors[]`;
+and the same `metrics` block — which also proves both discovered the same files with the same line counts.
+
+The tiers are cumulative — `smoke` is what CI runs on every push, `full` is the whole thing:
+
+| Tier | Packages | Files | Lines | Issues | Identical |
+|---|---:|---:|---:|---:|---|
+| `smoke` (requests, Flask, Jinja2, urllib3…) | 8 | 572 | 176,043 | 7,796 | **8/8** |
+| `standard` (+ Django, numpy, pandas, SQLAlchemy, ansible…) | 24 | 11,624 | 3,640,954 | 73,577 | **24/24** |
+| `full` (+ transformers, salt, scipy, matplotlib, airflow…) | 36 | 21,536 | 7,170,763 | 130,730 | **36/36** |
+
+Three of those packages ship files CPython refuses on purpose — salt's Jinja scaffolding named
+`{{module_name}}.py`, pexpect's Python 2 helpers, black's `tests/data/` museum of pathological syntax. Both
+tools reject them, and the `errors[]` comparison checks they reject them *identically*, which is the
+interesting half.
+
+**The whole option surface.** [`scripts/cli_matrix.py`](scripts/cli_matrix.py) runs **88 invocations**
+through both binaries and compares **stdout, stderr *and* the exit code** — the two streams and the one
+number a CI job actually branches on. It covers the severity and confidence thresholds, test selection and
+skipping, profiles and config files, all nine formatters, `--msg-template`, `-o`, context lines,
+aggregation, `-q`/`-v`/`-d`, `--exit-zero`, `--ignore-nosec`, target discovery (recursive or not, excludes,
+globs, symlinks, missing paths, empty directories, non-UTF-8 and unparsable files), `.bandit` handling,
+every usage error that exits 2, baselines, and the `bandit-baseline` / `bandit-config-generator` binaries.
+
+Result: **85/88 identical**, the 3 remaining being deviations [#10, #18, #19](#6-remaining-differences-deliberate).
+On its first pass the matrix found **six real divergences**, all fixed — the one worth naming is that
+`-ll`/`-lll`/`-ii`/`-iii` filtered one level too low, because argparse's `action="count"` increments *from*
+`default=1`; `bandit -ll` is the common CI invocation, so it was silently reporting the wrong set of issues.
+Nothing else in this repository observed it: the Python suite does not test its own argument parser.
+
+```bash
+cargo test --test cli_matrix     # replays the 88 recorded invocations, no Python required
+```
+
+**What it exercises.** The corpus triggers **60 of the 75 test ids**; the other 15 (telnetlib, the XML
+family, SNMP…) are code no maintained library still writes, and are covered by the `examples/` golden
+corpus instead — so **0 ids go unexercised**. Parity on code that never wakes a plugin would prove little,
+which is why [`docs/drop-in-parity.md`](docs/drop-in-parity.md) names them one by one rather than averaging
+them away. That report is *generated* by `scripts/parity_report.py` from the differential's own JSON output,
+never edited by hand.
+
 ---
 
 ## 6. Remaining differences (deliberate)
@@ -524,12 +577,13 @@ configuration conversion, the first-match ordering of blacklists, the "first hit
 `linerange`, the absent ≠ `None` distinction in `check_call_arg_value`: all of it is reproduced
 **identically**, bugs included.
 
-Here are the 15 deliberate deviations. The [`DEVIATIONS.md`](DEVIATIONS.md) file gives the full rationale for
-each, backed by a test case.
+Here are the 16 deliberate deviations that remain. The [`DEVIATIONS.md`](DEVIATIONS.md) file gives the full
+rationale for each, backed by a test case; it is append-only, so its numbering is stable and three of its
+nineteen entries (#1, #14, #15) are struck through — the CLI matrix of [§5.5](#55-real-third-party-code-and-the-whole-command-line-surface)
+showed they were divergences BanditRS could simply stop having, and they were resolved rather than justified.
 
 | # | Deviation | Visible where | Nature |
 |---:|---|---|---|
-| 1 | `# nosec B101,B102` (comma without a space): Python only ignores the **last** id, BanditRS takes them all | files with multi-id `nosec` | 🐞 bug fixed |
 | 2 | CSV formatter with no CWE (`NOTSET`): Python crashes (`KeyError: 'link'`), BanditRS writes an empty column | `-f csv` | 🐞 bug fixed |
 | 3 | `.bandit` (INI): `level`/`confidence`/`number` converted to integers; the `configfile` key actually honoured | `--ini` | 🐞 bug fixed |
 | 4 | `discover_files` no longer mutates the loaded configuration (Python accumulated exclusions across calls) | repeated calls | 🐞 bug fixed |
@@ -542,12 +596,15 @@ each, backed by a test case.
 | 11 | YAML: no `&id001`/`*id001` anchors/aliases (PyYAML deduplicates by Python object `id()`) | `-f yaml` | 🎨 cosmetic |
 | 12 | `more_info` points at `…/en/latest/…` instead of the installed package version | all formats | 🎯 deliberate choice |
 | 13 | `Context::statement()` has a real implementation (in Python the key is never written, so the property is always `None`) | no plugin reads it | 📐 testability |
-| 14 | The "Using command line arg for selected targets" log is only emitted if the `targets` key is in the `.bandit` file | `-v --ini` | 🎨 cosmetic |
-| 15 | `bandit-baseline`: "Got current commit: `master`" instead of "`<sha> master`" | `bandit-baseline` | 🎨 cosmetic |
+| 16 | Parser target version: set by `BANDITRS_PYTHON_COMPAT`, not by a host interpreter — align it with the reference and there is no gap at all, 3.12-only packages included | files using syntax the reference rejects | ⚙️ configuration |
+| 17 | The ids in "profile include/exclude tests" come out in a stable order; Python joins a `set`, whose order changes between runs of the *same* command | `-v -p <profile>` | 🎯 determinism |
+| 18 | `-d` does not dump the `Context` dict node by node (Python prints `<ast.Name object at 0x…>` reprs — 17,514 lines against 38); the `INFO`/`WARNING`/`ERROR` log lines are identical | `-d` | 🎨 cosmetic |
+| 19 | An invalid YAML config reports `saphyr-parser`'s wording instead of PyYAML's — same behaviour, same exit code 2, different parser message | broken `-c` file | 🎨 cosmetic |
 
 **None of these deviations changes which issue is reported, at which line, with which severity** — with the
-assumed exception of #9 (two `B703` edge cases that no upstream fixture exercises) and #1 (a `nosec` syntax
-that Python clearly mishandles).
+assumed exception of #9 (two `B703` edge cases that no upstream fixture exercises) and #16, which is not a
+gap but a setting: with the parser target aligned to the reference interpreter, the reports match on real
+code down to `errors[]` ([§5.5](#55-real-third-party-code-and-the-whole-command-line-surface)).
 
 ---
 
@@ -729,7 +786,7 @@ PyYAML's line-wrapping algorithm, `str.format()` syntax, the `repr()` of literal
 ### Quality gate
 
 ```bash
-scripts/check.sh          # build + 351 tests + rustfmt + clippy -D warnings + benchmark compilation
+scripts/check.sh          # build + 354 tests + rustfmt + clippy -D warnings + benchmark compilation
 scripts/check.sh fast     # without the benchmarks (development loop)
 ```
 
@@ -770,13 +827,15 @@ through the `PY_BANDIT` variable. `scripts/check.sh parity` runs the fast subset
 | File | Contents |
 |---|---|
 | [`PLAN.md`](PLAN.md) | progress status, decisions, milestones, architecture, pitfalls encountered |
-| [`DEVIATIONS.md`](DEVIATIONS.md) | the 15 deliberate deviations, justified one by one |
+| [`DEVIATIONS.md`](DEVIATIONS.md) | the 16 remaining deliberate deviations, justified one by one (append-only: 19 entries, 3 struck through as resolved) |
 | [`docs/spec/core.md`](docs/spec/core.md) | the exact semantics of the Python core (read before porting anything) |
 | [`docs/spec/plugins.md`](docs/spec/plugins.md) | the 42 plugins + blacklists: messages, regexes, defaults verbatim |
 | [`docs/spec/cli_formatters_tests.md`](docs/spec/cli_formatters_tests.md) | CLI, formatters, test suite as specification |
 | [`docs/plan/benchmarks.md`](docs/plan/benchmarks.md) | measurement protocol, thresholds, results, `callgrind` profile |
 | [`docs/plan/test-inventory.md`](docs/plan/test-inventory.md) | Python test ↔ Rust test mapping, line by line |
-| [`docs/plan/README.md`](docs/plan/README.md) | the parallel development plan (16 work packages), kept for the record |
+| [`docs/drop-in-parity.md`](docs/drop-in-parity.md) | the drop-in evidence, package by package and invocation by invocation — **generated**, never hand-edited |
+| [`tests/corpus/README.md`](tests/corpus/README.md) | the real-world corpus: tiers, why sdists are pinned by sha256, why `verify --parse` is the precondition |
+| [`docs/plan/README.md`](docs/plan/README.md) | the parallel development plan (21 work packages), kept for the record |
 
 ---
 

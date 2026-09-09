@@ -137,9 +137,10 @@ package in the parity tiers is additionally pinned to a release CPython 3.11 par
 
 ```
 cargo build --release
-scripts/corpus.py fetch  --tier standard      # pinned by sha256, ~200 MB
+scripts/corpus.py fetch  --tier full          # pinned by sha256
 scripts/corpus.py verify --parse              # precondition: all of it parses under 3.11
-scripts/diff_corpus.py   --tier standard --json target/parity/standard.json
+scripts/diff_corpus.py   --tier full --json target/parity/full.json
+scripts/diff_corpus.py   --tier frontier --rs-compat latest --json target/parity/frontier.json
 scripts/cli_matrix.py    diff
-scripts/parity_report.py --parity target/parity/standard.json
+scripts/parity_report.py --parity target/parity/full.json target/parity/frontier.json
 ```
