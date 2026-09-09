@@ -65,7 +65,10 @@ pub fn normalize(text: &str, root: &str) -> String {
     let text = generated_at_yaml().replace_all(&text, "generated_at: '<TS>'");
     let text = end_time_utc().replace_all(&text, r#""endTimeUtc": "<TS>""#);
     let text = run_started().replace_all(&text, "Run started:<TS>");
-    let text = tool_version_pair().replace_all(&text, "\"version\": \"<VER>\",$1\"semanticVersion\": \"<VER>\"");
+    let text = tool_version_pair().replace_all(
+        &text,
+        "\"version\": \"<VER>\",$1\"semanticVersion\": \"<VER>\"",
+    );
     let text = readthedocs_version().replace_all(&text, "readthedocs.io/en/X/");
     let text = memory_address().replace_all(&text, "0x0");
     text.replace(root, "<ROOT>")
