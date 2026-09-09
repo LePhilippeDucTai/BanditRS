@@ -125,6 +125,10 @@ pub struct Profile {
     pub include: IndexSet<String>,
     pub exclude: IndexSet<String>,
     /// Legacy `blacklist` data: node type (`Call`, `Import`, `ImportFrom`) → entries.
+    /// `None` when there is no legacy override (matching upstream's `if not blacklist:`
+    /// truthy check in `test_set.py::_load_builtins`, which treats an *absent* and an
+    /// *empty* `profile["blacklist"]` dict identically) — never `Some` of an empty map,
+    /// see the comment in `convert_legacy_blacklist_tests`.
     pub blacklist: Option<IndexMap<String, Vec<BlacklistEntry>>>,
 }
 
@@ -137,6 +141,14 @@ pub struct BanditConfig {
     pub raw: ConfigValue,
     /// `plugin_name_pattern` setting.
     pub plugin_name_pattern: String,
+    /// The `profiles` section converted by `convert_legacy_config` (test
+    /// names resolved to ids, legacy `blacklist_calls`/`blacklist_imports`
+    /// wired into `Profile::blacklist`). Empty when the config has no
+    /// `profiles` section. Computed once in [`BanditConfig::new`] (or left
+    /// empty by [`BanditConfig::default`]); [`BanditConfig::profile`] reads
+    /// it. `pub` (like the other fields) so tests can build a `BanditConfig`
+    /// by struct literal without going through a file.
+    pub profiles: IndexMap<String, Profile>,
 }
 
 impl Default for BanditConfig {
@@ -158,6 +170,7 @@ impl Default for BanditConfig {
             path: None,
             raw: ConfigValue::Map(m),
             plugin_name_pattern: "*.py".into(),
+            profiles: IndexMap::new(),
         }
     }
 }
@@ -165,21 +178,16 @@ impl Default for BanditConfig {
 impl BanditConfig {
     /// `BanditConfig(config_file)`.
     ///
-    /// TODO(M3/M7): read the file (`OSError` → `ConfigError("Could not read config file.")`),
-    /// parse YAML (`pycompat::yaml_load`, `safe_load` semantics) or TOML
+    /// Reads the file (`OSError` → `ConfigError("Could not read config file.")`),
+    /// parses YAML (`pycompat::yaml_load`, `safe_load` semantics) or TOML
     /// (`.toml` suffix, `[tool.bandit]` table; parse errors →
-    /// `ConfigError("Error parsing file.")`), run `validate()` (legacy
-    /// `blacklist_*` references without data → the long "Config file has an
-    /// include or exclude reference to legacy test '%s' but no configuration
-    /// data for it. ..." message; `profiles` present → deprecation warning
-    /// `"Config file '%s' contains deprecated legacy config data. Please
-    /// consider upgrading to the new config format. The tool
-    /// 'bandit-config-generator' can help you with this. Support for legacy
-    /// configs will be removed in a future bandit version."` logged with
-    /// the config path as argument), reject non-mapping roots
-    /// (`"Error parsing file."`), then `convert_legacy_config()` and
-    /// `_init_settings()`. Note: a loaded file replaces the defaults entirely
-    /// (no `include` default merged in).
+    /// `ConfigError("Error parsing file.")`), runs [`validate`](Self::validate)
+    /// (legacy `blacklist_*` references without data → `ConfigError`;
+    /// `profiles` present → deprecation warning), rejects non-mapping roots
+    /// (`"Error parsing file."`), then runs
+    /// [`convert_legacy_config`](Self::convert_legacy_config) and computes
+    /// `plugin_name_pattern`. Note: a loaded file replaces the defaults
+    /// entirely (no `include` default merged in).
     pub fn new(config_file: Option<&str>) -> Result<BanditConfig, ConfigError> {
         let Some(path) = config_file else {
             return Ok(BanditConfig::default());
@@ -205,22 +213,24 @@ impl BanditConfig {
             })?
         };
 
-        if !matches!(raw, ConfigValue::Map(_)) {
-            return Err(ConfigError::new("Error parsing file.", path));
-        }
         let mut config = BanditConfig {
             path: Some(path.to_string()),
             raw,
             plugin_name_pattern: String::new(),
+            profiles: IndexMap::new(),
         };
 
-        if config.get_option("profiles").is_some() {
-            crate::log_warning!(
-                "config",
-                "Config file '{}' contains deprecated legacy config data. Please consider upgrading to the new config format. The tool 'bandit-config-generator' can help you with this. Support for legacy configs will be removed in a future bandit version.",
-                path
-            );
+        // upstream: `self.validate(config_file)` runs before the "must be a
+        // dict" check below, even though `validate` may be looking at a
+        // non-mapping root (e.g. `test_bad_yaml`'s `[]`) — see `validate`.
+        config.validate(path)?;
+
+        // valid config must be a mapping.
+        if !matches!(config.raw, ConfigValue::Map(_)) {
+            return Err(ConfigError::new("Error parsing file.", path));
         }
+
+        config.convert_legacy_config();
 
         config.plugin_name_pattern = config
             .get_option("plugin_name_pattern")
@@ -253,32 +263,14 @@ impl BanditConfig {
         }
     }
 
-    /// `config["profiles"][name]` as converted by `convert_names_to_ids`
-    /// (test names in `include`/`exclude` resolved to ids, unknown names
-    /// left unchanged). Legacy `blacklist_calls`/`blacklist_imports` data
-    /// (`convert_legacy_blacklist_*`) is not yet converted — TODO(M7+):
-    /// keep the upstream argument swap between `bad_calls` and
-    /// `bad_imports`, `tests/unit/core/test_config.py` depends on it.
+    /// `config["profiles"][name]` after `convert_legacy_config` (test names
+    /// in `include`/`exclude` resolved to ids, unknown names left unchanged;
+    /// legacy `blacklist_calls`/`blacklist_imports` data wired into
+    /// `Profile::blacklist`, keeping the upstream argument swap — see
+    /// [`convert_legacy_blacklist_tests`]). The conversion runs once, in
+    /// [`BanditConfig::new`]; this just reads the result.
     pub fn profile(&self, name: &str) -> Option<Profile> {
-        let profiles = self.get_option("profiles")?;
-        let prof = profiles.as_map()?.get(name)?;
-        let to_ids = |key: &str| -> IndexSet<String> {
-            prof.as_map()
-                .and_then(|m| m.get(key))
-                .and_then(ConfigValue::as_list)
-                .map(|l| {
-                    l.iter()
-                        .map(ConfigValue::py_str)
-                        .map(|n| registry::get_test_id(&n).map(str::to_string).unwrap_or(n))
-                        .collect()
-                })
-                .unwrap_or_default()
-        };
-        Some(Profile {
-            include: to_ids("include"),
-            exclude: to_ids("exclude"),
-            blacklist: None,
-        })
+        self.profiles.get(name).cloned()
     }
 
     /// Profile built from the `tests` / `skips` options (`_get_profile`
@@ -294,6 +286,360 @@ impl BanditConfig {
             exclude: to_set(self.get_option("skips")),
             blacklist: None,
         }
+    }
+
+    /// `BanditConfig.validate(path)`: a `profiles` section that references a
+    /// legacy `blacklist_calls`/`blacklist_imports`/`blacklist_import_func`
+    /// test without the matching top-level configuration block is a
+    /// `ConfigError`; a `profiles` section (whether or not it triggers that
+    /// error) logs the "contains deprecated legacy config data" warning.
+    ///
+    /// Uses `self.raw` directly (not [`get_option`](Self::get_option)):
+    /// upstream's `"profiles" in self._config` and `self._config.get(block)`
+    /// are plain-dict membership/lookup — true whenever the key is present,
+    /// even if its value is falsy (`{}`, `None`, ...) — unlike `get_option`,
+    /// which also treats a present-but-falsy value as absent.
+    pub fn validate(&self, path: &str) -> Result<(), ConfigError> {
+        const MESSAGE: &str = "Config file has an include or exclude reference to legacy test '{0}' but no configuration data for it. Configuration data is required for this test. Please consider switching to the new config file format, the tool 'bandit-config-generator' can help you with this.";
+
+        let mut legacy = false;
+        if let Some(top) = self.raw.as_map()
+            && let Some(profiles) = top.get("profiles")
+        {
+            legacy = true;
+            if let Some(profiles) = profiles.as_map() {
+                for profile in profiles.values() {
+                    let inc = legacy_name_set(profile, "include");
+                    let exc = legacy_name_set(profile, "exclude");
+
+                    check_legacy_ref("blacklist_imports", "blacklist_imports", &inc, &exc, top)
+                        .map_err(|k| ConfigError::new(&MESSAGE.replace("{0}", &k), path))?;
+                    check_legacy_ref(
+                        "blacklist_import_func",
+                        "blacklist_imports",
+                        &inc,
+                        &exc,
+                        top,
+                    )
+                    .map_err(|k| ConfigError::new(&MESSAGE.replace("{0}", &k), path))?;
+                    check_legacy_ref("blacklist_calls", "blacklist_calls", &inc, &exc, top)
+                        .map_err(|k| ConfigError::new(&MESSAGE.replace("{0}", &k), path))?;
+                }
+            }
+        }
+
+        if legacy {
+            crate::log_warning!(
+                "config",
+                "Config file '{}' contains deprecated legacy config data. Please consider upgrading to the new config format. The tool 'bandit-config-generator' can help you with this. Support for legacy configs will be removed in a future bandit version.",
+                path
+            );
+        }
+
+        Ok(())
+    }
+
+    /// `BanditConfig.convert_legacy_config`, run once by [`BanditConfig::new`].
+    /// Converts the `profiles` section (test names to ids via
+    /// [`convert_names_to_ids`]) and any legacy
+    /// `blacklist_calls`/`blacklist_imports` data (via
+    /// [`convert_legacy_blacklist_data`]), then — only when at least one
+    /// profile exists — wires the latter into `blacklist_calls`/
+    /// `blacklist_imports` profile entries via
+    /// [`convert_legacy_blacklist_tests`] (upstream's `if updated_profiles:`
+    /// gate: an empty `profiles` section is left as an empty map either
+    /// way). The result becomes `self.profiles`; upstream instead
+    /// overwrites `self._config["profiles"]`, which `get_option("profiles")`
+    /// then returns — `profile(name)` gives the same converted data without
+    /// needing to round-trip through `self.raw`.
+    pub fn convert_legacy_config(&mut self) {
+        let mut updated_profiles = self.convert_names_to_ids();
+        let (bad_calls, bad_imports) = self.convert_legacy_blacklist_data();
+
+        if !updated_profiles.is_empty() {
+            convert_legacy_blacklist_tests(&mut updated_profiles, &bad_calls, &bad_imports);
+        }
+        self.profiles = updated_profiles;
+    }
+
+    /// `BanditConfig.convert_names_to_ids`: `profiles` with `include`/
+    /// `exclude` test names resolved to ids (unknown names left unchanged);
+    /// `Profile::blacklist` is left `None`, filled in by
+    /// [`convert_legacy_blacklist_tests`] when non-empty.
+    fn convert_names_to_ids(&self) -> IndexMap<String, Profile> {
+        let mut updated_profiles = IndexMap::new();
+        let Some(profiles) = self
+            .raw
+            .as_map()
+            .and_then(|m| m.get("profiles"))
+            .and_then(ConfigValue::as_map)
+        else {
+            return updated_profiles;
+        };
+        for (name, profile) in profiles {
+            let to_ids = |key: &str| -> IndexSet<String> {
+                profile
+                    .as_map()
+                    .and_then(|m| m.get(key))
+                    .and_then(ConfigValue::as_list)
+                    .map(|l| {
+                        l.iter()
+                            .map(ConfigValue::py_str)
+                            .map(|n| registry::get_test_id(&n).map(str::to_string).unwrap_or(n))
+                            .collect()
+                    })
+                    .unwrap_or_default()
+            };
+            updated_profiles.insert(
+                name.clone(),
+                Profile {
+                    include: to_ids("include"),
+                    exclude: to_ids("exclude"),
+                    blacklist: None,
+                },
+            );
+        }
+        updated_profiles
+    }
+
+    /// `BanditConfig.convert_legacy_blacklist_data`: `blacklist_calls.
+    /// bad_name_sets` and `blacklist_imports.bad_import_sets` entries turned
+    /// into [`BlacklistEntry`] values (`val["name"] = key`; `{func}`/
+    /// `{module}` in `message` replaced with `{name}`; imports entries also
+    /// rename `imports` to `qualnames`). Returns `(bad_calls, bad_imports)`
+    /// in that order — `convert_legacy_config` passes them on with upstream's
+    /// argument swap, see [`convert_legacy_blacklist_tests`].
+    fn convert_legacy_blacklist_data(&self) -> (Vec<BlacklistEntry>, Vec<BlacklistEntry>) {
+        let mut bad_calls_list = Vec::new();
+        let mut bad_imports_list = Vec::new();
+
+        if let Some(sets) = self
+            .raw
+            .as_map()
+            .and_then(|m| m.get("blacklist_calls"))
+            .and_then(ConfigValue::as_map)
+            .and_then(|m| m.get("bad_name_sets"))
+            .and_then(ConfigValue::as_list)
+        {
+            for item in sets {
+                if let Some(map) = item.as_map() {
+                    for (key, val) in map {
+                        if let Some(entry) = legacy_call_entry(key, val) {
+                            bad_calls_list.push(entry);
+                        }
+                    }
+                }
+            }
+        }
+
+        if let Some(sets) = self
+            .raw
+            .as_map()
+            .and_then(|m| m.get("blacklist_imports"))
+            .and_then(ConfigValue::as_map)
+            .and_then(|m| m.get("bad_import_sets"))
+            .and_then(ConfigValue::as_list)
+        {
+            for item in sets {
+                if let Some(map) = item.as_map() {
+                    for (key, val) in map {
+                        if let Some(entry) = legacy_import_entry(key, val) {
+                            bad_imports_list.push(entry);
+                        }
+                    }
+                }
+            }
+        }
+
+        (bad_calls_list, bad_imports_list)
+    }
+}
+
+/// `profile.get(key) or set()`: the raw string names in a legacy profile's
+/// `include`/`exclude` list, before id resolution (used by `validate`, which
+/// runs before `convert_names_to_ids`).
+fn legacy_name_set(profile: &ConfigValue, key: &str) -> IndexSet<String> {
+    profile
+        .as_map()
+        .and_then(|m| m.get(key))
+        .and_then(ConfigValue::as_list)
+        .map(|l| {
+            l.iter()
+                .filter_map(ConfigValue::as_str)
+                .map(str::to_string)
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// `_test(key, block, exclude, include)` in `BanditConfig.validate`: `Err(key)`
+/// when `key` is referenced (`include` or `exclude`) but `top.get(block)`
+/// is absent (`self._config.get(block) is None`). Upstream's own parameter
+/// names are swapped relative to its call site (`_test(key, block, inc,
+/// exc)` binds `exclude=inc, include=exc`), but the check is an `or` of
+/// both, so the swap has no observable effect here (unlike
+/// `convert_legacy_blacklist_tests`, where it does).
+fn check_legacy_ref(
+    key: &str,
+    block: &str,
+    inc: &IndexSet<String>,
+    exc: &IndexSet<String>,
+    top: &IndexMap<String, ConfigValue>,
+) -> Result<(), String> {
+    if (inc.contains(key) || exc.contains(key)) && top.get(block).is_none() {
+        return Err(key.to_string());
+    }
+    Ok(())
+}
+
+/// One `blacklist_calls.bad_name_sets` item (`{pickle: {qualnames: [...],
+/// message: "..."}}`) turned into a [`BlacklistEntry`]. `id` defaults to
+/// `"LEGACY"` and `level` to `"MEDIUM"` — the same defaults
+/// `blacklisting.report_issue` (`check.get("id", "LEGACY")`, `check.get(
+/// "level", "MEDIUM")`) applies at report time, applied here instead since
+/// `BlacklistEntry`'s fields aren't optional.
+fn legacy_call_entry(name: &str, val: &ConfigValue) -> Option<BlacklistEntry> {
+    let map = val.as_map()?;
+    let message = map.get("message")?.as_str()?.replace("{func}", "{name}");
+    let qualnames = map
+        .get("qualnames")
+        .and_then(ConfigValue::as_list)
+        .map(|l| {
+            l.iter()
+                .filter_map(ConfigValue::as_str)
+                .map(|s| s.to_string().into())
+                .collect()
+        })
+        .unwrap_or_default();
+    let level = map
+        .get("level")
+        .and_then(ConfigValue::as_str)
+        .unwrap_or("MEDIUM")
+        .to_string();
+    Some(BlacklistEntry {
+        name: name.to_string().into(),
+        id: "LEGACY".into(),
+        cwe: crate::core::issue::Cwe::NOTSET,
+        qualnames,
+        message: message.into(),
+        level: level.into(),
+    })
+}
+
+/// One `blacklist_imports.bad_import_sets` item (`{telnet: {imports: [...],
+/// level: ..., message: "..."}}`) turned into a [`BlacklistEntry`] (`imports`
+/// renamed to `qualnames`). Same `id`/`level` defaults as
+/// [`legacy_call_entry`].
+fn legacy_import_entry(name: &str, val: &ConfigValue) -> Option<BlacklistEntry> {
+    let map = val.as_map()?;
+    let message = map.get("message")?.as_str()?.replace("{module}", "{name}");
+    let qualnames = map
+        .get("imports")
+        .and_then(ConfigValue::as_list)
+        .map(|l| {
+            l.iter()
+                .filter_map(ConfigValue::as_str)
+                .map(|s| s.to_string().into())
+                .collect()
+        })
+        .unwrap_or_default();
+    let level = map
+        .get("level")
+        .and_then(ConfigValue::as_str)
+        .unwrap_or("MEDIUM")
+        .to_string();
+    Some(BlacklistEntry {
+        name: name.to_string().into(),
+        id: "LEGACY".into(),
+        cwe: crate::core::issue::Cwe::NOTSET,
+        qualnames,
+        message: message.into(),
+        level: level.into(),
+    })
+}
+
+/// `name in data: data.remove(name); data.add("B001")` (`_clean_set` in
+/// `convert_legacy_blacklist_tests`).
+fn clean_set(name: &str, set: &mut IndexSet<String>) {
+    if set.shift_remove(name) {
+        set.insert("B001".to_string());
+    }
+}
+
+/// `BanditConfig.convert_legacy_blacklist_tests` (a `@staticmethod`).
+///
+/// upstream: bandit/core/config.py — the method is *declared* as
+/// `convert_legacy_blacklist_tests(profiles, bad_imports, bad_calls)`, but
+/// `convert_legacy_config` *calls* it positionally as
+/// `(updated_profiles, bad_calls, bad_imports)`: the 2nd/3rd positional
+/// arguments land on parameters named the other way round. `DEVIATIONS.md`
+/// (preamble) and `test_converted_blacklist_call_data`/
+/// `test_converted_blacklist_import_data` require keeping this exactly: the
+/// `"blacklist_calls"` profile branch ends up populated with the *imports*
+/// blacklist data (telnet, from the `blacklist_imports` config key) and the
+/// `"blacklist_imports"` branch with the *calls* blacklist data (pickle,
+/// from the `blacklist_calls` config key) — `calls_data`/`imports_data`
+/// below are named for where the data *comes from* (matching
+/// `convert_legacy_config`'s call site), not for which branch consumes them.
+fn convert_legacy_blacklist_tests(
+    profiles: &mut IndexMap<String, Profile>,
+    calls_data: &[BlacklistEntry],
+    imports_data: &[BlacklistEntry],
+) {
+    for profile in profiles.values_mut() {
+        let mut blacklist: IndexMap<String, Vec<BlacklistEntry>> = IndexMap::new();
+
+        // upstream swap: "blacklist_calls" gets the *imports* data.
+        if profile.include.contains("blacklist_calls")
+            && !profile.exclude.contains("blacklist_calls")
+        {
+            blacklist
+                .entry("Call".to_string())
+                .or_default()
+                .extend(imports_data.iter().cloned());
+        }
+        clean_set("blacklist_calls", &mut profile.include);
+        clean_set("blacklist_calls", &mut profile.exclude);
+
+        // upstream swap: "blacklist_imports" gets the *calls* data.
+        if profile.include.contains("blacklist_imports")
+            && !profile.exclude.contains("blacklist_imports")
+        {
+            for node in ["Import", "ImportFrom", "Call"] {
+                blacklist
+                    .entry(node.to_string())
+                    .or_default()
+                    .extend(calls_data.iter().cloned());
+            }
+        }
+        clean_set("blacklist_imports", &mut profile.include);
+        clean_set("blacklist_imports", &mut profile.exclude);
+        clean_set("blacklist_import_func", &mut profile.include);
+        clean_set("blacklist_import_func", &mut profile.exclude);
+
+        // "This can happen with a legacy config that includes
+        // blacklist_calls but exclude blacklist_imports for example"
+        if profile.include.contains("B001") && profile.exclude.contains("B001") {
+            profile.exclude.shift_remove("B001");
+        }
+
+        // upstream always stores `profile["blacklist"] = blacklist` here, even when the
+        // dict ends up empty (no `blacklist_calls`/`blacklist_imports` reference) — but
+        // `test_set.py::_load_builtins` immediately does `if not blacklist:` (an empty
+        // dict is falsy) and falls back to the builtin table filtered by the profile.
+        // `TestSet::new` (test_set.rs) only has `Some`/`None` to branch on, so an empty
+        // `Some` here would wrongly look like "override with nothing" instead of "no
+        // override": confirmed as a real regression by differential (`-p` on a profile
+        // with no legacy blacklist reference, e.g. the sample's `test_4`, silently
+        // dropped every builtin-blacklist finding, such as B406/B317 on
+        // `examples/xml_sax.py`). Folding the emptiness check in here — `None` exactly
+        // when upstream's dict would be falsy — keeps `TestSet::new`'s existing
+        // `Some`/`None` match correct without touching test_set.rs.
+        profile.blacklist = if blacklist.is_empty() {
+            None
+        } else {
+            Some(blacklist)
+        };
     }
 }
 
@@ -337,6 +683,7 @@ mod tests {
             path: None,
             raw: ConfigValue::Map(m),
             plugin_name_pattern: "*.py".into(),
+            profiles: IndexMap::new(),
         };
         assert_eq!(c.get_option("a.b"), Some(&ConfigValue::Int(3)));
         assert!(c.get_option("a.c").is_none());

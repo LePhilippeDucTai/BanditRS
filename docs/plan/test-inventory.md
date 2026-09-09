@@ -218,32 +218,32 @@ Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partie
 
 | Test Python | Test Rust | Statut | Note |
 |---|---|---|---|
-| `TestConfigCompat::test_bad_yaml` | `test_bad_yaml` | à porter |  |
-| `TestConfigCompat::test_blacklist_error` | `test_blacklist_error` | à porter |  |
-| `TestConfigCompat::test_converted_blacklist_call_data` | `test_converted_blacklist_call_data` | à porter |  |
-| `TestConfigCompat::test_converted_blacklist_call_test` | `test_converted_blacklist_call_test` | à porter |  |
-| `TestConfigCompat::test_converted_blacklist_import_data` | `test_converted_blacklist_import_data` | à porter |  |
-| `TestConfigCompat::test_converted_blacklist_import_test` | `test_converted_blacklist_import_test` | à porter |  |
-| `TestConfigCompat::test_converted_exclude` | `test_converted_exclude` | à porter |  |
-| `TestConfigCompat::test_converted_exclude_blacklist` | `test_converted_exclude_blacklist` | à porter |  |
-| `TestConfigCompat::test_converted_include` | `test_converted_include` | à porter |  |
-| `TestConfigCompat::test_deprecation_message` | `test_deprecation_message` | à porter |  |
-| `TestGetOption::test_levels` | `test_levels` | à porter |  |
-| `TestGetOption::test_levels_not_exist` | `test_levels_not_exist` | à porter |  |
-| `TestGetSetting::test_not_exist` | `test_not_exist` | à porter |  |
-| `TestInit::test_file_does_not_exist` | `test_file_does_not_exist` | à porter |  |
-| `TestInit::test_settings` | `test_settings` | à porter |  |
-| `TestInit::test_yaml_invalid` | `test_yaml_invalid` | à porter |  |
-| `TestTomlConfig::test_bad_yaml` | `test_bad_yaml_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_blacklist_error` | `test_blacklist_error_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_converted_blacklist_call_data` | `test_converted_blacklist_call_data_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_converted_blacklist_call_test` | `test_converted_blacklist_call_test_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_converted_blacklist_import_data` | `test_converted_blacklist_import_data_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_converted_blacklist_import_test` | `test_converted_blacklist_import_test_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_converted_exclude` | `test_converted_exclude_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_converted_exclude_blacklist` | `test_converted_exclude_blacklist_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_converted_include` | `test_converted_include_toml` | à porter | variante TOML (`TestTomlConfig`) |
-| `TestTomlConfig::test_deprecation_message` | `test_deprecation_message_toml` | à porter | variante TOML (`TestTomlConfig`) |
+| `TestConfigCompat::test_bad_yaml` | `test_bad_yaml` | porté |  |
+| `TestConfigCompat::test_blacklist_error` | `test_blacklist_error` | porté |  |
+| `TestConfigCompat::test_converted_blacklist_call_data` | `test_converted_blacklist_call_data` | porté |  |
+| `TestConfigCompat::test_converted_blacklist_call_test` | `test_converted_blacklist_call_test` | porté |  |
+| `TestConfigCompat::test_converted_blacklist_import_data` | `test_converted_blacklist_import_data` | porté |  |
+| `TestConfigCompat::test_converted_blacklist_import_test` | `test_converted_blacklist_import_test` | porté |  |
+| `TestConfigCompat::test_converted_exclude` | `test_converted_exclude` | porté |  |
+| `TestConfigCompat::test_converted_exclude_blacklist` | `test_converted_exclude_blacklist` | porté |  |
+| `TestConfigCompat::test_converted_include` | `test_converted_include` | porté |  |
+| `TestConfigCompat::test_deprecation_message` | `test_deprecation_message` | porté |  |
+| `TestGetOption::test_levels` | `test_levels` | porté |  |
+| `TestGetOption::test_levels_not_exist` | `test_levels_not_exist` | porté |  |
+| `TestGetSetting::test_not_exist` | `test_not_exist` | porté |  |
+| `TestInit::test_file_does_not_exist` | `test_file_does_not_exist` | porté |  |
+| `TestInit::test_settings` | `test_settings` | porté |  |
+| `TestInit::test_yaml_invalid` | `test_yaml_invalid` | porté |  |
+| `TestTomlConfig::test_bad_yaml` | `test_bad_yaml_toml` | porté | variante TOML (`TestTomlConfig`) ; upstream ne charge en fait pas le TOML pour ce test (`TempFile("[]")` garde le suffixe `.yaml` par défaut), identique à `test_bad_yaml` |
+| `TestTomlConfig::test_blacklist_error` | `test_blacklist_error_toml` | porté | variante TOML (`TestTomlConfig`) ; upstream ne charge aucun fichier (écrit `_config` directement), identique à `test_blacklist_error` |
+| `TestTomlConfig::test_converted_blacklist_call_data` | `test_converted_blacklist_call_data_toml` | porté | variante TOML (`TestTomlConfig`) |
+| `TestTomlConfig::test_converted_blacklist_call_test` | `test_converted_blacklist_call_test_toml` | porté | variante TOML (`TestTomlConfig`) |
+| `TestTomlConfig::test_converted_blacklist_import_data` | `test_converted_blacklist_import_data_toml` | porté | variante TOML (`TestTomlConfig`) |
+| `TestTomlConfig::test_converted_blacklist_import_test` | `test_converted_blacklist_import_test_toml` | porté | variante TOML (`TestTomlConfig`) |
+| `TestTomlConfig::test_converted_exclude` | `test_converted_exclude_toml` | porté | variante TOML (`TestTomlConfig`) |
+| `TestTomlConfig::test_converted_exclude_blacklist` | `test_converted_exclude_blacklist_toml` | porté | variante TOML (`TestTomlConfig`) |
+| `TestTomlConfig::test_converted_include` | `test_converted_include_toml` | porté | variante TOML (`TestTomlConfig`) |
+| `TestTomlConfig::test_deprecation_message` | `test_deprecation_message_toml` | porté | variante TOML (`TestTomlConfig`) ; upstream ne charge aucun fichier, identique à `test_deprecation_message` |
 
 ## `tests/unit/core/test_context.py` → `tests/unit_core_context.rs` ([WP-09](wp/WP-09-unit-core-context.md))
 
