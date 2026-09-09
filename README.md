@@ -20,30 +20,30 @@ with **57% less memory**.
 
 ## Install
 
-Fastest way to try it: `uvx` fetches, builds and runs BanditRS in one shot, installing nothing
-permanent. Here it scans the current directory:
+Fastest way to try it, no Rust toolchain needed: [`scripts/install.sh`](scripts/install.sh) resolves
+the *latest* [GitHub Release](https://github.com/LePhilippeDucTai/BanditRS/releases) and has `pip`
+grab the prebuilt wheel that matches your platform automatically — no version number and no wheel
+filename to pick by hand, and nothing to edit here when a new version ships:
 
 ```bash
-uvx --from git+https://github.com/LePhilippeDucTai/BanditRS bandit -r .
-```
-
-To keep it around, install it as a tool — `bandit`, `banditrs`, `bandit-baseline` and
-`bandit-config-generator` all land on your `PATH`:
-
-```bash
-uv tool install git+https://github.com/LePhilippeDucTai/BanditRS
+curl -LsSf https://raw.githubusercontent.com/LePhilippeDucTai/BanditRS/main/scripts/install.sh | sh
 bandit -r .
 ```
 
-Both commands build the Rust crate from source, so they need `rustc` ≥ 1.96 and take a couple of
-minutes the first time. To skip compiling altogether, grab the prebuilt wheel for your platform from
-the [latest release](https://github.com/LePhilippeDucTai/BanditRS/releases) — no Rust toolchain
-involved, and it works with every supported Python:
+Prefer building from source with `uv`? `uvx`/`uv tool install` clone the repo and compile on the spot
+— no version-selection problem either, but they need `rustc` ≥ 1.96 and take a couple of minutes the
+first time:
 
 ```bash
-pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>
-uvx --from <same-wheel-url> bandit -r .     # or run it on the fly, still without Rust
+uvx --from git+https://github.com/LePhilippeDucTai/BanditRS bandit -r .          # on the fly
+uv tool install git+https://github.com/LePhilippeDucTai/BanditRS && bandit -r .  # keep it around
 ```
+
+> **Why not `uvx` for the prebuilt wheel too?** It should be able to install directly from the
+> release URL, but as of `uv` 0.8 its downloader returns a spurious `401 Unauthorized` on the signed
+> `objects.githubusercontent.com` redirect that GitHub Release downloads go through — `pip` fetches
+> the identical URL without issue. `scripts/install.sh` therefore shells out to `pip`; switch to `uv`
+> there once this is fixed upstream.
 
 Platform wheel names, coexisting with the PyCQA `bandit` command, `pre-commit`, and building from
 source: [§7](#7-usage-and-installation-details).
@@ -649,8 +649,8 @@ commands are at the [top of this README](#install); here is the full matrix.
 
 | Method | Command | Needs a Rust toolchain? |
 | --- | --- | --- |
-| **Prebuilt wheel** (recommended) | `pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>` | **No** |
-| **Prebuilt wheel, no install** | `uvx --from <same-wheel-url> bandit -r .` | **No** |
+| **Prebuilt wheel, latest, auto-detected** (recommended) | `curl -LsSf https://raw.githubusercontent.com/LePhilippeDucTai/BanditRS/main/scripts/install.sh \| sh` | **No** |
+| **Prebuilt wheel, a specific version or platform** | `pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>` | **No** |
 | **uv, on the fly** | `uvx --from git+https://github.com/LePhilippeDucTai/BanditRS bandit -r .` | **Yes** |
 | **uv, as a tool** | `uv tool install git+https://github.com/LePhilippeDucTai/BanditRS` | **Yes** |
 | **From git** | `pip install git+https://github.com/LePhilippeDucTai/BanditRS` | **Yes** |
@@ -663,7 +663,8 @@ commands are at the [top of this README](#install); here is the full matrix.
 > inherent to the `git+` syntax, not a limitation of this package. The prebuilt
 > wheels attached to each
 > [release](https://github.com/LePhilippeDucTai/BanditRS/releases) exist precisely
-> to avoid it — pick the one matching your platform from the table below.
+> to avoid it — `scripts/install.sh` picks the right one automatically, or pick
+> one yourself from the table below.
 
 > **Why `--from`.** The distribution is named `banditrs`, but the command you
 > usually want is `bandit`. `uvx` assumes the two match, so plain `uvx bandit`
