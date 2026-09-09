@@ -10,7 +10,11 @@
 
 use crate::constants::EXCLUDE;
 
-pub const USAGE: &str = "usage: bandit [-h] [-r] [-a {file,vuln}] [-n CONTEXT_LINES] [-c CONFIG_FILE]\n              [-p PROFILE] [-t TESTS] [-s SKIPS] [-l | --severity-level {all,low,medium,high}]\n              [-i | --confidence-level {all,low,medium,high}]\n              [-f {csv,custom,html,json,sarif,screen,txt,xml,yaml}] [--msg-template MSG_TEMPLATE]\n              [-o [OUTPUT_FILE]] [-v | -q] [-d] [--ignore-nosec] [-x EXCLUDED_PATHS]\n              [-b BASELINE] [--ini INI_PATH] [--exit-zero] [--version]\n              [targets ...]\n";
+/// `parser.format_usage()` of the reference `bandit`, byte for byte at the
+/// 80-column width argparse falls back to when stdout is not a terminal
+/// (`shutil.get_terminal_size()`), which is how it is emitted in scripts
+/// and CI. Verified by `scripts/cli_matrix.py` (WP-18).
+pub const USAGE: &str = "usage: bandit [-h] [-r] [-a {file,vuln}] [-n CONTEXT_LINES] [-c CONFIG_FILE]\n              [-p PROFILE] [-t TESTS] [-s SKIPS]\n              [-l | --severity-level {all,low,medium,high}]\n              [-i | --confidence-level {all,low,medium,high}]\n              [-f {csv,custom,html,json,sarif,screen,txt,xml,yaml}]\n              [--msg-template MSG_TEMPLATE] [-o [OUTPUT_FILE]] [-v] [-d] [-q]\n              [--ignore-nosec] [-x EXCLUDED_PATHS] [-b BASELINE]\n              [--ini INI_PATH] [--exit-zero] [--version]\n              [targets ...]\n";
 
 /// Parsed CLI arguments (`argparse.Namespace`).
 #[derive(Debug, Clone, PartialEq)]
@@ -223,7 +227,7 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 "verbose" => {
                     if verbose_or_quiet == Some("quiet") {
                         return ParseOutcome::Exit(error(
-                            "argument -v/--verbose: not allowed with argument -q/--quiet",
+                            "argument -v/--verbose: not allowed with argument -q/--quiet/--silent",
                         ));
                     }
                     args.verbose = true;
@@ -233,7 +237,7 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 "quiet" | "silent" => {
                     if verbose_or_quiet == Some("verbose") {
                         return ParseOutcome::Exit(error(
-                            "argument -q/--quiet: not allowed with argument -v/--verbose",
+                            "argument -q/--quiet/--silent: not allowed with argument -v/--verbose",
                         ));
                     }
                     args.quiet = true;
@@ -264,7 +268,7 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 'v' => {
                     if verbose_or_quiet == Some("quiet") {
                         return ParseOutcome::Exit(error(
-                            "argument -v/--verbose: not allowed with argument -q/--quiet",
+                            "argument -v/--verbose: not allowed with argument -q/--quiet/--silent",
                         ));
                     }
                     args.verbose = true;
@@ -273,7 +277,7 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                 'q' => {
                     if verbose_or_quiet == Some("verbose") {
                         return ParseOutcome::Exit(error(
-                            "argument -q/--quiet: not allowed with argument -v/--verbose",
+                            "argument -q/--quiet/--silent: not allowed with argument -v/--verbose",
                         ));
                     }
                     args.quiet = true;
@@ -285,9 +289,11 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                             "argument -l/--level: not allowed with argument --severity-level",
                         ));
                     }
-                    if !level_set {
-                        args.severity = 0;
-                    }
+                    // `action="count"` with `default=1`: argparse increments
+                    // *from* the default, so `-l` is 2, `-ll` is 3 and
+                    // `-lll` is 4, which `RANKING[n - 1]` then maps to
+                    // LOW/MEDIUM/HIGH. Resetting to 0 here shifted every
+                    // threshold down by one level.
                     args.severity += 1;
                     level_set = true;
                 }
@@ -297,9 +303,11 @@ pub fn parse(argv: &[String]) -> ParseOutcome {
                             "argument -i/--confidence: not allowed with argument --confidence-level",
                         ));
                     }
-                    if !conf_set {
-                        args.confidence = 0;
-                    }
+                    // `action="count"` with `default=1`: argparse increments
+                    // *from* the default, so `-i` is 2, `-ii` is 3 and
+                    // `-iii` is 4, which `RANKING[n - 1]` then maps to
+                    // LOW/MEDIUM/HIGH. Resetting to 0 here shifted every
+                    // threshold down by one level.
                     args.confidence += 1;
                     conf_set = true;
                 }

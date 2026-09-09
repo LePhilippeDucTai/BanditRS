@@ -8,7 +8,9 @@ const TEMPLATE: &str = "\n### Bandit config file generated from:\n# '{cli}'\n\n#
 
 fn print_help() {
     println!(
-        "usage: bandit-config-generator [-h] [--show-defaults] [-o OUTPUT_FILE] [-t TESTS] [-s SKIPS]\n"
+        // argparse wraps the usage line at 80 columns (the width it falls back
+        // to when stdout is not a terminal); reproduced verbatim.
+        "usage: bandit-config-generator [-h] [--show-defaults] [-o OUTPUT_FILE]\n                               [-t TESTS] [-s SKIPS]\n"
     );
     println!("Bandit Config Generator\n");
     println!("    This tool is used to generate an optional profile.  The profile may be used");

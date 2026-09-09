@@ -7,7 +7,7 @@
 //! regressions are caught without a Python environment (`scripts/bench_regression.sh`).
 
 use std::hint::black_box;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use criterion::{Criterion, criterion_group, criterion_main};
 
@@ -169,6 +169,88 @@ fn bench_scan_stdlib(c: &mut Criterion) {
     group.finish();
 }
 
+/// Real third-party code, from the corpus pinned in `tests/corpus/manifest.tsv`
+/// (WP-17). `examples/` is 94 tiny files written to trip every plugin and the
+/// stdlib is unusually plugin-sparse; a real library is neither, and is the
+/// shape of input the tool actually meets. Skipped cleanly when the corpus has
+/// not been fetched — it is gitignored, so this is the normal case on a fresh
+/// clone (`scripts/corpus.py fetch --tier smoke` provides it).
+fn corpus_package(prefix: &str) -> Option<String> {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("target/corpus");
+    let entries = std::fs::read_dir(root).ok()?;
+    entries
+        .filter_map(Result::ok)
+        .map(|e| e.path())
+        .find(|p| {
+            p.is_dir()
+                && p.file_name()
+                    .and_then(|n| n.to_str())
+                    .is_some_and(|n| n.starts_with(prefix))
+        })
+        .map(|p| p.to_string_lossy().into_owned())
+}
+
+fn bench_scan_corpus(c: &mut Criterion) {
+    // paramiko: small enough to keep the bench quick, dense enough in security
+    // findings (13 distinct test ids) that plugin cost, not walking, dominates.
+    let Some(dir) = corpus_package("paramiko-") else {
+        return;
+    };
+    let mut group = c.benchmark_group("corpus");
+    group.sample_size(20);
+    group.bench_function("scan_paramiko", |b| {
+        b.iter(|| {
+            let config = BanditConfig::default();
+            let mut mgr = manager_with(full_test_set(&config));
+            black_box(scan(&mut mgr, std::slice::from_ref(&dir)))
+        })
+    });
+    group.finish();
+}
+
+/// A single very large machine-generated module, the shape `botocore` and other
+/// SDK packages are full of: one file, thousands of lines, few findings. Isolates
+/// parser and walker throughput from plugin cost.
+fn bench_scan_large_generated_file(c: &mut Criterion) {
+    let Some(dir) = corpus_package("botocore-") else {
+        return;
+    };
+    let biggest = walkdir_biggest_py(Path::new(&dir));
+    let Some(file) = biggest else { return };
+    let mut group = c.benchmark_group("corpus");
+    group.sample_size(20);
+    group.bench_function("scan_largest_botocore_file", |b| {
+        b.iter(|| {
+            let config = BanditConfig::default();
+            let mut mgr = manager_with(full_test_set(&config));
+            black_box(scan(&mut mgr, std::slice::from_ref(&file)))
+        })
+    });
+    group.finish();
+}
+
+fn walkdir_biggest_py(root: &Path) -> Option<String> {
+    let mut stack = vec![root.to_path_buf()];
+    let mut best: Option<(u64, PathBuf)> = None;
+    while let Some(dir) = stack.pop() {
+        let Ok(entries) = std::fs::read_dir(&dir) else {
+            continue;
+        };
+        for entry in entries.filter_map(Result::ok) {
+            let path = entry.path();
+            let Ok(meta) = entry.metadata() else { continue };
+            if meta.is_dir() {
+                stack.push(path);
+            } else if path.extension().is_some_and(|e| e == "py")
+                && best.as_ref().is_none_or(|(size, _)| meta.len() > *size)
+            {
+                best = Some((meta.len(), path));
+            }
+        }
+    }
+    best.map(|(_, p)| p.to_string_lossy().into_owned())
+}
+
 criterion_group!(
     benches,
     bench_scan_examples,
@@ -178,5 +260,7 @@ criterion_group!(
     bench_format_json_examples,
     bench_format_sarif_examples,
     bench_scan_stdlib,
+    bench_scan_corpus,
+    bench_scan_large_generated_file,
 );
 criterion_main!(benches);

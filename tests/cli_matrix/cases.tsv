@@ -1,0 +1,108 @@
+# CLI differential matrix (WP-18). One row per invocation; the generator
+# (scripts/cli_matrix.py) and the replay test (tests/cli_matrix.rs) both read
+# this file, so the two never drift apart.
+#
+# id     unique, also the golden basename (tests/cli_matrix/out/<id>.{out,err,code})
+# bin    bandit | bandit-config-generator | bandit-baseline
+# prep   -            plain copy of tests/cli_matrix/workspace/
+#        git          the copy is turned into a git repo with two commits
+#        selfbaseline the tool first writes baseline.json for src/assert.py
+# args   argv, split on spaces. Run with cwd = the workspace copy, so every
+#        path in the output is relative and needs no path normalisation.
+#id	bin	prep	args
+# --- severity and confidence thresholds ---
+sev_default	bandit	-	-r src -f json
+sev_l	bandit	-	-r src -f json -l
+sev_ll	bandit	-	-r src -f json -ll
+sev_lll	bandit	-	-r src -f json -lll
+sev_level_all	bandit	-	-r src -f json --severity-level all
+sev_level_low	bandit	-	-r src -f json --severity-level low
+sev_level_medium	bandit	-	-r src -f json --severity-level medium
+sev_level_high	bandit	-	-r src -f json --severity-level high
+conf_i	bandit	-	-r src -f json -i
+conf_ii	bandit	-	-r src -f json -ii
+conf_iii	bandit	-	-r src -f json -iii
+conf_level_all	bandit	-	-r src -f json --confidence-level all
+conf_level_low	bandit	-	-r src -f json --confidence-level low
+conf_level_medium	bandit	-	-r src -f json --confidence-level medium
+conf_level_high	bandit	-	-r src -f json --confidence-level high
+sev_conf_combined	bandit	-	-r src -f json -ll -ii
+# --- test selection ---
+tests_one	bandit	-	-r src -f json -t B101
+tests_many	bandit	-	-r src -f json -t B101,B303,B608
+tests_by_name	bandit	-	-r src -f json -t hardcoded_password_string
+tests_unknown	bandit	-	-r src -f json -t B999999
+skip_one	bandit	-	-r src -f json -s B101
+skip_many	bandit	-	-r src -f json -s B101,B404,B603
+skip_unknown	bandit	-	-r src -f json -s NOPE
+tests_and_skip	bandit	-	-r src -f json -t B101,B303 -s B303
+profile_shell	bandit	-	-r src -f json -c cfg/profiles.yml -p ShellInjection
+profile_crypto	bandit	-	-r src -f json -c cfg/profiles.yml -p Crypto
+profile_unknown	bandit	-	-r src -f json -c cfg/profiles.yml -p NoSuchProfile
+config_tuned	bandit	-	-r src -f json -c cfg/tuned.yml
+config_legacy	bandit	-	-r src -f json -c cfg/legacy.yml
+config_bad	bandit	-	-r src -f json -c cfg/bad.yml
+config_missing	bandit	-	-r src -f json -c cfg/nope.yml
+# --- output formats ---
+fmt_csv	bandit	-	-r src -f csv
+fmt_custom	bandit	-	-r src -f custom
+fmt_html	bandit	-	-r src -f html
+fmt_json	bandit	-	-r src -f json
+fmt_sarif	bandit	-	-r src -f sarif
+fmt_screen	bandit	-	-r src -f screen
+fmt_txt	bandit	-	-r src -f txt
+fmt_xml	bandit	-	-r src -f xml
+fmt_yaml	bandit	-	-r src -f yaml
+fmt_default	bandit	-	-r src
+msg_template	bandit	-	-r src -f custom --msg-template {abspath}:{line}:{severity}:{test_id}:{msg}
+msg_template_rel	bandit	-	-r src -f custom --msg-template {relpath}|{range}|{confidence}|{test_id}
+msg_template_no_custom	bandit	-	-r src -f json --msg-template {line}
+out_file_json	bandit	-	-r src -f json -o report.json
+out_file_txt	bandit	-	-r src -f txt -o report.txt
+context_zero	bandit	-	-r src -f txt -n 0
+context_five	bandit	-	-r src -f txt -n 5
+aggregate_file	bandit	-	-r src -f txt -a file
+aggregate_vuln	bandit	-	-r src -f txt -a vuln
+quiet	bandit	-	-r src -f txt -q
+verbose	bandit	-	-r src -f txt -v
+debug	bandit	-	-r src -f json -d
+exit_zero	bandit	-	-r src -f json --exit-zero
+ignore_nosec	bandit	-	-r src/nosec.py -f json --ignore-nosec
+number_and_quiet	bandit	-	-r src -f txt -n 1 -q
+# --- target discovery ---
+dir_without_r	bandit	-	src -f json
+explicit_files	bandit	-	src/assert.py src/imports.py src/yaml_load.py -f json
+single_file	bandit	-	src/subprocess_shell.py -f json
+exclude_one	bandit	-	-r src -f json -x src/nosec.py
+exclude_many	bandit	-	-r src -f json -x src/nosec.py,src/nonsense2.py
+exclude_glob	bandit	-	-r src -f json -x *nosec*
+missing_target	bandit	-	-r src/does_not_exist.py -f json
+empty_dir	bandit	-	-r empty -f json
+symlink	bandit	-	link_to_assert.py -f json
+non_utf8	bandit	-	src/trojansource_latin1.py -f json
+syntax_error	bandit	-	src/nonsense2.py -f json
+mixed_ok_and_broken	bandit	-	src/assert.py src/nonsense2.py -f json
+no_targets	bandit	-	-f json
+# --- ini configuration ---
+ini_explicit	bandit	-	--ini .bandit -f json -r src
+ini_missing	bandit	-	--ini nope.bandit -f json -r src
+# --- usage errors (exit 2) ---
+excl_level	bandit	-	-r src -l --severity-level high
+excl_confidence	bandit	-	-r src -i --confidence-level high
+excl_verbose_quiet	bandit	-	-r src -v -q
+unknown_flag	bandit	-	-r src --no-such-flag
+bad_format	bandit	-	-r src -f nope
+bad_aggregate	bandit	-	-r src -a nope
+help	bandit	-	--help
+version	bandit	-	--version
+# --- baseline ---
+baseline_self	bandit	selfbaseline	-r src -f json -b baseline.json
+baseline_self_txt	bandit	selfbaseline	-r src -f txt -b baseline.json
+baseline_missing	bandit	-	-r src -f json -b nope.json
+# --- sibling binaries ---
+cfggen_defaults	bandit-config-generator	-	--show-defaults
+cfggen_help	bandit-config-generator	-	--help
+cfggen_tests	bandit-config-generator	-	-t B101,B303
+cfggen_skip	bandit-config-generator	-	-s B101
+baseline_bin_help	bandit-baseline	-	--help
+baseline_bin_run	bandit-baseline	git	-r src -f json

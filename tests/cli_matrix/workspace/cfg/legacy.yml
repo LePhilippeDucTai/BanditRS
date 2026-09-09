@@ -1,0 +1,15 @@
+hardcoded_password:
+  word_list: wordlist/default-passwords
+blacklist_calls:
+  bad_name_sets:
+    - pickle:
+        qualnames:
+          - pickle.loads
+        message: "Pickle library appears to be in use: {func}"
+blacklist_imports:
+  bad_import_sets:
+    - telnet:
+        imports:
+          - telnetlib
+        level: HIGH
+        message: "Telnet-related module {module} is used"

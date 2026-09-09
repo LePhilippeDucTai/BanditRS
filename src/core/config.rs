@@ -451,6 +451,12 @@ impl BanditConfig {
             }
         }
 
+        if !bad_imports_list.is_empty() || !bad_calls_list.is_empty() {
+            crate::log_warning!(
+                "config",
+                "Legacy blacklist data found in config, overriding data plugins"
+            );
+        }
         (bad_calls_list, bad_imports_list)
     }
 }

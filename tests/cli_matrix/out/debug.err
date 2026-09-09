@@ -1,0 +1,38 @@
+[main]	DEBUG	logging initialized
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[manager]	WARNING	Test in comment: on is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: the is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: line is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: at is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: the is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: start is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: of is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: function is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: call is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: on is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: the is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: specific is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: kwarg is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: line is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: on is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: the is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: line is not a test name or id, ignoring
+[node_visitor]	DEBUG	Module qualified name: assert
+[node_visitor]	DEBUG	Module qualified name: crypto-md5
+[node_visitor]	DEBUG	Module qualified name: flask_debug
+[node_visitor]	DEBUG	Module qualified name: hardcoded-passwords
+[node_visitor]	DEBUG	Module qualified name: imports
+[node_visitor]	DEBUG	Module qualified name: mark_safe
+[node_visitor]	DEBUG	Module qualified name: nosec
+[tester]	WARNING	nosec encountered (B607), but no failed test on file src/nosec.py:11
+[tester]	WARNING	nosec encountered (B607), but no failed test on file src/nosec.py:15
+[node_visitor]	DEBUG	Module qualified name: os-chmod
+[node_visitor]	DEBUG	Module qualified name: requests-missing-timeout
+[node_visitor]	DEBUG	Module qualified name: sql_statements
+[node_visitor]	DEBUG	Module qualified name: subprocess_shell
+[node_visitor]	DEBUG	Module qualified name: trojansource_latin1
+[node_visitor]	DEBUG	Module qualified name: try_except_pass
+[node_visitor]	DEBUG	Module qualified name: yaml_load

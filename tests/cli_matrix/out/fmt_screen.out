@@ -1,0 +1,1532 @@
+[95mRun started:<TS>
+[95m
+Test results:[0m
+[94m>> Issue: [B101:assert_used] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b101_assert_used.html
+   Location: src/assert.py:1:0[0m
+1	assert True
+
+--------------------------------------------------
+[91m>> Issue: [B413:blacklist] The pyCrypto library and its module MD2 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto
+   Location: src/crypto-md5.py:2:0[0m
+1	from cryptography.hazmat.primitives import hashes
+2	from Crypto.Hash import MD2 as pycrypto_md2
+3	from Crypto.Hash import MD4 as pycrypto_md4
+
+--------------------------------------------------
+[91m>> Issue: [B413:blacklist] The pyCrypto library and its module MD4 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto
+   Location: src/crypto-md5.py:3:0[0m
+2	from Crypto.Hash import MD2 as pycrypto_md2
+3	from Crypto.Hash import MD4 as pycrypto_md4
+4	from Crypto.Hash import MD5 as pycrypto_md5
+
+--------------------------------------------------
+[91m>> Issue: [B413:blacklist] The pyCrypto library and its module MD5 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto
+   Location: src/crypto-md5.py:4:0[0m
+3	from Crypto.Hash import MD4 as pycrypto_md4
+4	from Crypto.Hash import MD5 as pycrypto_md5
+5	from Crypto.Hash import SHA as pycrypto_sha
+
+--------------------------------------------------
+[91m>> Issue: [B413:blacklist] The pyCrypto library and its module SHA are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto
+   Location: src/crypto-md5.py:5:0[0m
+4	from Crypto.Hash import MD5 as pycrypto_md5
+5	from Crypto.Hash import SHA as pycrypto_sha
+6	from Cryptodome.Hash import MD2 as pycryptodomex_md2
+
+--------------------------------------------------
+[91m>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:13:0[0m
+12	
+13	hashlib.md5(1)
+14	hashlib.md5(1).hexdigest()
+
+--------------------------------------------------
+[91m>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:14:0[0m
+13	hashlib.md5(1)
+14	hashlib.md5(1).hexdigest()
+15	
+
+--------------------------------------------------
+[91m>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:16:18[0m
+15	
+16	abc = str.replace(hashlib.md5("1"), "###")
+17	
+
+--------------------------------------------------
+[91m>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:18:6[0m
+17	
+18	print(hashlib.md5("1"))
+19	
+
+--------------------------------------------------
+[91m>> Issue: [B324:hashlib] Use of weak SHA1 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:20:0[0m
+19	
+20	hashlib.sha1(1)
+21	
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:24:0[0m
+23	
+24	pycrypto_md2.new()
+25	pycrypto_md4.new()
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:25:0[0m
+24	pycrypto_md2.new()
+25	pycrypto_md4.new()
+26	pycrypto_md5.new()
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:26:0[0m
+25	pycrypto_md4.new()
+26	pycrypto_md5.new()
+27	pycrypto_sha.new()
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:27:0[0m
+26	pycrypto_md5.new()
+27	pycrypto_sha.new()
+28	
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:29:0[0m
+28	
+29	pycryptodomex_md2.new()
+30	pycryptodomex_md4.new()
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:30:0[0m
+29	pycryptodomex_md2.new()
+30	pycryptodomex_md4.new()
+31	pycryptodomex_md5.new()
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:31:0[0m
+30	pycryptodomex_md4.new()
+31	pycryptodomex_md5.new()
+32	pycryptodomex_sha.new()
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:32:0[0m
+31	pycryptodomex_md5.new()
+32	pycryptodomex_sha.new()
+33	
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:34:0[0m
+33	
+34	hashes.MD5()
+35	hashes.SHA1()
+
+--------------------------------------------------
+[93m>> Issue: [B303:blacklist] Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5
+   Location: src/crypto-md5.py:35:0[0m
+34	hashes.MD5()
+35	hashes.SHA1()
+36	
+
+--------------------------------------------------
+[93m>> Issue: [B324:hashlib] Use of insecure crypt.METHOD_CRYPT hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:37:0[0m
+36	
+37	crypt.crypt("asdfasdfasdfasdf", salt=crypt.METHOD_CRYPT)
+38	crypt.crypt("asdfasdfasdfasdf", salt=crypt.METHOD_MD5)
+
+--------------------------------------------------
+[93m>> Issue: [B324:hashlib] Use of insecure crypt.METHOD_MD5 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:38:0[0m
+37	crypt.crypt("asdfasdfasdfasdf", salt=crypt.METHOD_CRYPT)
+38	crypt.crypt("asdfasdfasdfasdf", salt=crypt.METHOD_MD5)
+39	crypt.crypt("asdfasdfasdfasdf", salt=crypt.METHOD_BLOWFISH)
+
+--------------------------------------------------
+[93m>> Issue: [B324:hashlib] Use of insecure crypt.METHOD_BLOWFISH hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:39:0[0m
+38	crypt.crypt("asdfasdfasdfasdf", salt=crypt.METHOD_MD5)
+39	crypt.crypt("asdfasdfasdfasdf", salt=crypt.METHOD_BLOWFISH)
+40	crypt.crypt("asdfasdfasdfasdf")
+
+--------------------------------------------------
+[93m>> Issue: [B324:hashlib] Use of insecure crypt.METHOD_CRYPT hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:44:0[0m
+43	
+44	crypt.mksalt(crypt.METHOD_CRYPT)
+45	crypt.mksalt(crypt.METHOD_MD5)
+
+--------------------------------------------------
+[93m>> Issue: [B324:hashlib] Use of insecure crypt.METHOD_MD5 hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:45:0[0m
+44	crypt.mksalt(crypt.METHOD_CRYPT)
+45	crypt.mksalt(crypt.METHOD_MD5)
+46	crypt.mksalt(crypt.METHOD_BLOWFISH)
+
+--------------------------------------------------
+[93m>> Issue: [B324:hashlib] Use of insecure crypt.METHOD_BLOWFISH hash function.
+   Severity: Medium   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b324_hashlib.html
+   Location: src/crypto-md5.py:46:0[0m
+45	crypt.mksalt(crypt.METHOD_MD5)
+46	crypt.mksalt(crypt.METHOD_BLOWFISH)
+47	crypt.mksalt()
+
+--------------------------------------------------
+[91m>> Issue: [B201:flask_debug_true] A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+   Severity: High   Confidence: Medium
+   CWE: CWE-94 (https://cwe.mitre.org/data/definitions/94.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b201_flask_debug_true.html
+   Location: src/flask_debug.py:10:0[0m
+9	#bad
+10	app.run(debug=True)
+11	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'class_password'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:4:15[0m
+3	class SomeClass:
+4	    password = "class_password"
+5	
+
+--------------------------------------------------
+[94m>> Issue: [B107:hardcoded_password_default] Possible hardcoded password: 'Admin'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b107_hardcoded_password_default.html
+   Location: src/hardcoded-passwords.py:8:0[0m
+7	# Severity: Low   Confidence: Medium
+8	def someFunction(user, password="Admin"):
+9	    print("Hi " + user)
+10	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'root'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:14:19[0m
+13	    # Severity: Low   Confidence: Medium
+14	    if password == "root":
+15	        print("OK, logged in")
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: ''
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:20:19[0m
+19	    # Severity: Low   Confidence: Medium
+20	    if password == '':
+21	        print("No password!")
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'ajklawejrkl42348swfgkg'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:26:19[0m
+25	    # Severity: Low   Confidence: Medium
+26	    if password == "ajklawejrkl42348swfgkg":
+27	        print("Nice password!")
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'this cool password'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:33:23[0m
+32	    # Severity: Low   Confidence: Medium
+33	    if obj.password == "this cool password":
+34	        print(obj.password)
+
+--------------------------------------------------
+[94m>> Issue: [B107:hardcoded_password_default] Possible hardcoded password: 'blerg'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b107_hardcoded_password_default.html
+   Location: src/hardcoded-passwords.py:38:0[0m
+37	# Severity: Low   Confidence: Medium
+38	def doLogin(password="blerg"):
+39	    pass
+40	
+
+--------------------------------------------------
+[94m>> Issue: [B106:hardcoded_password_funcarg] Possible hardcoded password: 'blerg'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b106_hardcoded_password_funcarg.html
+   Location: src/hardcoded-passwords.py:46:0[0m
+45	# Severity: Low   Confidence: Medium
+46	doLogin(password="blerg")
+47	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'blerg'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:50:11[0m
+49	# Severity: Low   Confidence: Medium
+50	password = "blerg"
+51	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'blerg'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:54:9[0m
+53	# Severity: Low   Confidence: Medium
+54	password["password"] = "blerg"
+55	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'secret'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:58:17[0m
+57	# Severity: Low   Confidence: Medium
+58	EMAIL_PASSWORD = "secret"
+59	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'emails_secret'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:62:12[0m
+61	# Severity: Low   Confidence: Medium
+62	email_pwd = 'emails_secret'
+63	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'd6s$f9g!j8mg7hw?n&2'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:66:31[0m
+65	# Severity: Low   Confidence: Medium
+66	my_secret_password_for_email = 'd6s$f9g!j8mg7hw?n&2'
+67	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: '1234'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:70:11[0m
+69	# Severity: Low   Confidence: Medium
+70	passphrase='1234'
+71	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'pass'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:94:23[0m
+93	# https://github.com/PyCQA/bandit/issues/313
+94	log({"server": server, "password": 'pass', "user": user})
+95	
+
+--------------------------------------------------
+[94m>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: '12345'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b105_hardcoded_password_string.html
+   Location: src/hardcoded-passwords.py:102:8[0m
+101	# https://github.com/PyCQA/bandit/issues/1267
+102	info = {"password": "12345"}
+103	
+
+--------------------------------------------------
+[94m>> Issue: [B403:blacklist] Consider possible security implications associated with pickle module.
+   Severity: Low   Confidence: High
+   CWE: CWE-502 (https://cwe.mitre.org/data/definitions/502.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b403-import-pickle
+   Location: src/imports.py:2:0[0m
+1	import os
+2	import pickle
+3	import sys
+
+--------------------------------------------------
+[94m>> Issue: [B404:blacklist] Consider possible security implications associated with the subprocess module.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b404-import-subprocess
+   Location: src/imports.py:4:0[0m
+3	import sys
+4	import subprocess
+
+--------------------------------------------------
+[93m>> Issue: [B308:blacklist] Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+   Severity: Medium   Confidence: High
+   CWE: CWE-79 (https://cwe.mitre.org/data/definitions/79.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe
+   Location: src/mark_safe.py:4:8[0m
+3	mystr = '<b>Hello World</b>'
+4	mystr = safestring.mark_safe(mystr)
+
+--------------------------------------------------
+[94m>> Issue: [B607:start_process_with_partial_path] Starting a process with a partial executable path
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b607_start_process_with_partial_path.html
+   Location: src/nosec.py:9:0[0m
+8	                 shell=True)  #nosec (on the specific kwarg line)
+9	subprocess.Popen('#nosec', shell=True)
+10	subprocess.Popen('/bin/ls *', shell=True) # type: ... # nosec # noqa: E501 ; pylint: disable=line-too-long
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/nosec.py:9:0[0m
+8	                 shell=True)  #nosec (on the specific kwarg line)
+9	subprocess.Popen('#nosec', shell=True)
+10	subprocess.Popen('/bin/ls *', shell=True) # type: ... # nosec # noqa: E501 ; pylint: disable=line-too-long
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/nosec.py:11:0[0m
+10	subprocess.Popen('/bin/ls *', shell=True) # type: ... # nosec # noqa: E501 ; pylint: disable=line-too-long
+11	subprocess.Popen('/bin/ls *', shell=True) # type: ... # nosec B607 # noqa: E501 ; pylint: disable=line-too-long
+12	subprocess.Popen('/bin/ls *', shell=True)  #nosec subprocess_popen_with_shell_equals_true (on the line)
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/nosec.py:17:0[0m
+16	subprocess.Popen('/bin/ls *', shell=True) # type: ... # noqa: E501 ; pylint: disable=line-too-long # nosec
+17	subprocess.Popen('#nosec', shell=True) # nosec B607, B101
+18	subprocess.Popen('#nosec', shell=True) # nosec B602, subprocess_popen_with_shell_equals_true
+
+--------------------------------------------------
+[94m>> Issue: [B607:start_process_with_partial_path] Starting a process with a partial executable path
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b607_start_process_with_partial_path.html
+   Location: src/nosec.py:18:0[0m
+17	subprocess.Popen('#nosec', shell=True) # nosec B607, B101
+18	subprocess.Popen('#nosec', shell=True) # nosec B602, subprocess_popen_with_shell_equals_true
+
+--------------------------------------------------
+[91m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o227 on file (/etc/passwd).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:6:0[0m
+5	
+6	os.chmod('/etc/passwd', 0o227)
+7	os.chmod('/etc/passwd', 0o7)
+
+--------------------------------------------------
+[91m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o7 on file (/etc/passwd).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:7:0[0m
+6	os.chmod('/etc/passwd', 0o227)
+7	os.chmod('/etc/passwd', 0o7)
+8	os.chmod('/etc/passwd', 0o664)
+
+--------------------------------------------------
+[93m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o664 on file (/etc/passwd).
+   Severity: Medium   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:8:0[0m
+7	os.chmod('/etc/passwd', 0o7)
+8	os.chmod('/etc/passwd', 0o664)
+9	os.chmod('/etc/passwd', 0o777)
+
+--------------------------------------------------
+[91m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o777 on file (/etc/passwd).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:9:0[0m
+8	os.chmod('/etc/passwd', 0o664)
+9	os.chmod('/etc/passwd', 0o777)
+10	os.chmod('/etc/passwd', 0o770)
+
+--------------------------------------------------
+[93m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o770 on file (/etc/passwd).
+   Severity: Medium   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:10:0[0m
+9	os.chmod('/etc/passwd', 0o777)
+10	os.chmod('/etc/passwd', 0o770)
+11	os.chmod('/etc/passwd', 0o776)
+
+--------------------------------------------------
+[91m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o776 on file (/etc/passwd).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:11:0[0m
+10	os.chmod('/etc/passwd', 0o770)
+11	os.chmod('/etc/passwd', 0o776)
+12	os.chmod('/etc/passwd', 0o760)
+
+--------------------------------------------------
+[93m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o760 on file (/etc/passwd).
+   Severity: Medium   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:12:0[0m
+11	os.chmod('/etc/passwd', 0o776)
+12	os.chmod('/etc/passwd', 0o760)
+13	os.chmod('~/.bashrc', 511)
+
+--------------------------------------------------
+[91m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o777 on file (~/.bashrc).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:13:0[0m
+12	os.chmod('/etc/passwd', 0o760)
+13	os.chmod('~/.bashrc', 511)
+14	os.chmod('/etc/hosts', 0o777)
+
+--------------------------------------------------
+[91m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o777 on file (/etc/hosts).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:14:0[0m
+13	os.chmod('~/.bashrc', 511)
+14	os.chmod('/etc/hosts', 0o777)
+15	os.chmod('/tmp/oh_hai', 0x0)
+
+--------------------------------------------------
+[91m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o777 on file (/tmp/oh_hai).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:15:0[0m
+14	os.chmod('/etc/hosts', 0o777)
+15	os.chmod('/tmp/oh_hai', 0x0)
+16	os.chmod('/etc/passwd', stat.S_IRWXU)
+
+--------------------------------------------------
+[93m>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b108_hardcoded_tmp_directory.html
+   Location: src/os-chmod.py:15:9[0m
+14	os.chmod('/etc/hosts', 0o777)
+15	os.chmod('/tmp/oh_hai', 0x0)
+16	os.chmod('/etc/passwd', stat.S_IRWXU)
+
+--------------------------------------------------
+[91m>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o777 on file (keyfile).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b103_set_bad_file_permissions.html
+   Location: src/os-chmod.py:17:0[0m
+16	os.chmod('/etc/passwd', stat.S_IRWXU)
+17	os.chmod(keyfile, 0o777)
+18	os.chmod('~/hidden_exec', stat.S_IXGRP)
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:6:0[0m
+5	# Errors
+6	requests.get('https://gmail.com')
+7	requests.get('https://gmail.com', timeout=None)
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:7:0[0m
+6	requests.get('https://gmail.com')
+7	requests.get('https://gmail.com', timeout=None)
+8	requests.post('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:8:0[0m
+7	requests.get('https://gmail.com', timeout=None)
+8	requests.post('https://gmail.com')
+9	requests.post('https://gmail.com', timeout=None)
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:9:0[0m
+8	requests.post('https://gmail.com')
+9	requests.post('https://gmail.com', timeout=None)
+10	requests.put('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:10:0[0m
+9	requests.post('https://gmail.com', timeout=None)
+10	requests.put('https://gmail.com')
+11	requests.put('https://gmail.com', timeout=None)
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:11:0[0m
+10	requests.put('https://gmail.com')
+11	requests.put('https://gmail.com', timeout=None)
+12	requests.delete('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:12:0[0m
+11	requests.put('https://gmail.com', timeout=None)
+12	requests.delete('https://gmail.com')
+13	requests.delete('https://gmail.com', timeout=None)
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:13:0[0m
+12	requests.delete('https://gmail.com')
+13	requests.delete('https://gmail.com', timeout=None)
+14	requests.patch('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:14:0[0m
+13	requests.delete('https://gmail.com', timeout=None)
+14	requests.patch('https://gmail.com')
+15	requests.patch('https://gmail.com', timeout=None)
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:15:0[0m
+14	requests.patch('https://gmail.com')
+15	requests.patch('https://gmail.com', timeout=None)
+16	requests.options('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:16:0[0m
+15	requests.patch('https://gmail.com', timeout=None)
+16	requests.options('https://gmail.com')
+17	requests.options('https://gmail.com', timeout=None)
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:17:0[0m
+16	requests.options('https://gmail.com')
+17	requests.options('https://gmail.com', timeout=None)
+18	requests.head('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:18:0[0m
+17	requests.options('https://gmail.com', timeout=None)
+18	requests.head('https://gmail.com')
+19	requests.head('https://gmail.com', timeout=None)
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to requests with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:19:0[0m
+18	requests.head('https://gmail.com')
+19	requests.head('https://gmail.com', timeout=None)
+20	httpx.get('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:21:0[0m
+20	httpx.get('https://gmail.com')
+21	httpx.get('https://gmail.com', timeout=None)
+22	httpx.post('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:23:0[0m
+22	httpx.post('https://gmail.com')
+23	httpx.post('https://gmail.com', timeout=None)
+24	httpx.put('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:25:0[0m
+24	httpx.put('https://gmail.com')
+25	httpx.put('https://gmail.com', timeout=None)
+26	httpx.delete('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:27:0[0m
+26	httpx.delete('https://gmail.com')
+27	httpx.delete('https://gmail.com', timeout=None)
+28	httpx.patch('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:29:0[0m
+28	httpx.patch('https://gmail.com')
+29	httpx.patch('https://gmail.com', timeout=None)
+30	httpx.options('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:31:0[0m
+30	httpx.options('https://gmail.com')
+31	httpx.options('https://gmail.com', timeout=None)
+32	httpx.head('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:33:0[0m
+32	httpx.head('https://gmail.com')
+33	httpx.head('https://gmail.com', timeout=None)
+34	httpx.Client()
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:35:0[0m
+34	httpx.Client()
+35	httpx.Client(timeout=None)
+36	httpx.AsyncClient()
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:37:0[0m
+36	httpx.AsyncClient()
+37	httpx.AsyncClient(timeout=None)
+38	with httpx.Client() as client:
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:40:5[0m
+39	    client.get('https://gmail.com')
+40	with httpx.Client(timeout=None) as client:
+41	    client.get('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B113:request_without_timeout] Call to httpx with timeout set to None
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b113_request_without_timeout.html
+   Location: src/requests-missing-timeout.py:44:11[0m
+43	    await client.get('https://gmail.com')
+44	async with httpx.AsyncClient(timeout=None) as client:
+45	    await client.get('https://gmail.com')
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:4:8[0m
+3	# bad
+4	query = "SELECT * FROM foo WHERE id = '%s'" % identifier
+5	query = "INSERT INTO foo VALUES ('a', 'b', '%s')" % value
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:5:8[0m
+4	query = "SELECT * FROM foo WHERE id = '%s'" % identifier
+5	query = "INSERT INTO foo VALUES ('a', 'b', '%s')" % value
+6	query = "INSERT INTO foo VALUES('a', 'b', '%s')" % value
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:6:8[0m
+5	query = "INSERT INTO foo VALUES ('a', 'b', '%s')" % value
+6	query = "INSERT INTO foo VALUES('a', 'b', '%s')" % value
+7	query = "DELETE FROM foo WHERE id = '%s'" % identifier
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:7:8[0m
+6	query = "INSERT INTO foo VALUES('a', 'b', '%s')" % value
+7	query = "DELETE FROM foo WHERE id = '%s'" % identifier
+8	query = "UPDATE foo SET value = 'b' WHERE id = '%s'" % identifier
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:8:8[0m
+7	query = "DELETE FROM foo WHERE id = '%s'" % identifier
+8	query = "UPDATE foo SET value = 'b' WHERE id = '%s'" % identifier
+9	query = """WITH cte AS (SELECT x FROM foo)
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:9:8[0m
+8	query = "UPDATE foo SET value = 'b' WHERE id = '%s'" % identifier
+9	query = """WITH cte AS (SELECT x FROM foo)
+10	SELECT x FROM cte WHERE x = '%s'""" % identifier
+11	# bad alternate forms
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:12:8[0m
+11	# bad alternate forms
+12	query = "SELECT * FROM foo WHERE id = '" + identifier + "'"
+13	query = "SELECT * FROM foo WHERE id = '{}'".format(identifier)
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:13:8[0m
+12	query = "SELECT * FROM foo WHERE id = '" + identifier + "'"
+13	query = "SELECT * FROM foo WHERE id = '{}'".format(identifier)
+14	query = "SELECT * FROM foo WHERE id = '[VALUE]'".replace("[VALUE]", identifier)
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:14:8[0m
+13	query = "SELECT * FROM foo WHERE id = '{}'".format(identifier)
+14	query = "SELECT * FROM foo WHERE id = '[VALUE]'".replace("[VALUE]", identifier)
+15	
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:17:12[0m
+16	# bad
+17	cur.execute("SELECT * FROM foo WHERE id = '%s'" % identifier)
+18	cur.execute("INSERT INTO foo VALUES ('a', 'b', '%s')" % value)
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:18:12[0m
+17	cur.execute("SELECT * FROM foo WHERE id = '%s'" % identifier)
+18	cur.execute("INSERT INTO foo VALUES ('a', 'b', '%s')" % value)
+19	cur.execute("INSERT INTO foo VALUES('a', 'b', '%s')" % value)
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:19:12[0m
+18	cur.execute("INSERT INTO foo VALUES ('a', 'b', '%s')" % value)
+19	cur.execute("INSERT INTO foo VALUES('a', 'b', '%s')" % value)
+20	cur.execute("DELETE FROM foo WHERE id = '%s'" % identifier)
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:20:12[0m
+19	cur.execute("INSERT INTO foo VALUES('a', 'b', '%s')" % value)
+20	cur.execute("DELETE FROM foo WHERE id = '%s'" % identifier)
+21	cur.execute("UPDATE foo SET value = 'b' WHERE id = '%s'" % identifier)
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:21:12[0m
+20	cur.execute("DELETE FROM foo WHERE id = '%s'" % identifier)
+21	cur.execute("UPDATE foo SET value = 'b' WHERE id = '%s'" % identifier)
+22	# bad alternate forms
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:23:12[0m
+22	# bad alternate forms
+23	cur.execute("SELECT * FROM foo WHERE id = '" + identifier + "'")
+24	cur.execute("SELECT * FROM foo WHERE id = '{}'".format(identifier))
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:24:12[0m
+23	cur.execute("SELECT * FROM foo WHERE id = '" + identifier + "'")
+24	cur.execute("SELECT * FROM foo WHERE id = '{}'".format(identifier))
+25	cur.execute("SELECT * FROM foo WHERE id = '[VALUE]'".replace("[VALUE]", identifier))
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:25:12[0m
+24	cur.execute("SELECT * FROM foo WHERE id = '{}'".format(identifier))
+25	cur.execute("SELECT * FROM foo WHERE id = '[VALUE]'".replace("[VALUE]", identifier))
+26	
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:28:12[0m
+27	# bad f-strings
+28	cur.execute(f"SELECT {column_name} FROM foo WHERE id = 1")
+29	cur.execute(f"SELECT {a + b} FROM foo WHERE id = 1")
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:29:12[0m
+28	cur.execute(f"SELECT {column_name} FROM foo WHERE id = 1")
+29	cur.execute(f"SELECT {a + b} FROM foo WHERE id = 1")
+30	cur.execute(f"INSERT INTO {table_name} VALUES (1)")
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:30:12[0m
+29	cur.execute(f"SELECT {a + b} FROM foo WHERE id = 1")
+30	cur.execute(f"INSERT INTO {table_name} VALUES (1)")
+31	cur.execute(f"INSERT INTO {table_name} VALUES(1)")
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:31:12[0m
+30	cur.execute(f"INSERT INTO {table_name} VALUES (1)")
+31	cur.execute(f"INSERT INTO {table_name} VALUES(1)")
+32	cur.execute(f"UPDATE {table_name} SET id = 1")
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:32:12[0m
+31	cur.execute(f"INSERT INTO {table_name} VALUES(1)")
+32	cur.execute(f"UPDATE {table_name} SET id = 1")
+33	
+
+--------------------------------------------------
+[93m>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html
+   Location: src/sql_statements.py:47:4[0m
+46	
+47	a()("SELECT %s FROM foo" % val)
+48	
+
+--------------------------------------------------
+[94m>> Issue: [B404:blacklist] Consider possible security implications associated with the subprocess module.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b404-import-subprocess
+   Location: src/subprocess_shell.py:1:0[0m
+1	import subprocess
+2	from subprocess import Popen as pop
+3	
+
+--------------------------------------------------
+[94m>> Issue: [B404:blacklist] Consider possible security implications associated with the subprocess module.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b404-import-subprocess
+   Location: src/subprocess_shell.py:2:0[0m
+1	import subprocess
+2	from subprocess import Popen as pop
+3	
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:11:0[0m
+10	
+11	pop('/bin/gcc --version', shell=True)
+12	Popen('/bin/gcc --version', shell=True)
+
+--------------------------------------------------
+[93m>> Issue: [B604:any_other_function_with_shell_equals_true] Function call with shell=True parameter identified, possible security issue.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b604_any_other_function_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:12:0[0m
+11	pop('/bin/gcc --version', shell=True)
+12	Popen('/bin/gcc --version', shell=True)
+13	
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:14:0[0m
+13	
+14	subprocess.Popen('/bin/gcc --version', shell=True)
+15	subprocess.Popen(['/bin/gcc', '--version'], shell=False)
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:15:0[0m
+14	subprocess.Popen('/bin/gcc --version', shell=True)
+15	subprocess.Popen(['/bin/gcc', '--version'], shell=False)
+16	subprocess.Popen(['/bin/gcc', '--version'])
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:16:0[0m
+15	subprocess.Popen(['/bin/gcc', '--version'], shell=False)
+16	subprocess.Popen(['/bin/gcc', '--version'])
+17	
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:18:0[0m
+17	
+18	subprocess.call(["/bin/ls",
+19	                 "-l"
+20	                 ])
+21	subprocess.call('/bin/ls -l', shell=True)
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:21:0[0m
+20	                 ])
+21	subprocess.call('/bin/ls -l', shell=True)
+22	
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:23:0[0m
+22	
+23	subprocess.check_call(['/bin/ls', '-l'], shell=False)
+24	subprocess.check_call('/bin/ls -l', shell=True)
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:24:0[0m
+23	subprocess.check_call(['/bin/ls', '-l'], shell=False)
+24	subprocess.check_call('/bin/ls -l', shell=True)
+25	
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:26:0[0m
+25	
+26	subprocess.check_output(['/bin/ls', '-l'])
+27	subprocess.check_output('/bin/ls -l', shell=True)
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:27:0[0m
+26	subprocess.check_output(['/bin/ls', '-l'])
+27	subprocess.check_output('/bin/ls -l', shell=True)
+28	subprocess.check_output([], stdout=None)
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:28:0[0m
+27	subprocess.check_output('/bin/ls -l', shell=True)
+28	subprocess.check_output([], stdout=None)
+29	
+
+--------------------------------------------------
+[94m>> Issue: [B605:start_process_with_a_shell] Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b605_start_process_with_a_shell.html
+   Location: src/subprocess_shell.py:30:0[0m
+29	
+30	subprocess.getoutput('/bin/ls -l')
+31	subprocess.getstatusoutput('/bin/ls -l')
+
+--------------------------------------------------
+[94m>> Issue: [B605:start_process_with_a_shell] Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b605_start_process_with_a_shell.html
+   Location: src/subprocess_shell.py:31:0[0m
+30	subprocess.getoutput('/bin/ls -l')
+31	subprocess.getstatusoutput('/bin/ls -l')
+32	
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:33:0[0m
+32	
+33	subprocess.run(['/bin/ls', '-l'])
+34	subprocess.run('/bin/ls -l', shell=True)
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:34:0[0m
+33	subprocess.run(['/bin/ls', '-l'])
+34	subprocess.run('/bin/ls -l', shell=True)
+35	
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:36:0[0m
+35	
+36	subprocess.Popen('/bin/ls *', shell=True)
+37	subprocess.Popen('/bin/ls %s' % ('something',), shell=True)
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:37:0[0m
+36	subprocess.Popen('/bin/ls *', shell=True)
+37	subprocess.Popen('/bin/ls %s' % ('something',), shell=True)
+38	subprocess.Popen('/bin/ls {}'.format('something'), shell=True)
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:38:0[0m
+37	subprocess.Popen('/bin/ls %s' % ('something',), shell=True)
+38	subprocess.Popen('/bin/ls {}'.format('something'), shell=True)
+39	
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:41:0[0m
+40	command = "/bin/ls" + unknown_function()
+41	subprocess.Popen(command, shell=True)
+42	
+
+--------------------------------------------------
+[94m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:43:0[0m
+42	
+43	subprocess.Popen('/bin/ls && cat /etc/passwd', shell=True)
+44	
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:46:0[0m
+45	command = 'pwd'
+46	subprocess.call(command, shell='True')
+47	subprocess.call(command, shell='False')
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:47:0[0m
+46	subprocess.call(command, shell='True')
+47	subprocess.call(command, shell='False')
+48	subprocess.call(command, shell='None')
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:48:0[0m
+47	subprocess.call(command, shell='False')
+48	subprocess.call(command, shell='None')
+49	subprocess.call(command, shell=1)
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:49:0[0m
+48	subprocess.call(command, shell='None')
+49	subprocess.call(command, shell=1)
+50	
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:51:0[0m
+50	
+51	subprocess.call(command, shell=Popen())
+52	subprocess.call(command, shell=[True])
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:52:0[0m
+51	subprocess.call(command, shell=Popen())
+52	subprocess.call(command, shell=[True])
+53	subprocess.call(command, shell={'IS': 'True'})
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:53:0[0m
+52	subprocess.call(command, shell=[True])
+53	subprocess.call(command, shell={'IS': 'True'})
+54	subprocess.call(command, shell=command)
+
+--------------------------------------------------
+[91m>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: src/subprocess_shell.py:54:0[0m
+53	subprocess.call(command, shell={'IS': 'True'})
+54	subprocess.call(command, shell=command)
+55	
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:56:0[0m
+55	
+56	subprocess.call(command, shell=False)
+57	subprocess.call(command, shell=0)
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:57:0[0m
+56	subprocess.call(command, shell=False)
+57	subprocess.call(command, shell=0)
+58	subprocess.call(command, shell=[])
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:58:0[0m
+57	subprocess.call(command, shell=0)
+58	subprocess.call(command, shell=[])
+59	subprocess.call(command, shell={})
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:59:0[0m
+58	subprocess.call(command, shell=[])
+59	subprocess.call(command, shell={})
+60	subprocess.call(command, shell=None)
+
+--------------------------------------------------
+[94m>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src/subprocess_shell.py:60:0[0m
+59	subprocess.call(command, shell={})
+60	subprocess.call(command, shell=None)
+
+--------------------------------------------------
+[94m>> Issue: [B110:try_except_pass] Try, Except, Pass detected.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b110_try_except_pass.html
+   Location: src/try_except_pass.py:4:0[0m
+3	    a = 1
+4	except:
+5	    pass
+6	
+
+--------------------------------------------------
+[94m>> Issue: [B110:try_except_pass] Try, Except, Pass detected.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b110_try_except_pass.html
+   Location: src/try_except_pass.py:11:0[0m
+10	    a = 1
+11	except Exception:
+12	    pass
+13	
+
+--------------------------------------------------
+[93m>> Issue: [B506:yaml_load] Use of unsafe yaml load. Allows instantiation of arbitrary objects. Consider yaml.safe_load().
+   Severity: Medium   Confidence: High
+   CWE: CWE-20 (https://cwe.mitre.org/data/definitions/20.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b506_yaml_load.html
+   Location: src/yaml_load.py:9:8[0m
+8	    ystr = yaml.dump({'a': 1, 'b': 2, 'c': 3})
+9	    y = yaml.load(ystr)
+10	    yaml.dump(y)
+
+--------------------------------------------------
+[93m>> Issue: [B506:yaml_load] Use of unsafe yaml load. Allows instantiation of arbitrary objects. Consider yaml.safe_load().
+   Severity: Medium   Confidence: High
+   CWE: CWE-20 (https://cwe.mitre.org/data/definitions/20.html)
+   More Info: https://bandit.readthedocs.io/en/X/plugins/b506_yaml_load.html
+   Location: src/yaml_load.py:22:0[0m
+21	
+22	yaml.load("{}", Loader=yaml.Loader)
+23	
+
+--------------------------------------------------
+[95m
+Code scanned:[0m
+	Total lines of code: 328
+	Total lines skipped (#nosec): 5
+[95m
+Run metrics:[0m
+	Total issues (by severity):
+		Undefined: 0
+		Low: 50
+		Medium: 72
+		High: 29
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 37
+		Medium: 30
+		High: 84
+[95mFiles skipped (1):[0m
+	src/nonsense2.py (syntax error while parsing AST from file)

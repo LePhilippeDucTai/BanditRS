@@ -1,0 +1,4 @@
+DEVIATIONS.md #19: PyYAML's parse-error wording for an invalid config
+Golden recorded from BanditRS, not from Python: the two are
+known to differ here. The replay still guards against a Rust
+regression; scripts/cli_matrix.py diff reports it as expected.

@@ -1,0 +1,5 @@
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: B101,B303
+[main]	INFO	cli exclude tests: B303
+[main]	ERROR	Non-exclusive include/exclude test sets: {'B303'}

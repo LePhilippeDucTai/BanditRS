@@ -150,9 +150,27 @@ impl ConfigParser {
 
 /// `parse_ini_file(f_loc)`.
 pub fn parse_ini_file(path: &str) -> Option<IndexMap<String, String>> {
-    let text = std::fs::read_to_string(path).ok()?;
-    let cp = ConfigParser::read_str(&text).ok()?;
-    cp.items("bandit")
+    // `utils.parse_ini_file` catches (configparser.Error, KeyError, TypeError)
+    // and warns before returning None — an unreadable file, an unparsable one
+    // and a file without a `[bandit]` section all take that same path.
+    fn warn(path: &str) -> Option<IndexMap<String, String>> {
+        crate::log_warning!(
+            "utils",
+            "Unable to parse config file {} or missing [bandit] section",
+            path
+        );
+        None
+    }
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return warn(path);
+    };
+    let Ok(cp) = ConfigParser::read_str(&text) else {
+        return warn(path);
+    };
+    match cp.items("bandit") {
+        Some(items) => Some(items),
+        None => warn(path),
+    }
 }
 
 #[cfg(test)]

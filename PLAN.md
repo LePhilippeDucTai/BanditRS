@@ -83,12 +83,13 @@ rejetée avec le même code 2.
 | J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | **Fait** (2026-09-09) : campagne complète dans `docs/plan/benchmarks.md` §5 (examples 19,0×, stdlib 49,9×, subprocess_shell.py 33,3×, long_set.py 17,4×, mémoire Rust −57 %) — tous les objectifs §2 dépassés ; `scripts/bench_regression.sh` en place (garde-fou +10 %) ; profil `valgrind --callgrind` en §6 (2 pistes d'optimisation chiffrées non appliquées, hors propriété WP-15) |
 | J4 | Consolidation : `PLAN.md` réécrit en état final, `README.md` à jour, version `0.2.0` | **Fait** (2026-09-09) : décision utilisateur — consolidation sans publication externe. Porte de qualité (`scripts/check.sh`) verte avant et après (351 tests, clippy 0 avertissement, fmt propre) ; version du crate passée à `0.2.0` (`Cargo.toml`/`Cargo.lock`) ; `README.md` reflète l'état final ; `docs/plan/README.md` §3 mis à jour. **J4 est le dernier jalon du plan parallèle** ; aucun J5 n'est défini — toute suite (publication, nouvelles fonctionnalités hors périmètre bandit) demande une nouvelle décision utilisateur et un nouveau plan. |
 
-> **CI GitHub Actions désactivée le 2026-09-09 à la demande de l'utilisateur** (aucun coût souhaité). Le
-> workflow est conservé, inerte, dans `.github/workflows/ci.yml.disabled` (GitHub ne lit que `*.yml`/`*.yaml`).
-> La porte de qualité s'exécute **en local** via `scripts/check.sh`, qui reproduit à l'identique les trois jobs
-> du workflow (build + tests + `wp_status.sh --check` ; rustfmt + clippy `-D warnings` ; compilation des benchs).
-> À lancer avant chaque commit, et systématiquement avant un push. Pour réactiver un jour :
-> `git mv .github/workflows/ci.yml.disabled .github/workflows/ci.yml`.
+> **CI GitHub Actions : active** (`.github/workflows/ci.yml`). Elle avait été désactivée le 2026-09-09
+> pour des raisons de coût, puis réactivée avec le wheel multi-plateforme ; le dépôt étant public, les
+> runners standard sont gratuits. Six jobs : `test`, `lint`, `bench` (compilation seule), `python`
+> (wheel), `parity` (matrice CLI + corpus `smoke` face au bandit de référence) et `parity-nightly`
+> (tier `standard` + contrôle de dérive du corpus golden, hebdomadaire).
+> `scripts/check.sh` reproduit les mêmes vérifications en local — à lancer avant chaque commit, et
+> systématiquement avant un push.
 
 | Jalon | Module(s) | État |
 |---|---|---|

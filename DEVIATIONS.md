@@ -5,7 +5,14 @@ connus uniquement quand aucun test n'en dépend. Tout le reste (coquilles dans l
 `bad_calls`/`bad_imports` de la conversion legacy — testée —, premier match des blacklists, « premier hit » du
 nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reproduit à l'identique.
 
-1. `# nosec B101,B102` (virgule sans espace) : Python n'ignore que le dernier id ; BanditRS prend tous les ids.
+1. ~~`# nosec B101,B102` (virgule sans espace) : Python n'ignore que le dernier id ; BanditRS prend tous les
+   ids.~~ **Résorbé le 2026-09-09 (J5).** La matrice différentielle CLI (WP-18) a montré que BanditRS
+   découpait les jetons d'un commentaire `nosec` sur les espaces et les virgules, là où Python itère
+   `NOSEC_COMMENT_TESTS = (?:(B\d+|[a-z\d_]+),?)+` et prend `group(1)` : la ponctuation est ignorée
+   (`#nosec (on the line)` donne `on`, `the`, `line`, jamais `(on`) et un groupe répété ne conserve que sa
+   **dernière** répétition (`B101,B102` donne le seul jeton `B102`). Le crate `regex` reproduit les deux
+   comportements à l'identique ; `src/core/nosec.rs` porte donc désormais la regex telle quelle et il n'y a
+   plus d'écart — ni sur les ids retenus, ni sur les avertissements `Test in comment: …` de stderr.
 2. Formatter CSV : un test sans CWE (NOTSET) plante en Python (`KeyError: 'link'`) ; BanditRS écrit une colonne vide.
 3. Fichier `.bandit` (INI) : `level`, `confidence`, `number` sont convertis en entiers (Python garde des chaînes et
    plante) ; la clé `configfile` est réellement honorée (Python lisait la mauvaise clé de défaut).
@@ -65,12 +72,44 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
     (`docs/plan/wp/WP-09-unit-core-context.md`) donne donc à `statement()` une vraie implémentation — le plus
     proche ancêtre de type `Stmt` — pour que la propriété soit testable avec un extrait réel. Sans impact
     observable : `statement()` n'est utilisé par aucun plugin ni aucune sortie.
-14. `apply_ini_options` (`src/cli/main.rs`) ne journalise « Using command line arg for selected targets » que
-    si la clé `targets` est présente dans le `.bandit` (INI), alors que Python l'émet dès que `args.targets`
-    est fourni en ligne de commande, indépendamment de la clé ini. Repéré lors de la revue de WP-03 (hors de
-    son périmètre) ; assumé comme déviation en clôture du jalon J4 (2026-09-09) plutôt que corrigé, faute de
-    test de la suite qui l'observe.
-15. `src/cli/baseline.rs::name_rev()` rend `master` là où Python (`commit.name_rev`) rend `<sha> master` dans
-    le message « Got current/parent commit: … ». Repéré lors de la revue de WP-04 (hors de son périmètre) ;
-    assumé comme déviation en clôture du jalon J4 (2026-09-09), aucun test de `test_baseline.py` ne
-    l'observe.
+14. ~~`apply_ini_options` (`src/cli/main.rs`) ne journalise « Using command line arg for selected targets »
+    que si la clé `targets` est présente dans le `.bandit` (INI).~~ **Résorbé le 2026-09-09 (J5).** Le cas
+    `ini_explicit` de la matrice CLI (WP-18) l'observe. `parser.get_default("targets")` vaut `None` pour un
+    `nargs="*"`, donc `_log_option_source` prend sa branche « défaut non défini » : le message est émis dès
+    que des cibles sont passées en ligne de commande, et la valeur de l'ini n'est consultée que s'il n'y en a
+    aucune. Porté tel quel.
+15. ~~`src/cli/baseline.rs::name_rev()` rend `master` là où Python (`commit.name_rev`) rend `<sha> master`
+    dans le message « Got current/parent commit: … ».~~ **Résorbé le 2026-09-09 (J5).** Le cas
+    `baseline_bin_run` de la matrice CLI l'observe. `commit.name_rev` de GitPython est `git name-rev <sha>`,
+    dont la sortie est « <sha> <nom> » ; le `--name-only` du portage Rust supprimait la moitié `<sha>`.
+
+## Écarts constatés au jalon J5 (matrice CLI et corpus réel)
+
+16. **Version cible du parseur.** BanditRS analyse avec `ruff_python_parser`, dont la version cible est
+    pilotée par `BANDITRS_PYTHON_COMPAT` ; bandit Python analyse avec l'`ast` de l'interpréteur hôte.
+    Avec `BANDITRS_PYTHON_COMPAT=3.11`, BanditRS **accepte et refuse exactement ce que refuse CPython
+    3.11** : la parité est totale y compris sur des paquets écrits en syntaxe 3.12+ — mesuré sur
+    `django 6.1.1` et `ansible-core 2.21.4` (4 709 fichiers, 33 fichiers en PEP 695), rapports
+    identiques, `errors[]` compris. Avec la cible par défaut (la plus récente), BanditRS analyse
+    normalement les fichiers que la référence 3.11 range dans `errors[]` (Django : 5 fichiers,
+    +53 issues ; ansible-core : 28 fichiers, +34 issues) et applique la sémantique 3.12 des positions de
+    constantes de f-strings (écart #7), ce qui déplace les issues remontées à l'intérieur d'une f-string.
+    Ce n'est donc pas un défaut de parité mais un réglage : **comparer à une référence, c'est aligner la
+    version d'interpréteur**, ce que font tous les harnais de ce dépôt. Le tier `frontier` du corpus
+    (`tests/corpus/manifest.tsv`) existe pour chiffrer les deux régimes
+    (`scripts/diff_corpus.py --tier frontier --rs-compat latest`).
+17. **Ordre des identifiants dans « profile include/exclude tests ».** `_log_info` joint un `set` Python, dont
+    l'ordre d'itération dépend du hachage randomisé des chaînes : cinq exécutions identiques du même
+    `bandit -c cfg/profiles.yml -p ShellInjection` ont donné trois ordres différents. BanditRS itère une
+    collection déterministe. C'est Python qui n'est pas reproductible ici ; le harnais trie les deux côtés
+    avant comparaison (`scripts/cli_matrix.py`).
+18. **Sortie de `-d` (debug).** Python journalise, pour chaque nœud visité, le dictionnaire `Context` complet,
+    y compris le `repr` des objets `ast` CPython (`<ast.Name object at 0x…>`) — 17 514 lignes contre 38 sur
+    l'espace de travail de la matrice. BanditRS n'a pas de graphe d'objets Python à imprimer ; reproduire ce
+    dump octet à octet supposerait d'émuler le `repr` de chaque type de nœud CPython et la disposition exacte
+    du dictionnaire, pour une sortie qui est une aide au débogage et non une interface exploitable. Les
+    lignes de journal `INFO`/`WARNING`/`ERROR`, elles, sont identiques (cas `debug` de la matrice).
+19. **Texte des erreurs de parsing YAML.** Une configuration YAML invalide produit le message de PyYAML
+    (« while parsing a flow sequence / expected ',' or ']' », avec ligne et colonne) ; BanditRS produit celui
+    de `saphyr-parser` (« illegal placement of ':' indicator at byte … »). Même comportement (erreur
+    journalisée par `[config] ERROR`, code de sortie 2), seul le libellé de l'analyseur diffère.

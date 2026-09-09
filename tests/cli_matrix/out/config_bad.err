@@ -1,0 +1,2 @@
+[config]	ERROR	illegal placement of ':' indicator at byte 33 line 2 column 9
+[main]	ERROR	cfg/bad.yml : Error parsing file.
