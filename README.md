@@ -6,6 +6,7 @@
 Same tests, same options, same outputs, same exit codes — **17× to 87× faster**,
 with **57% less memory**.
 
+[![CI](https://github.com/LePhilippeDucTai/BanditRS/actions/workflows/ci.yml/badge.svg)](https://github.com/LePhilippeDucTai/BanditRS/actions/workflows/ci.yml)
 [![Rust](https://img.shields.io/badge/rust-1.96%2B-B7410E?logo=rust&logoColor=white)](rust-toolchain.toml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-351%20✓%20(0%20ignored)-success)](#5-how-parity-is-proven)
@@ -520,14 +521,55 @@ that Python clearly mishandles).
 
 ## 7. Installation and usage
 
-### Building
+### Installing
 
-```bash
-rustup update stable          # rustc ≥ 1.96 required
-git clone https://github.com/LePhilippeDucTai/BanditRS && cd BanditRS
-cargo build --release
-# → target/release/{bandit, bandit-baseline, bandit-config-generator}
+BanditRS ships as a Python package, so it drops into any environment that already
+has `pip` — no Rust knowledge required to *use* it.
+
+| Method | Command | Needs a Rust toolchain? |
+| --- | --- | --- |
+| **Prebuilt wheel** (recommended) | `pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>` | **No** |
+| **From git** | `pip install git+https://github.com/LePhilippeDucTai/BanditRS` | **Yes** |
+| **From source** | `cargo build --release` | Yes |
+
+> **Why `git+` needs Rust.** `pip install git+…` always builds from source: pip
+> clones the repository and builds a wheel from the checkout on the spot. No
+> prebuilt artifact is involved, so `rustc` ≥ 1.96 and `cargo` must be present,
+> and the build takes a couple of minutes. That is inherent to the `git+` syntax,
+> not a limitation of this package. The prebuilt wheels attached to each
+> [release](https://github.com/LePhilippeDucTai/BanditRS/releases) exist precisely
+> to avoid it — pick the one matching your platform from the table below.
+
+Every release publishes one wheel per platform. Because the wheels contain native
+executables that do not link against libpython, each one is tagged
+`py3-none-<platform>` and works with **every** supported Python version:
+
+| Platform | Architecture | Wheel tag |
+| --- | --- | --- |
+| Linux (glibc ≥ 2.17) | x86-64 | `manylinux2014_x86_64` |
+| Linux (glibc ≥ 2.17) | ARM64 | `manylinux2014_aarch64` |
+| macOS | Intel | `macosx_*_x86_64` |
+| macOS | Apple Silicon | `macosx_*_arm64` |
+| Windows | x86-64 | `win_amd64` |
+| Windows | ARM64 | `win_arm64` |
+
+Installing gives you four commands:
+
 ```
+bandit                     drop-in replacement for the PyCQA command
+banditrs                   identical alias (see below)
+bandit-baseline            scan against a git baseline
+bandit-config-generator    emit a configuration profile
+```
+
+#### Coexisting with PyCQA bandit
+
+The `bandit` command is a deliberate drop-in replacement, which means it occupies
+the same file name as the PyCQA package. If both are installed in the same
+environment, the last one installed wins — silently. The `banditrs` alias is
+there for exactly that case: it is byte-for-byte the same program under a name
+nothing else claims, so you can compare the two side by side, or migrate
+gradually, without uninstalling anything.
 
 ### Usage
 
@@ -552,6 +594,21 @@ bandit-config-generator --show-defaults > bandit.yaml   # generate a full profil
 bandit-baseline -r my_project/                          # diff against the parent commit (requires git)
 ```
 
+### From Python
+
+The `banditrs` module is a thin locator/launcher around the same executables —
+the analysis is never reimplemented in Python:
+
+```python
+import banditrs
+
+banditrs.find_bandit_bin()                  # -> PosixPath('.../bin/bandit')
+result = banditrs.run(["-r", "src/", "-f", "json"], capture_output=True, text=True)
+result.returncode                           # non-zero when issues are found
+```
+
+`python -m banditrs …` is equivalent to calling `bandit` directly.
+
 ### Replacing bandit in a CI pipeline
 
 ```yaml
@@ -561,14 +618,21 @@ bandit-baseline -r my_project/                          # diff against the paren
   hooks: [{ id: bandit, args: ["-r", "src/"] }]
 
 # after: same invocation, same output, same exit code
-- repo: local
-  hooks:
-    - id: banditrs
-      name: banditrs
-      entry: /path/to/bandit
-      language: system
-      types: [python]
-      args: ["-r", "src/"]
+- repo: https://github.com/LePhilippeDucTai/BanditRS
+  rev: v0.2.0
+  hooks: [{ id: banditrs, args: ["-r", "src/"] }]
+```
+
+pre-commit builds the hook in its own isolated environment, so this route
+compiles from source and needs a Rust toolchain on the machine running the hook.
+
+### Building from source
+
+```bash
+rustup update stable          # rustc ≥ 1.96 required
+git clone https://github.com/LePhilippeDucTai/BanditRS && cd BanditRS
+cargo build --release
+# → target/release/{bandit, banditrs, bandit-baseline, bandit-config-generator}
 ```
 
 ### Development tooling

@@ -1,19 +1,27 @@
 # WP-16 — Intégration continue : validation, job différentiel, tableau de bord
 
-> ## ⛔ LOT SUSPENDU (2026-09-09)
+> ## ✅ LOT REPRIS (2026-09-09)
 >
-> **Décision de l'utilisateur : aucune CI hébergée, aucun coût — la validation se fait uniquement en local.**
-> Le workflow créé en J0 a été désactivé (renommé `.github/workflows/ci.yml.disabled` ; GitHub ne lit que
-> `*.yml`/`*.yaml`, le fichier est donc inerte et aucune exécution n'est déclenchée).
+> **Décision précédente (levée) :** « aucune CI hébergée, aucun coût — validation uniquement en local ».
+> Le workflow avait été neutralisé en `.github/workflows/ci.yml.disabled`.
 >
-> **Le remplaçant est `scripts/check.sh`**, qui reproduit les trois jobs à l'identique sur la machine de dév :
-> build de toutes les cibles + suite complète + `wp_status.sh --check`, puis rustfmt + clippy `-D warnings`,
-> puis compilation des benchs. Sortie 0 = équivalent d'une CI verte. `scripts/check.sh fast` saute les benchs.
+> **Ce qui a changé :** la question du coût a été tranchée sur pièces. `LePhilippeDucTai/BanditRS`
+> est un dépôt **public**, et la facturation GitHub Actions ne s'applique pas aux dépôts publics
+> utilisant des runners *standard* : minutes illimitées et gratuites, y compris sur les runners
+> ARM64 (`ubuntu-24.04-arm`, `windows-11-arm`) et macOS. Seuls les *larger runners* sont facturés
+> même pour un dépôt public — aucun job n'en déclare. Les assets de Releases ne sont pas facturés
+> non plus. Aucun secret n'est requis (le `GITHUB_TOKEN` automatique suffit).
 >
-> Ne pas reprendre ce lot sans accord explicite de l'utilisateur. Pour réactiver le workflow :
-> `git mv .github/workflows/ci.yml.disabled .github/workflows/ci.yml`.
+> **Seule réserve :** si le dépôt passait en privé, la facturation démarrerait (2 000 min/mois
+> offertes, coefficient ×2 Windows et ×10 macOS).
 >
-> Le reste de cette fiche est conservé tel quel pour le jour où la question se reposera.
+> `.github/workflows/ci.yml` est donc réactivé et étendu d'un job `python` (construction du wheel
+> + fumée des quatre commandes + sdist installable). `.github/workflows/release.yml` s'y ajoute :
+> six wheels (Linux/macOS/Windows × x86-64/ARM64) plus un sdist, attachés à chaque tag `v*`.
+>
+> `scripts/check.sh` reste la porte de qualité locale et gagne le mode `python` (qui vérifie en plus
+> la **parité de sortie entre le binaire du wheel et celui construit par cargo**, ce que la CI ne
+> fait pas).
 
 **Agent** : `banditrs-wp-low` · **Vague** B (job golden après WP-14) · **Fichiers** : `.github/workflows/*.yml`, `README.md` (badge uniquement)
 **Référence** : `.github/workflows/ci.yml` (créé en J0 : jobs `test`, `lint`, `bench`)

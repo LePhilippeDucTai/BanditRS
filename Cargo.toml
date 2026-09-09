@@ -19,6 +19,10 @@ name = "bandit"
 path = "src/bin/bandit.rs"
 
 [[bin]]
+name = "banditrs"
+path = "src/bin/banditrs.rs"
+
+[[bin]]
 name = "bandit-baseline"
 path = "src/bin/bandit_baseline.rs"
 

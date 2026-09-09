@@ -1,0 +1,25 @@
+# pre-commit integration for BanditRS.
+#
+#   repo: https://github.com/LePhilippeDucTai/BanditRS
+#   rev: v0.2.0
+#   hooks:
+#     - id: banditrs
+#
+# `language: python` makes pre-commit build the wheel from this repository in
+# its own isolated environment, which requires a Rust toolchain (rustc >= 1.96)
+# on the machine running the hook. See README §7 for the trade-offs.
+- id: banditrs
+  name: banditrs
+  description: "Scan Python code for common security issues (bandit, reimplemented in Rust)"
+  entry: bandit
+  language: python
+  types: [python]
+  require_serial: false
+
+- id: banditrs-baseline
+  name: banditrs (baseline)
+  description: "Report only issues absent from the git baseline"
+  entry: bandit-baseline
+  language: python
+  types: [python]
+  require_serial: true

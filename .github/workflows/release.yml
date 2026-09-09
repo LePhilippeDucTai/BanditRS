@@ -1,0 +1,136 @@
+# Release pipeline: build one binary wheel per OS/architecture, plus a source
+# distribution, and attach them all to a GitHub Release.
+#
+# Cost: every runner below is a *standard* GitHub-hosted runner. Standard
+# runners — including the ARM64 ones and macOS — are free with unlimited
+# minutes on public repositories, and Release assets are not billed. No job
+# requests a larger runner, which is the only thing GitHub charges for on a
+# public repository. Nothing here needs a secret: the automatic GITHUB_TOKEN is
+# enough to publish the Release.
+#
+# Why there is no Python-version matrix: the wheels contain native executables
+# that do not link against libpython, so maturin tags them `py3-none-<platform>`
+# — one wheel per platform, valid for every supported Python. Six wheels total.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  # Dry run: builds and smoke-tests everything, publishes nothing (the `release`
+  # job is tag-gated). Use this to validate changes before cutting a tag.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  wheels:
+    name: wheel · ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x86_64
+            runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            # `auto` selects manylinux2014 (glibc 2.17), the oldest baseline the
+            # Rust linux-gnu targets still support. Bump to `2_28` if a
+            # dependency ever needs a newer glibc.
+            manylinux: auto
+          - name: linux-aarch64
+            runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            manylinux: auto
+          - name: macos-x86_64
+            # `macos-13` was retired from the runner fleet; Intel macOS is now
+            # only available through the `-intel` labels.
+            runner: macos-15-intel
+            target: x86_64-apple-darwin
+          - name: macos-aarch64
+            runner: macos-latest
+            target: aarch64-apple-darwin
+          - name: windows-x86_64
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+          - name: windows-aarch64
+            runner: windows-11-arm
+            target: aarch64-pc-windows-msvc
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux }}
+          args: --release --locked --out dist
+
+      # Every target above is built on its own native architecture, so the
+      # smoke test really exercises the artifact we are about to publish —
+      # including the ARM64 wheels.
+      - name: Smoke-test the wheel
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-index --find-links dist banditrs
+          bandit --version
+          banditrs --version
+          bandit-baseline --help > /dev/null
+          bandit-config-generator --show-defaults > /dev/null
+          bandit -r examples/ --exit-zero
+          python -m banditrs --version
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.name }}
+          path: dist/*.whl
+          retention-days: 1
+          if-no-files-found: error
+
+  sdist:
+    name: source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+
+  release:
+    name: publish GitHub Release
+    needs: [wheels, sdist]
+    # Tag-gated: a `workflow_dispatch` run builds and smoke-tests everything but
+    # never publishes, so the pipeline can be rehearsed safely.
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: List artifacts
+        run: ls -l dist
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true

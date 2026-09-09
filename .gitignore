@@ -2,3 +2,8 @@
 /.venv
 *.swp
 /.claude/worktrees/
+
+# Python packaging
+/dist
+__pycache__/
+*.egg-info/
