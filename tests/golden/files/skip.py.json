@@ -1,0 +1,134 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/skip.py": {
+      "CONFIDENCE.HIGH": 5,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 5,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 7,
+      "nosec": 2,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 5,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 5,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 7,
+      "nosec": 2,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 subprocess.call([\"/bin/ls\", \"-l\"])\n2 subprocess.call([\"/bin/ls\", \"-l\"]) #noqa\n3 subprocess.call([\"/bin/ls\", \"-l\"]) # noqa\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/skip.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 1,
+      "line_range": [
+        1
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "1 subprocess.call([\"/bin/ls\", \"-l\"])\n2 subprocess.call([\"/bin/ls\", \"-l\"]) #noqa\n3 subprocess.call([\"/bin/ls\", \"-l\"]) # noqa\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/skip.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 2,
+      "line_range": [
+        2
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "2 subprocess.call([\"/bin/ls\", \"-l\"]) #noqa\n3 subprocess.call([\"/bin/ls\", \"-l\"]) # noqa\n4 subprocess.call([\"/bin/ls\", \"-l\"]) # nosec\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/skip.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 3,
+      "line_range": [
+        3
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "4 subprocess.call([\"/bin/ls\", \"-l\"]) # nosec\n5 subprocess.call([\"/bin/ls\", \"-l\"])\n6 subprocess.call([\"/bin/ls\", \"-l\"]) #nosec\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/skip.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "6 subprocess.call([\"/bin/ls\", \"-l\"]) #nosec\n7 subprocess.call([\"/bin/ls\", \"-l\"])\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/skip.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    }
+  ]
+}

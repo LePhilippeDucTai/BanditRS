@@ -1,0 +1,54 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/httpoxy_twisted_script.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 6,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 6,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "4 root = static.File(\"/root\")\n5 root.putChild(\"login.cgi\", twcgi.CGIScript(\"/var/www/cgi-bin/login.py\"))\n6 reactor.listenTCP(80, server.Site(root))\n",
+      "col_offset": 27,
+      "end_col_offset": 71,
+      "filename": "./examples/httpoxy_twisted_script.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 284,
+        "link": "https://cwe.mitre.org/data/definitions/284.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Consider possible security implications associated with twisted.web.twcgi.CGIScript module.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b412-import-httpoxy",
+      "test_id": "B412",
+      "test_name": "blacklist"
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/django_sql_injection_raw.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 6,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 6,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 6,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 6,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "4 User.objects.annotate(val=RawSQL('secure', []))\n5 User.objects.annotate(val=RawSQL('%secure' % 'nos', []))\n6 User.objects.annotate(val=RawSQL('{}secure'.format('no'), []))\n",
+      "col_offset": 26,
+      "end_col_offset": 55,
+      "filename": "./examples/django_sql_injection_raw.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of RawSQL potential SQL attack vector.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b611_django_rawsql_used.html",
+      "test_id": "B611",
+      "test_name": "django_rawsql_used"
+    },
+    {
+      "code": "5 User.objects.annotate(val=RawSQL('%secure' % 'nos', []))\n6 User.objects.annotate(val=RawSQL('{}secure'.format('no'), []))\n7 raw = '\"username\") AS \"val\" FROM \"auth_user\" WHERE \"username\"=\"admin\" --'\n",
+      "col_offset": 26,
+      "end_col_offset": 61,
+      "filename": "./examples/django_sql_injection_raw.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of RawSQL potential SQL attack vector.",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b611_django_rawsql_used.html",
+      "test_id": "B611",
+      "test_name": "django_rawsql_used"
+    },
+    {
+      "code": "7 raw = '\"username\") AS \"val\" FROM \"auth_user\" WHERE \"username\"=\"admin\" --'\n8 User.objects.annotate(val=RawSQL(raw, []))\n9 raw = '\"username\") AS \"val\" FROM \"auth_user\"' \\\n",
+      "col_offset": 26,
+      "end_col_offset": 41,
+      "filename": "./examples/django_sql_injection_raw.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of RawSQL potential SQL attack vector.",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b611_django_rawsql_used.html",
+      "test_id": "B611",
+      "test_name": "django_rawsql_used"
+    },
+    {
+      "code": "10       ' WHERE \"username\"=\"admin\" OR 1=%s --'\n11 User.objects.annotate(val=RawSQL(raw, [0]))\n12 User.objects.annotate(val=RawSQL(sql='{}secure'.format('no'), params=[]))\n",
+      "col_offset": 26,
+      "end_col_offset": 42,
+      "filename": "./examples/django_sql_injection_raw.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of RawSQL potential SQL attack vector.",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b611_django_rawsql_used.html",
+      "test_id": "B611",
+      "test_name": "django_rawsql_used"
+    },
+    {
+      "code": "11 User.objects.annotate(val=RawSQL(raw, [0]))\n12 User.objects.annotate(val=RawSQL(sql='{}secure'.format('no'), params=[]))\n13 User.objects.annotate(val=RawSQL(params=[], sql='{}secure'.format('no')))\n",
+      "col_offset": 26,
+      "end_col_offset": 72,
+      "filename": "./examples/django_sql_injection_raw.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of RawSQL potential SQL attack vector.",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b611_django_rawsql_used.html",
+      "test_id": "B611",
+      "test_name": "django_rawsql_used"
+    },
+    {
+      "code": "12 User.objects.annotate(val=RawSQL(sql='{}secure'.format('no'), params=[]))\n13 User.objects.annotate(val=RawSQL(params=[], sql='{}secure'.format('no')))\n",
+      "col_offset": 26,
+      "end_col_offset": 72,
+      "filename": "./examples/django_sql_injection_raw.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of RawSQL potential SQL attack vector.",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b611_django_rawsql_used.html",
+      "test_id": "B611",
+      "test_name": "django_rawsql_used"
+    }
+  ]
+}

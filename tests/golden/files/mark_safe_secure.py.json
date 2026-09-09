@@ -1,0 +1,374 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/mark_safe_secure.py": {
+      "CONFIDENCE.HIGH": 17,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 17,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 58,
+      "nosec": 6,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 17,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 17,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 58,
+      "nosec": 6,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "3 \n4 safestring.mark_safe('<b>secure</b>')\n5 safestring.SafeText('<b>secure</b>')\n",
+      "col_offset": 0,
+      "end_col_offset": 37,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 4,
+      "line_range": [
+        4
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "10 my_secure_str = '<b>Hello World</b>'\n11 safestring.mark_safe(my_secure_str)\n12 \n",
+      "col_offset": 0,
+      "end_col_offset": 35,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "13 my_secure_str, _ = ('<b>Hello World</b>', '')\n14 safestring.mark_safe(my_secure_str)\n15 \n",
+      "col_offset": 0,
+      "end_col_offset": 35,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 14,
+      "line_range": [
+        14
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "16 also_secure_str = my_secure_str\n17 safestring.mark_safe(also_secure_str)\n18 \n",
+      "col_offset": 0,
+      "end_col_offset": 37,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 17,
+      "line_range": [
+        17
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "28         my_secure_str = 'Secure'\n29     safestring.mark_safe(my_secure_str)\n30 \n",
+      "col_offset": 4,
+      "end_col_offset": 39,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 29,
+      "line_range": [
+        29
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "32 def format_secure():\n33     safestring.mark_safe('<b>{}</b>'.format('secure'))\n34     my_secure_str = 'secure'\n",
+      "col_offset": 4,
+      "end_col_offset": 54,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 33,
+      "line_range": [
+        33
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "34     my_secure_str = 'secure'\n35     safestring.mark_safe('<b>{}</b>'.format(my_secure_str))\n36     safestring.mark_safe('<b>{} {}</b>'.format(my_secure_str, 'a'))\n",
+      "col_offset": 4,
+      "end_col_offset": 59,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 35,
+      "line_range": [
+        35
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "35     safestring.mark_safe('<b>{}</b>'.format(my_secure_str))\n36     safestring.mark_safe('<b>{} {}</b>'.format(my_secure_str, 'a'))\n37     safestring.mark_safe('<b>{} {}</b>'.format(*[my_secure_str, 'a']))\n",
+      "col_offset": 4,
+      "end_col_offset": 67,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 36,
+      "line_range": [
+        36
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "36     safestring.mark_safe('<b>{} {}</b>'.format(my_secure_str, 'a'))\n37     safestring.mark_safe('<b>{} {}</b>'.format(*[my_secure_str, 'a']))\n38     safestring.mark_safe('<b>{b}</b>'.format(b=my_secure_str))  # nosec TODO\n",
+      "col_offset": 4,
+      "end_col_offset": 70,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 37,
+      "line_range": [
+        37
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "40     my_secure_str = '<b>{}</b>'.format(my_secure_str)\n41     safestring.mark_safe(my_secure_str)\n42 \n",
+      "col_offset": 4,
+      "end_col_offset": 39,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 41,
+      "line_range": [
+        41
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "44 def percent_secure():\n45     safestring.mark_safe('<b>%s</b>' % 'secure')\n46     my_secure_str = 'secure'\n",
+      "col_offset": 4,
+      "end_col_offset": 48,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 45,
+      "line_range": [
+        45
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "46     my_secure_str = 'secure'\n47     safestring.mark_safe('<b>%s</b>' % my_secure_str)\n48     safestring.mark_safe('<b>%s %s</b>' % (my_secure_str, 'a'))\n",
+      "col_offset": 4,
+      "end_col_offset": 53,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 47,
+      "line_range": [
+        47
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "47     safestring.mark_safe('<b>%s</b>' % my_secure_str)\n48     safestring.mark_safe('<b>%s %s</b>' % (my_secure_str, 'a'))\n49     safestring.mark_safe('<b>%(b)s</b>' % {'b': my_secure_str})  # nosec TODO\n",
+      "col_offset": 4,
+      "end_col_offset": 63,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 48,
+      "line_range": [
+        48
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "53     with open(path) as f:\n54         safestring.mark_safe('Secure')\n55 \n",
+      "col_offset": 8,
+      "end_col_offset": 38,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 54,
+      "line_range": [
+        54
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "61         my_secure_str += ' Secure'\n62     safestring.mark_safe(my_secure_str)\n63     while ord(os.urandom(1)) % 2 == 0:\n",
+      "col_offset": 4,
+      "end_col_offset": 39,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 62,
+      "line_range": [
+        62
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "64         my_secure_str += ' Secure'\n65     safestring.mark_safe(my_secure_str)\n66 \n",
+      "col_offset": 4,
+      "end_col_offset": 39,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 65,
+      "line_range": [
+        65
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "74         my_secure_str = 'Secure'\n75     safestring.mark_safe(my_secure_str)\n",
+      "col_offset": 4,
+      "end_col_offset": 39,
+      "filename": "./examples/mark_safe_secure.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.",
+      "line_number": 75,
+      "line_range": [
+        75
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b308-mark-safe",
+      "test_id": "B308",
+      "test_name": "blacklist"
+    }
+  ]
+}

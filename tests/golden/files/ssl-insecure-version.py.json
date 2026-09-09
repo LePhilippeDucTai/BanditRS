@@ -1,0 +1,498 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/ssl-insecure-version.py": {
+      "CONFIDENCE.HIGH": 9,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 14,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 9,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 13,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 31,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 9,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 14,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 9,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 13,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 31,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "3 \n4 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_SSLv2)\n5 SSL.Context(method=SSL.SSLv2_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 47,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "ssl.wrap_socket call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 4,
+      "line_range": [
+        4
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "4 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_SSLv2)\n5 SSL.Context(method=SSL.SSLv2_METHOD)\n6 SSL.Context(method=SSL.SSLv23_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 36,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "SSL.Context call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "5 SSL.Context(method=SSL.SSLv2_METHOD)\n6 SSL.Context(method=SSL.SSLv23_METHOD)\n7 \n",
+      "col_offset": 0,
+      "end_col_offset": 37,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "SSL.Context call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "7 \n8 herp_derp(ssl_version=ssl.PROTOCOL_SSLv2)\n9 herp_derp(method=SSL.SSLv2_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 41,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "8 herp_derp(ssl_version=ssl.PROTOCOL_SSLv2)\n9 herp_derp(method=SSL.SSLv2_METHOD)\n10 herp_derp(method=SSL.SSLv23_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 9,
+      "line_range": [
+        9
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "9 herp_derp(method=SSL.SSLv2_METHOD)\n10 herp_derp(method=SSL.SSLv23_METHOD)\n11 \n",
+      "col_offset": 0,
+      "end_col_offset": 35,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 10,
+      "line_range": [
+        10
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "12 # strict tests\n13 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_SSLv3)\n14 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_TLSv1)\n",
+      "col_offset": 0,
+      "end_col_offset": 47,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "ssl.wrap_socket call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "13 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_SSLv3)\n14 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_TLSv1)\n15 SSL.Context(method=SSL.SSLv3_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 47,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "ssl.wrap_socket call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 14,
+      "line_range": [
+        14
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "14 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_TLSv1)\n15 SSL.Context(method=SSL.SSLv3_METHOD)\n16 SSL.Context(method=SSL.TLSv1_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 36,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "SSL.Context call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 15,
+      "line_range": [
+        15
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "15 SSL.Context(method=SSL.SSLv3_METHOD)\n16 SSL.Context(method=SSL.TLSv1_METHOD)\n17 \n",
+      "col_offset": 0,
+      "end_col_offset": 36,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "SSL.Context call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 16,
+      "line_range": [
+        16
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "17 \n18 herp_derp(ssl_version=ssl.PROTOCOL_SSLv3)\n19 herp_derp(ssl_version=ssl.PROTOCOL_TLSv1)\n",
+      "col_offset": 0,
+      "end_col_offset": 41,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 18,
+      "line_range": [
+        18
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "18 herp_derp(ssl_version=ssl.PROTOCOL_SSLv3)\n19 herp_derp(ssl_version=ssl.PROTOCOL_TLSv1)\n20 herp_derp(method=SSL.SSLv3_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 41,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 19,
+      "line_range": [
+        19
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "19 herp_derp(ssl_version=ssl.PROTOCOL_TLSv1)\n20 herp_derp(method=SSL.SSLv3_METHOD)\n21 herp_derp(method=SSL.TLSv1_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 20,
+      "line_range": [
+        20
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "20 herp_derp(method=SSL.SSLv3_METHOD)\n21 herp_derp(method=SSL.TLSv1_METHOD)\n22 \n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 21,
+      "line_range": [
+        21
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "22 \n23 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_TLSv1_1)\n24 SSL.Context(method=SSL.TLSv1_1_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 49,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "ssl.wrap_socket call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 23,
+      "line_range": [
+        23
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "23 ssl.wrap_socket(ssl_version=ssl.PROTOCOL_TLSv1_1)\n24 SSL.Context(method=SSL.TLSv1_1_METHOD)\n25 \n",
+      "col_offset": 0,
+      "end_col_offset": 38,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "SSL.Context call with insecure SSL/TLS protocol version identified, security issue.",
+      "line_number": 24,
+      "line_range": [
+        24
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "25 \n26 herp_derp(ssl_version=ssl.PROTOCOL_TLSv1_1)\n27 herp_derp(method=SSL.TLSv1_1_METHOD)\n",
+      "col_offset": 0,
+      "end_col_offset": 43,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 26,
+      "line_range": [
+        26
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "26 herp_derp(ssl_version=ssl.PROTOCOL_TLSv1_1)\n27 herp_derp(method=SSL.TLSv1_1_METHOD)\n28 \n",
+      "col_offset": 0,
+      "end_col_offset": 36,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function call with insecure SSL/TLS protocol identified, possible security issue.",
+      "line_number": 27,
+      "line_range": [
+        27
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b502_ssl_with_bad_version.html",
+      "test_id": "B502",
+      "test_name": "ssl_with_bad_version"
+    },
+    {
+      "code": "29 \n30 ssl.wrap_socket()\n31 \n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "ssl.wrap_socket call with no SSL/TLS protocol version specified, the default SSLv23 could be insecure, possible security issue.",
+      "line_number": 30,
+      "line_range": [
+        30
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b504_ssl_with_no_version.html",
+      "test_id": "B504",
+      "test_name": "ssl_with_no_version"
+    },
+    {
+      "code": "31 \n32 def open_ssl_socket(version=ssl.PROTOCOL_SSLv2):\n33     pass\n34 \n",
+      "col_offset": 0,
+      "end_col_offset": 8,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function definition identified with insecure SSL/TLS protocol version by default, possible security issue.",
+      "line_number": 32,
+      "line_range": [
+        32,
+        33
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b503_ssl_with_bad_defaults.html",
+      "test_id": "B503",
+      "test_name": "ssl_with_bad_defaults"
+    },
+    {
+      "code": "34 \n35 def open_ssl_socket(version=SSL.SSLv2_METHOD):\n36     pass\n37 \n",
+      "col_offset": 0,
+      "end_col_offset": 8,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function definition identified with insecure SSL/TLS protocol version by default, possible security issue.",
+      "line_number": 35,
+      "line_range": [
+        35,
+        36
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b503_ssl_with_bad_defaults.html",
+      "test_id": "B503",
+      "test_name": "ssl_with_bad_defaults"
+    },
+    {
+      "code": "37 \n38 def open_ssl_socket(version=SSL.SSLv23_METHOD):\n39     pass\n40 \n",
+      "col_offset": 0,
+      "end_col_offset": 8,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function definition identified with insecure SSL/TLS protocol version by default, possible security issue.",
+      "line_number": 38,
+      "line_range": [
+        38,
+        39
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b503_ssl_with_bad_defaults.html",
+      "test_id": "B503",
+      "test_name": "ssl_with_bad_defaults"
+    },
+    {
+      "code": "40 \n41 def open_ssl_socket(version=SSL.TLSv1_1_METHOD):\n42     pass\n43 \n",
+      "col_offset": 0,
+      "end_col_offset": 8,
+      "filename": "./examples/ssl-insecure-version.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Function definition identified with insecure SSL/TLS protocol version by default, possible security issue.",
+      "line_number": 41,
+      "line_range": [
+        41,
+        42
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b503_ssl_with_bad_defaults.html",
+      "test_id": "B503",
+      "test_name": "ssl_with_bad_defaults"
+    }
+  ]
+}

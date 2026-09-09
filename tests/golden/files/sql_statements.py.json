@@ -1,0 +1,495 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/sql_statements.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 11,
+      "CONFIDENCE.MEDIUM": 12,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 23,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 36,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 11,
+      "CONFIDENCE.MEDIUM": 12,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 23,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 36,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "3 # bad\n4 query = \"SELECT * FROM foo WHERE id = '%s'\" % identifier\n5 query = \"INSERT INTO foo VALUES ('a', 'b', '%s')\" % value\n",
+      "col_offset": 8,
+      "end_col_offset": 43,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 4,
+      "line_range": [
+        4
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "4 query = \"SELECT * FROM foo WHERE id = '%s'\" % identifier\n5 query = \"INSERT INTO foo VALUES ('a', 'b', '%s')\" % value\n6 query = \"INSERT INTO foo VALUES('a', 'b', '%s')\" % value\n",
+      "col_offset": 8,
+      "end_col_offset": 49,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "5 query = \"INSERT INTO foo VALUES ('a', 'b', '%s')\" % value\n6 query = \"INSERT INTO foo VALUES('a', 'b', '%s')\" % value\n7 query = \"DELETE FROM foo WHERE id = '%s'\" % identifier\n",
+      "col_offset": 8,
+      "end_col_offset": 48,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "6 query = \"INSERT INTO foo VALUES('a', 'b', '%s')\" % value\n7 query = \"DELETE FROM foo WHERE id = '%s'\" % identifier\n8 query = \"UPDATE foo SET value = 'b' WHERE id = '%s'\" % identifier\n",
+      "col_offset": 8,
+      "end_col_offset": 41,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "7 query = \"DELETE FROM foo WHERE id = '%s'\" % identifier\n8 query = \"UPDATE foo SET value = 'b' WHERE id = '%s'\" % identifier\n9 query = \"\"\"WITH cte AS (SELECT x FROM foo)\n",
+      "col_offset": 8,
+      "end_col_offset": 52,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 8,
+      "line_range": [
+        8
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "8 query = \"UPDATE foo SET value = 'b' WHERE id = '%s'\" % identifier\n9 query = \"\"\"WITH cte AS (SELECT x FROM foo)\n10 SELECT x FROM cte WHERE x = '%s'\"\"\" % identifier\n11 # bad alternate forms\n",
+      "col_offset": 8,
+      "end_col_offset": 35,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 9,
+      "line_range": [
+        9,
+        10
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "11 # bad alternate forms\n12 query = \"SELECT * FROM foo WHERE id = '\" + identifier + \"'\"\n13 query = \"SELECT * FROM foo WHERE id = '{}'\".format(identifier)\n",
+      "col_offset": 8,
+      "end_col_offset": 40,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "12 query = \"SELECT * FROM foo WHERE id = '\" + identifier + \"'\"\n13 query = \"SELECT * FROM foo WHERE id = '{}'\".format(identifier)\n14 query = \"SELECT * FROM foo WHERE id = '[VALUE]'\".replace(\"[VALUE]\", identifier)\n",
+      "col_offset": 8,
+      "end_col_offset": 43,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "13 query = \"SELECT * FROM foo WHERE id = '{}'\".format(identifier)\n14 query = \"SELECT * FROM foo WHERE id = '[VALUE]'\".replace(\"[VALUE]\", identifier)\n15 \n",
+      "col_offset": 8,
+      "end_col_offset": 48,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 14,
+      "line_range": [
+        14
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "16 # bad\n17 cur.execute(\"SELECT * FROM foo WHERE id = '%s'\" % identifier)\n18 cur.execute(\"INSERT INTO foo VALUES ('a', 'b', '%s')\" % value)\n",
+      "col_offset": 12,
+      "end_col_offset": 47,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 17,
+      "line_range": [
+        17
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "17 cur.execute(\"SELECT * FROM foo WHERE id = '%s'\" % identifier)\n18 cur.execute(\"INSERT INTO foo VALUES ('a', 'b', '%s')\" % value)\n19 cur.execute(\"INSERT INTO foo VALUES('a', 'b', '%s')\" % value)\n",
+      "col_offset": 12,
+      "end_col_offset": 53,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 18,
+      "line_range": [
+        18
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "18 cur.execute(\"INSERT INTO foo VALUES ('a', 'b', '%s')\" % value)\n19 cur.execute(\"INSERT INTO foo VALUES('a', 'b', '%s')\" % value)\n20 cur.execute(\"DELETE FROM foo WHERE id = '%s'\" % identifier)\n",
+      "col_offset": 12,
+      "end_col_offset": 52,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 19,
+      "line_range": [
+        19
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "19 cur.execute(\"INSERT INTO foo VALUES('a', 'b', '%s')\" % value)\n20 cur.execute(\"DELETE FROM foo WHERE id = '%s'\" % identifier)\n21 cur.execute(\"UPDATE foo SET value = 'b' WHERE id = '%s'\" % identifier)\n",
+      "col_offset": 12,
+      "end_col_offset": 45,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 20,
+      "line_range": [
+        20
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "20 cur.execute(\"DELETE FROM foo WHERE id = '%s'\" % identifier)\n21 cur.execute(\"UPDATE foo SET value = 'b' WHERE id = '%s'\" % identifier)\n22 # bad alternate forms\n",
+      "col_offset": 12,
+      "end_col_offset": 56,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 21,
+      "line_range": [
+        21
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "22 # bad alternate forms\n23 cur.execute(\"SELECT * FROM foo WHERE id = '\" + identifier + \"'\")\n24 cur.execute(\"SELECT * FROM foo WHERE id = '{}'\".format(identifier))\n",
+      "col_offset": 12,
+      "end_col_offset": 44,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 23,
+      "line_range": [
+        23
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "23 cur.execute(\"SELECT * FROM foo WHERE id = '\" + identifier + \"'\")\n24 cur.execute(\"SELECT * FROM foo WHERE id = '{}'\".format(identifier))\n25 cur.execute(\"SELECT * FROM foo WHERE id = '[VALUE]'\".replace(\"[VALUE]\", identifier))\n",
+      "col_offset": 12,
+      "end_col_offset": 47,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 24,
+      "line_range": [
+        24
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "24 cur.execute(\"SELECT * FROM foo WHERE id = '{}'\".format(identifier))\n25 cur.execute(\"SELECT * FROM foo WHERE id = '[VALUE]'\".replace(\"[VALUE]\", identifier))\n26 \n",
+      "col_offset": 12,
+      "end_col_offset": 52,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 25,
+      "line_range": [
+        25
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "27 # bad f-strings\n28 cur.execute(f\"SELECT {column_name} FROM foo WHERE id = 1\")\n29 cur.execute(f\"SELECT {a + b} FROM foo WHERE id = 1\")\n",
+      "col_offset": 12,
+      "end_col_offset": 57,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 28,
+      "line_range": [
+        28
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "28 cur.execute(f\"SELECT {column_name} FROM foo WHERE id = 1\")\n29 cur.execute(f\"SELECT {a + b} FROM foo WHERE id = 1\")\n30 cur.execute(f\"INSERT INTO {table_name} VALUES (1)\")\n",
+      "col_offset": 12,
+      "end_col_offset": 51,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 29,
+      "line_range": [
+        29
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "29 cur.execute(f\"SELECT {a + b} FROM foo WHERE id = 1\")\n30 cur.execute(f\"INSERT INTO {table_name} VALUES (1)\")\n31 cur.execute(f\"INSERT INTO {table_name} VALUES(1)\")\n",
+      "col_offset": 12,
+      "end_col_offset": 50,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 30,
+      "line_range": [
+        30
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "30 cur.execute(f\"INSERT INTO {table_name} VALUES (1)\")\n31 cur.execute(f\"INSERT INTO {table_name} VALUES(1)\")\n32 cur.execute(f\"UPDATE {table_name} SET id = 1\")\n",
+      "col_offset": 12,
+      "end_col_offset": 49,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 31,
+      "line_range": [
+        31
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "31 cur.execute(f\"INSERT INTO {table_name} VALUES(1)\")\n32 cur.execute(f\"UPDATE {table_name} SET id = 1\")\n33 \n",
+      "col_offset": 12,
+      "end_col_offset": 45,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 32,
+      "line_range": [
+        32
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "46 \n47 a()(\"SELECT %s FROM foo\" % val)\n48 \n",
+      "col_offset": 4,
+      "end_col_offset": 24,
+      "filename": "./examples/sql_statements.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 47,
+      "line_range": [
+        47
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    }
+  ]
+}

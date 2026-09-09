@@ -1,0 +1,94 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/xml_expatbuilder.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 7,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 7,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 import xml.dom.expatbuilder as bad\n2 import defusedxml.expatbuilder as good\n3 \n",
+      "col_offset": 0,
+      "end_col_offset": 34,
+      "filename": "./examples/xml_expatbuilder.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 20,
+        "link": "https://cwe.mitre.org/data/definitions/20.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Using xml.dom.expatbuilder to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.expatbuilder with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.",
+      "line_number": 1,
+      "line_range": [
+        1
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b407-import-xml-expat",
+      "test_id": "B407",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "3 \n4 bad.parse('filethatdoesntexist.xml')\n5 good.parse('filethatdoesntexist.xml')\n",
+      "col_offset": 0,
+      "end_col_offset": 36,
+      "filename": "./examples/xml_expatbuilder.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 20,
+        "link": "https://cwe.mitre.org/data/definitions/20.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Using xml.dom.expatbuilder.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.expatbuilder.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called",
+      "line_number": 4,
+      "line_range": [
+        4
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b313-b320-xml-bad-expatbuilder",
+      "test_id": "B316",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "8 \n9 bad.parseString(xmlString)\n10 good.parseString(xmlString)\n",
+      "col_offset": 0,
+      "end_col_offset": 26,
+      "filename": "./examples/xml_expatbuilder.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 20,
+        "link": "https://cwe.mitre.org/data/definitions/20.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Using xml.dom.expatbuilder.parseString to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.dom.expatbuilder.parseString with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called",
+      "line_number": 9,
+      "line_range": [
+        9
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b313-b320-xml-bad-expatbuilder",
+      "test_id": "B316",
+      "test_name": "blacklist"
+    }
+  ]
+}

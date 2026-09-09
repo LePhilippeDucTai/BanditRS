@@ -1,0 +1,534 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/ciphers.py": {
+      "CONFIDENCE.HIGH": 25,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 24,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 77,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 25,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 24,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 77,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 from Crypto.Cipher import ARC2 as pycrypto_arc2\n2 from Crypto.Cipher import ARC4 as pycrypto_arc4\n3 from Crypto.Cipher import Blowfish as pycrypto_blowfish\n",
+      "col_offset": 0,
+      "end_col_offset": 47,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "The pyCrypto library and its module ARC2 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.",
+      "line_number": 1,
+      "line_range": [
+        1
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto",
+      "test_id": "B413",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "1 from Crypto.Cipher import ARC2 as pycrypto_arc2\n2 from Crypto.Cipher import ARC4 as pycrypto_arc4\n3 from Crypto.Cipher import Blowfish as pycrypto_blowfish\n",
+      "col_offset": 0,
+      "end_col_offset": 47,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "The pyCrypto library and its module ARC4 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.",
+      "line_number": 2,
+      "line_range": [
+        2
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto",
+      "test_id": "B413",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "2 from Crypto.Cipher import ARC4 as pycrypto_arc4\n3 from Crypto.Cipher import Blowfish as pycrypto_blowfish\n4 from Crypto.Cipher import DES as pycrypto_des\n",
+      "col_offset": 0,
+      "end_col_offset": 55,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "The pyCrypto library and its module Blowfish are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.",
+      "line_number": 3,
+      "line_range": [
+        3
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto",
+      "test_id": "B413",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "3 from Crypto.Cipher import Blowfish as pycrypto_blowfish\n4 from Crypto.Cipher import DES as pycrypto_des\n5 from Crypto.Cipher import XOR as pycrypto_xor\n",
+      "col_offset": 0,
+      "end_col_offset": 45,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "The pyCrypto library and its module DES are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.",
+      "line_number": 4,
+      "line_range": [
+        4
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto",
+      "test_id": "B413",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "4 from Crypto.Cipher import DES as pycrypto_des\n5 from Crypto.Cipher import XOR as pycrypto_xor\n6 from Cryptodome.Cipher import ARC2 as pycryptodomex_arc2\n",
+      "col_offset": 0,
+      "end_col_offset": 45,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "The pyCrypto library and its module XOR are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto",
+      "test_id": "B413",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "10 from Cryptodome.Cipher import XOR as pycryptodomex_xor\n11 from Crypto.Hash import SHA\n12 from Crypto import Random\n",
+      "col_offset": 0,
+      "end_col_offset": 27,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "The pyCrypto library and its module SHA are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto",
+      "test_id": "B413",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "11 from Crypto.Hash import SHA\n12 from Crypto import Random\n13 from Crypto.Util import Counter\n",
+      "col_offset": 0,
+      "end_col_offset": 25,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "The pyCrypto library and its module Random are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto",
+      "test_id": "B413",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "12 from Crypto import Random\n13 from Crypto.Util import Counter\n14 from cryptography.hazmat.primitives.ciphers import Cipher\n",
+      "col_offset": 0,
+      "end_col_offset": 31,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "The pyCrypto library and its module Counter are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_imports.html#b413-import-pycrypto",
+      "test_id": "B413",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "21 iv = Random.new().read(pycrypto_arc2.block_size)\n22 cipher = pycrypto_arc2.new(key, pycrypto_arc2.MODE_CFB, iv)\n23 msg = iv + cipher.encrypt(b'Attack at dawn')\n",
+      "col_offset": 9,
+      "end_col_offset": 59,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Crypto.Cipher.ARC2.new. Replace with a known secure cipher such as AES.",
+      "line_number": 22,
+      "line_range": [
+        22
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "23 msg = iv + cipher.encrypt(b'Attack at dawn')\n24 cipher = pycryptodomex_arc2.new(key, pycryptodomex_arc2.MODE_CFB, iv)\n25 msg = iv + cipher.encrypt(b'Attack at dawn')\n",
+      "col_offset": 9,
+      "end_col_offset": 69,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Cryptodome.Cipher.ARC2.new. Replace with a known secure cipher such as AES.",
+      "line_number": 24,
+      "line_range": [
+        24
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "28 nonce = Random.new().read(16)\n29 tempkey = SHA.new(key+nonce).digest()\n30 cipher = pycrypto_arc4.new(tempkey)\n",
+      "col_offset": 10,
+      "end_col_offset": 28,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of insecure MD2, MD4, MD5, or SHA1 hash function.",
+      "line_number": 29,
+      "line_range": [
+        29
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b303-md5",
+      "test_id": "B303",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "29 tempkey = SHA.new(key+nonce).digest()\n30 cipher = pycrypto_arc4.new(tempkey)\n31 msg = nonce + cipher.encrypt(b'Open the pod bay doors, HAL')\n",
+      "col_offset": 9,
+      "end_col_offset": 35,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Crypto.Cipher.ARC4.new. Replace with a known secure cipher such as AES.",
+      "line_number": 30,
+      "line_range": [
+        30
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "31 msg = nonce + cipher.encrypt(b'Open the pod bay doors, HAL')\n32 cipher = pycryptodomex_arc4.new(tempkey)\n33 msg = nonce + cipher.encrypt(b'Open the pod bay doors, HAL')\n",
+      "col_offset": 9,
+      "end_col_offset": 40,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Cryptodome.Cipher.ARC4.new. Replace with a known secure cipher such as AES.",
+      "line_number": 32,
+      "line_range": [
+        32
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "41 bs = pycrypto_blowfish.block_size\n42 cipher = pycrypto_blowfish.new(key, pycrypto_blowfish.MODE_CBC, iv)\n43 msg = iv + cipher.encrypt(plaintext + padding)\n",
+      "col_offset": 9,
+      "end_col_offset": 67,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Crypto.Cipher.Blowfish.new. Replace with a known secure cipher such as AES.",
+      "line_number": 42,
+      "line_range": [
+        42
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "44 bs = pycryptodomex_blowfish.block_size\n45 cipher = pycryptodomex_blowfish.new(key, pycryptodomex_blowfish.MODE_CBC, iv)\n46 msg = iv + cipher.encrypt(plaintext + padding)\n",
+      "col_offset": 9,
+      "end_col_offset": 77,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Cryptodome.Cipher.Blowfish.new. Replace with a known secure cipher such as AES.",
+      "line_number": 45,
+      "line_range": [
+        45
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "51 ctr = Counter.new(pycrypto_des.block_size*8/2, prefix=nonce)\n52 cipher = pycrypto_des.new(key, pycrypto_des.MODE_CTR, counter=ctr)\n53 msg = nonce + cipher.encrypt(plaintext)\n",
+      "col_offset": 9,
+      "end_col_offset": 66,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Crypto.Cipher.DES.new. Replace with a known secure cipher such as AES.",
+      "line_number": 52,
+      "line_range": [
+        52
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "55 ctr = Counter.new(pycryptodomex_des.block_size*8/2, prefix=nonce)\n56 cipher = pycryptodomex_des.new(key, pycryptodomex_des.MODE_CTR, counter=ctr)\n57 msg = nonce + cipher.encrypt(plaintext)\n",
+      "col_offset": 9,
+      "end_col_offset": 76,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Cryptodome.Cipher.DES.new. Replace with a known secure cipher such as AES.",
+      "line_number": 56,
+      "line_range": [
+        56
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "60 plaintext = b'Encrypt me'\n61 cipher = pycrypto_xor.new(key)\n62 msg = cipher.encrypt(plaintext)\n",
+      "col_offset": 9,
+      "end_col_offset": 30,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Crypto.Cipher.XOR.new. Replace with a known secure cipher such as AES.",
+      "line_number": 61,
+      "line_range": [
+        61
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "62 msg = cipher.encrypt(plaintext)\n63 cipher = pycryptodomex_xor.new(key)\n64 msg = cipher.encrypt(plaintext)\n",
+      "col_offset": 9,
+      "end_col_offset": 35,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher Cryptodome.Cipher.XOR.new. Replace with a known secure cipher such as AES.",
+      "line_number": 63,
+      "line_range": [
+        63
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "65 \n66 cipher = Cipher(algorithms.ARC4(key), mode=None, backend=default_backend())\n67 encryptor = cipher.encryptor()\n",
+      "col_offset": 16,
+      "end_col_offset": 36,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.ARC4. Replace with a known secure cipher such as AES.",
+      "line_number": 66,
+      "line_range": [
+        66
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "69 \n70 cipher = Cipher(algorithms.Blowfish(key), mode=None, backend=default_backend())\n71 encryptor = cipher.encryptor()\n",
+      "col_offset": 16,
+      "end_col_offset": 40,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.Blowfish. Replace with a known secure cipher such as AES.",
+      "line_number": 70,
+      "line_range": [
+        70
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "73 \n74 cipher = Cipher(algorithms.CAST5(key), mode=None, backend=default_backend())\n75 encryptor = cipher.encryptor()\n",
+      "col_offset": 16,
+      "end_col_offset": 37,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.CAST5. Replace with a known secure cipher such as AES.",
+      "line_number": 74,
+      "line_range": [
+        74
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "77 \n78 cipher = Cipher(algorithms.IDEA(key), mode=None, backend=default_backend())\n79 encryptor = cipher.encryptor()\n",
+      "col_offset": 16,
+      "end_col_offset": 36,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.IDEA. Replace with a known secure cipher such as AES.",
+      "line_number": 78,
+      "line_range": [
+        78
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "81 \n82 cipher = Cipher(algorithms.SEED(key), mode=None, backend=default_backend())\n83 encryptor = cipher.encryptor()\n",
+      "col_offset": 16,
+      "end_col_offset": 36,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.SEED. Replace with a known secure cipher such as AES.",
+      "line_number": 82,
+      "line_range": [
+        82
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "85 \n86 cipher = Cipher(algorithms.TripleDES(key), mode=None, backend=default_backend())\n87 encryptor = cipher.encryptor()\n",
+      "col_offset": 16,
+      "end_col_offset": 41,
+      "filename": "./examples/ciphers.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of insecure cipher cryptography.hazmat.primitives.ciphers.algorithms.TripleDES. Replace with a known secure cipher such as AES.",
+      "line_number": 86,
+      "line_range": [
+        86
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/blacklists/blacklist_calls.html#b304-b305-ciphers-and-modes",
+      "test_id": "B304",
+      "test_name": "blacklist"
+    }
+  ]
+}

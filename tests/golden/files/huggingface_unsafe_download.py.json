@@ -1,0 +1,363 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/huggingface_unsafe_download.py": {
+      "CONFIDENCE.HIGH": 15,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 15,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 81,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 15,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 15,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 81,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "9 # Example #1: No revision (defaults to floating 'main')\n10 unsafe_model_no_revision = AutoModel.from_pretrained(\"org/model_name\")\n11 \n",
+      "col_offset": 27,
+      "end_col_offset": 70,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in from_pretrained()",
+      "line_number": 10,
+      "line_range": [
+        10
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "12 # Example #2: Floating revision: 'main'\n13 unsafe_model_main = AutoModel.from_pretrained(\n14     \"org/model_name\",\n15     revision=\"main\"\n16 )\n17 \n",
+      "col_offset": 20,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in from_pretrained()",
+      "line_number": 13,
+      "line_range": [
+        13,
+        14,
+        15,
+        16
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "18 # Example #3: Floating tag revision: 'v1.0.0'\n19 unsafe_model_tag = AutoModel.from_pretrained(\n20     \"org/model_name\",\n21     revision=\"v1.0.0\"\n22 )\n23 \n",
+      "col_offset": 19,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in from_pretrained()",
+      "line_number": 19,
+      "line_range": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "27 # Example #4: No revision\n28 unsafe_tokenizer_no_revision = AutoTokenizer.from_pretrained(\"org/model_name\")\n29 \n",
+      "col_offset": 31,
+      "end_col_offset": 78,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in from_pretrained()",
+      "line_number": 28,
+      "line_range": [
+        28
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "30 # Example #5: Floating revision: 'main'\n31 unsafe_tokenizer_main = AutoTokenizer.from_pretrained(\n32     \"org/model_name\",\n33     revision=\"main\"\n34 )\n35 \n",
+      "col_offset": 24,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in from_pretrained()",
+      "line_number": 31,
+      "line_range": [
+        31,
+        32,
+        33,
+        34
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "36 # Example #6: Floating tag revision: 'v1.0.0'\n37 unsafe_tokenizer_tag = AutoTokenizer.from_pretrained(\n38     \"org/model_name\",\n39     revision=\"v1.0.0\"\n40 )\n41 \n",
+      "col_offset": 23,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in from_pretrained()",
+      "line_number": 37,
+      "line_range": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "45 # Example #8: No revision\n46 unsafe_dataset_no_revision = load_dataset(\"org_dataset\")\n47 \n",
+      "col_offset": 29,
+      "end_col_offset": 56,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in load_dataset()",
+      "line_number": 46,
+      "line_range": [
+        46
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "48 # Example #9: Floating revision: 'main'\n49 unsafe_dataset_main = load_dataset(\"org_dataset\", revision=\"main\")\n50 \n",
+      "col_offset": 22,
+      "end_col_offset": 66,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in load_dataset()",
+      "line_number": 49,
+      "line_range": [
+        49
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "51 # Example #10: Floating tag revision: 'v1.0.0'\n52 unsafe_dataset_tag = load_dataset(\"org_dataset\", revision=\"v1.0.0\")\n53 \n",
+      "col_offset": 21,
+      "end_col_offset": 67,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in load_dataset()",
+      "line_number": 52,
+      "line_range": [
+        52
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "57 # Example #11: No revision\n58 unsafe_file_no_revision = hf_hub_download(\n59     repo_id=\"org/model_name\",\n60     filename=\"config.json\"\n61 )\n62 \n",
+      "col_offset": 26,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in hf_hub_download()",
+      "line_number": 58,
+      "line_range": [
+        58,
+        59,
+        60,
+        61
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "63 # Example #12: Floating revision: 'main'\n64 unsafe_file_main = hf_hub_download(\n65     repo_id=\"org/model_name\",\n66     filename=\"config.json\",\n67     revision=\"main\"\n68 )\n69 \n",
+      "col_offset": 19,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in hf_hub_download()",
+      "line_number": 64,
+      "line_range": [
+        64,
+        65,
+        66,
+        67,
+        68
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "70 # Example #13: Floating tag revision: 'v1.0.0'\n71 unsafe_file_tag = hf_hub_download(\n72     repo_id=\"org/model_name\",\n73     filename=\"config.json\",\n74     revision=\"v1.0.0\"\n75 )\n76 \n",
+      "col_offset": 18,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in hf_hub_download()",
+      "line_number": 71,
+      "line_range": [
+        71,
+        72,
+        73,
+        74,
+        75
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "80 # Example #14: No revision\n81 unsafe_snapshot_no_revision = snapshot_download(repo_id=\"org/model_name\")\n82 \n",
+      "col_offset": 30,
+      "end_col_offset": 73,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in snapshot_download()",
+      "line_number": 81,
+      "line_range": [
+        81
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "83 # Example #15: Floating revision: 'main'\n84 unsafe_snapshot_main = snapshot_download(\n85     repo_id=\"org/model_name\",\n86     revision=\"main\"\n87 )\n88 \n",
+      "col_offset": 23,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in snapshot_download()",
+      "line_number": 84,
+      "line_range": [
+        84,
+        85,
+        86,
+        87
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "89 # Example #16: Floating tag revision: 'v1.0.0'\n90 unsafe_snapshot_tag = snapshot_download(\n91     repo_id=\"org/model_name\",\n92     revision=\"v1.0.0\"\n93 )\n94 \n",
+      "col_offset": 22,
+      "end_col_offset": 1,
+      "filename": "./examples/huggingface_unsafe_download.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in snapshot_download()",
+      "line_number": 90,
+      "line_range": [
+        90,
+        91,
+        92,
+        93
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    }
+  ]
+}

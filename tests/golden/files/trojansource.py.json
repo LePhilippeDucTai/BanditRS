@@ -1,0 +1,54 @@
+{
+  "errors": [],
+  "generated_at": "<TS>",
+  "metrics": {
+    "./examples/trojansource.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 3,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 3,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "3 access_level = \"user\"\n4 if access_level != 'none\u202e\u2066': # Check if admin \u2069\u2066' and access_level != 'user\n5     print(\"You are an admin.\\n\")\n",
+      "col_offset": 25,
+      "end_col_offset": 0,
+      "filename": "./examples/trojansource.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 838,
+        "link": "https://cwe.mitre.org/data/definitions/838.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "A Python source file contains bidirectional control characters ('\\u202e').",
+      "line_number": 4,
+      "line_range": [
+        4
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/X/plugins/b613_trojansource.html",
+      "test_id": "B613",
+      "test_name": "trojansource"
+    }
+  ]
+}
