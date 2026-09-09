@@ -41,19 +41,25 @@
 
 `cargo build --all-targets`, `cargo clippy --all-targets -- -D warnings` et `cargo fmt --check` propres.
 `cargo test --all-targets` : **67 tests unitaires** (`src/`) + **274 tests d'intégration** (`tests/`, un fichier
-miroir par fichier de test Python) dont **118 stubs `#[ignore]`** nommés comme les tests Python restant à porter
-(`scripts/wp_status.sh`) ; les **223 tests actifs** sont au vert — la table complète des exemples upstream
+miroir par fichier de test Python) = **341 tests, tous actifs et au vert, zéro `#[ignore]`**
+(`scripts/wp_status.sh --check` → 0). **Jalon J1 atteint le 2026-09-09** : les 273 tests de la suite Python
+ont un homologue Rust homonyme (263 portés — 225 à l'identique, 38 adaptés — et 10 non portables, justifiés
+dans `docs/plan/test-inventory.md` et `DEVIATIONS.md` #8). La table complète des exemples upstream
 (comptes de sévérité/confiance) correspond bit à bit à bandit Python.
 
-Différentiel complet rejoué après la vague A1 (2026-09-08) : `examples/*.py` × {json, csv, xml, yaml, html,
-txt, sarif} = **637 comparaisons, zéro diff inexpliqué** (les 34 diffs restants sont couverts par
-DEVIATIONS.md #5 `tarfile_extractall`, #9 `mark_safe_*`, #11 ancres YAML ; champs volatils normalisés :
-`generated_at`, `Run started:`, `endTimeUtc`, version de l'outil, URL de doc — cf. #12).
+Différentiel complet rejoué en fin de vague A2 (2026-09-09) via `scripts/diff_against_python.sh examples` :
+traces de parcours **91/91 identiques**, et `examples/` × {json, txt, csv, xml, yaml, custom, sarif, html}
+**sans aucun diff inexpliqué**. Les seuls écarts subsistants sont documentés : DEVIATIONS.md #5 (adresses
+mémoire `<ast.List object at 0x…>` de `tarfile_extractall`), #10 (scalaire double-quoted non replié en YAML),
+#11 (ancres/alias `&id001`/`*id001` de PyYAML, basées sur l'identité d'objet Python, non reproduites), plus
+les champs volatils (`generated_at`, `Run started:`, version de l'outil et URL de doc — cf. #12) et la barre
+de progression `Working…` que le bandit Python écrit sur la sortie. Depuis WP-01, `mark_safe_*` ne produit
+plus de diff (`DeepAssignation` implémenté, DEVIATIONS.md #9 réécrite en conséquence).
 
 | Jalon (plan parallèle) | Contenu | État |
 |---|---|---|
 | J0 | Restructuration : squelette miroir de la suite Python, `docs/plan/` (inventaire, 16 fiches de lots, playbook, benchmarks), agents `.claude/agents/banditrs-wp-*`, skill `banditrs-dispatch`, `benches/e2e.rs`, `scripts/{wp_status,bench_vs_python}.sh`, CI | **Fait** (2026-09-08) |
-| J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | **en cours** : vague A1 livrée (WP-02, 05, 07, 11, 12, 13 — 58 stubs activés, 176 → 118) ; reste la vague A2 (WP-01, 03, 04, 06, 08, 09, 10) |
+| J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | **Fait** (2026-09-09) : vague A1 (WP-02, 05, 07, 11, 12, 13) puis vague A2 (WP-01, 03, 04, 06, 09, 10, puis WP-08) — 176 stubs activés, 0 restant, `scripts/wp_status.sh --check` → 0 |
 | J2 | Corpus golden + différentiel en CI (WP-14, WP-16) | à lancer (vague B) |
 | J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | à lancer (vague B) |
 
@@ -62,17 +68,17 @@ DEVIATIONS.md #5 `tarfile_extractall`, #9 `mark_safe_*`, #11 ancres YAML ; champ
 | M0 | `Cargo.toml`, `rust-toolchain.toml`, `src/lib.rs`, `src/log.rs`, `src/constants.rs`, `src/core/issue.rs`, `src/core/metrics.rs`, `src/pycompat/{datetime,fnmatch,splitlines,path,unicode_escape}.rs`, `src/core/utils.rs` | **Fait + tests** |
 | M1 | `src/pycompat/encoding.rs` (PEP 263, BOM, latin-1, ascii, encoding_rs), `src/source/{file,parse}.rs` | **Fait + tests** |
 | M2 | `src/ast/{mod,vnode,children,joined_str,positions,linerange,qualname,literal,walker,trace}.rs`, `src/core/context.rs`, `bandit --dump-walk`, `scripts/dump_walk.py` | **Fait + validé** : trace de parcours identique à bandit Python sur **94/94 exemples et 120/120 fichiers de la stdlib** (avec `BANDITRS_PYTHON_COMPAT=3.11`) |
-| M3 | `src/core/blacklist.rs` (données + test B001), `src/core/registry.rs` (table des 42 plugins), `src/core/plugin_config.rs` (défauts + `from_config`), `src/core/nosec.rs`, `src/core/docs_utils.rs`, `src/core/test_set.rs` (`TestSet::new`), `src/core/tester.rs` (`Tester::run_tests`), `src/core/config.rs` (défauts + `get_option` ; **chargement fichier YAML/TOML et profils legacy restent stub**) | **Fait** (sauf chargement de fichier de config, voir M7) |
+| M3 | `src/core/blacklist.rs` (données + test B001), `src/core/registry.rs` (table des 42 plugins), `src/core/plugin_config.rs` (défauts + `from_config`), `src/core/nosec.rs`, `src/core/docs_utils.rs`, `src/core/test_set.rs` (`TestSet::new`), `src/core/tester.rs` (`Tester::run_tests`), `src/core/config.rs` (défauts + `get_option` ; chargement fichier et profils legacy complétés en M7/WP-08) | **Fait** |
 | M4 | `src/plugins/*.rs` — **42/42 plugins implémentés** (voir docs/spec/plugins.md) ; `django_mark_safe` (B703) : `DeepAssignation` porté intégralement par WP-01 (try/with/for/while/ExceptHandler, déballage de tuple) — deux divergences résiduelles où BanditRS est plus strict que Python, documentées DEVIATIONS.md #9 | **Fait** |
 | M5 | `src/core/discover.rs::discover_files`, `src/core/scan.rs::scan_file` (`catch_unwind`, nosec depuis les tokens), `src/core/manager.rs::run_tests` (parallèle via `rayon`) | **Fait** ; `tests/common/mod.rs::check_example`/`check_metrics` implémentés, **78 tests fonctionnels au vert** |
 | M6 | `src/formatters/*.rs` (csv/custom/html/json/sarif/screen/text/xml/yaml + `mod.rs::output_results`), `src/pycompat/{pyformat,csv,json,yaml_emit,html,xml,urlquote}.rs` | **Fait** ; **11 tests fonctionnels** (`tests/formatters.rs`, §C.7) au vert |
-| M7 | `src/cli/{argparse,main}.rs` (parseur maison + flux §A.11), `BanditConfig::new` (YAML via `pycompat::yaml_load` + TOML via `toml`), `BanditConfig::profile()` (conversion nom→id, pas la conversion legacy `blacklist_calls`/`blacklist_imports`), `src/pycompat/{yaml_load,configparser}.rs` | **Fait** ; **9 tests fonctionnels** (`tests/runtime.rs`) au vert |
+| M7 | `src/cli/{argparse,main}.rs` (parseur maison + flux §A.11), `BanditConfig::new` (YAML via `pycompat::yaml_load` + TOML via `toml`), `BanditConfig::profile()` (conversion nom→id ; conversion legacy `blacklist_calls`/`blacklist_imports` ajoutée par WP-08), `src/pycompat/{yaml_load,configparser}.rs` | **Fait** ; **9 tests fonctionnels** (`tests/runtime.rs`) au vert |
 | M8 | `src/cli/{baseline,config_generator}.rs` | **Fait** ; testé manuellement (dépôt git jetable) et via différentiel contre Python — voir §5. `tests/baseline_functional.rs`/`tests/cli_tools.rs` restent des placeholders (§C.3/C.4/C.5/C.6 pas portés en tests automatisés) |
 | M9 | Harnais différentiel exécuté ad hoc (voir §5) sur `examples/` (tous formats) : diffs restants tous expliqués par DEVIATIONS.md. `scripts/diff_against_python.sh` (script fichier) pas encore mis à jour/exécuté sur la stdlib | Essentiellement fait, script à finaliser |
 | M10 | perf, README, clippy | **Fait** : `cargo clippy --all-targets -- -D warnings` propre, `cargo fmt --all`, benchmark (~70× sur stdlib), README à jour |
 
-Chaque stub restant porte un commentaire de module. Chercher `todo!(` pour la liste exhaustive (restant : la
-conversion legacy `blacklist_calls`/`blacklist_imports` de `convert_legacy_config`, cf. §5).
+Plus aucun `todo!()` fonctionnel : la conversion legacy `blacklist_calls`/`blacklist_imports`
+(`convert_legacy_config`), dernier stub du projet, a été implémentée par WP-08 (cf. §5).
 
 ## 4. Architecture (rappel) et invariants à respecter
 
@@ -125,14 +131,25 @@ M0–M9 sont **faits** dans les grandes lignes (moteur de tests, 42 plugins, for
   la clé `targets` est présente dans le `.bandit`, alors que Python l'émet dès que `args.targets` est fourni en
   ligne de commande, indépendamment de la clé ini. Écart pré-existant repéré lors de la revue de WP-03 (hors de
   son périmètre) : à corriger, ou à assumer avec une entrée `DEVIATIONS.md`.
-- `BanditConfig::profile()` fait la conversion nom→id (`registry::get_test_id`) mais pas encore
-  `convert_legacy_blacklist_data`/`convert_legacy_blacklist_tests` (l'ancien format `blacklist_calls`/
-  `blacklist_imports` avec inversion `bad_calls`/`bad_imports` — DEVIATIONS.md note l'inversion à garder telle
-  quelle) : `todo!()` implicite (pas de config de test l'exerçant pour l'instant). Tests de référence :
-  `tests/unit/core/test_config.py`.
-- Tests unitaires et fonctionnels restants : voir `docs/plan/test-inventory.md` (176 stubs `#[ignore]` dans
-  `tests/functional_baseline.rs`, `tests/unit_cli_*.rs`, `tests/unit_core_*.rs`, `tests/unit_formatters_*.rs`) —
-  §C.3 (WP-02), §C.4 (WP-03), §C.5 (WP-04), §C.6 (WP-05), §C.7 (WP-12/13), §C.8–C.16 (WP-06…11).
+- ~~`BanditConfig::profile()` ne fait pas la conversion legacy `blacklist_calls`/`blacklist_imports`~~ :
+  **implémenté par WP-08** (`convert_legacy_config` + `validate`, appelés une fois depuis `new()`, avec
+  l'inversion amont `bad_calls`/`bad_imports` conservée telle quelle). C'était le dernier `todo!()`
+  fonctionnel du projet.
+- **Piège découvert par WP-08, à connaître avant de toucher aux profils** : `Profile::blacklist` est un
+  `Option<IndexMap<…>>` dont `TestSet::new` ne distingue que `Some` (« remplace la table intégrée ») et
+  `None` (« utilise la table intégrée filtrée »). Un `Some(map vide)` y est donc lu comme « remplace par
+  rien » et fait disparaître **silencieusement** tous les résultats de la blacklist intégrée pour un scan
+  `-p <profil>` dont la section `profiles` ne référence ni `blacklist_calls` ni `blacklist_imports`
+  (reproduit : `-p test_4 examples/xml_sax.py`, 8 résultats côté Python contre 0 côté Rust). La conversion
+  legacy produit donc `None`, pas `Some(vide)`, quand elle n'a rien à ajouter — c'est le comportement de
+  `if not blacklist:` en Python, où « absent » et « vide » sont indiscernables. Toute évolution de ce type
+  doit préserver cette équivalence.
+- `src/cli/baseline.rs::name_rev()` rend `master` là où Python (`commit.name_rev`) rend `<sha> master`, dans
+  le message « Got current/parent commit: … ». Écart pré-existant confirmé lors de la revue de WP-04 (hors de
+  son périmètre, aucun test de `test_baseline.py` ne l'observe) : à corriger, ou à assumer avec une entrée
+  `DEVIATIONS.md`.
+- Tests unitaires et fonctionnels : **tous portés** (J1 atteint, 0 stub — cf. §3 et
+  `docs/plan/test-inventory.md`).
 
 ### Harnais différentiel — méthode et résultat (fait ad hoc, à refaire via `scripts/diff_against_python.sh`)
 

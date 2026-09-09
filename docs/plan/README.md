@@ -14,9 +14,9 @@
 | | État au 2026-09-08 (fin de la session de restructuration) |
 |---|---|
 | Moteur | 42 plugins, 9 formatters, 3 exécutables, parité bit à bit validée par différentiel (`PLAN.md` §3) |
-| Suite Rust | 67 tests unitaires (`src/`) + 274 tests d'intégration (`tests/`), dont 98 actifs et **176 stubs `#[ignore]`** à activer |
+| Suite Rust | 67 tests unitaires (`src/`) + 274 tests d'intégration (`tests/`) — **341 tests, tous actifs et verts, 0 stub** depuis le 2026-09-09 |
 | Suite Python de référence | 273 tests (`/home/user/bandit` @ `1d3053d`), tous au vert (`pytest`, Python 3.11) |
-| Couverture du port | 82 tests portés, 5 partiels, 176 à porter (dont 51 « adaptés »), 10 non portables |
+| Couverture du port | **263 tests portés** (225 à l'identique, 38 adaptés), 0 restant, 10 non portables |
 | Performance (4 CPU) | `examples/` : Python 6,74 s → Rust 0,38 s (**17,7×**, dominé par le démarrage) ; stdlib 3.11 (672 fichiers, 307 k lignes) : ~70× (`PLAN.md` M10, à re-mesurer par WP-15) |
 
 Trois objectifs pour la phase qui s'ouvre, dans cet ordre de priorité :
@@ -74,7 +74,7 @@ principale (l'orchestrateur) après une passe de vérification identique pour to
 | Jalon | Contenu | Critère de sortie | Lots |
 |---|---|---|---|
 | **J0 — Restructuration** (fait) | Squelette miroir de la suite Python (176 stubs), inventaire, fiches de lots, agents, benchs, CI | `cargo test --all-targets` vert, `scripts/wp_status.sh` opérationnel | — |
-| **J1 — Suite Python 100 % portée** | Tous les stubs activés et verts ; tests partiels renforcés ; `DeepAssignation` (DEVIATIONS #9) et conversion legacy (`convert_legacy_config`) implémentées car des tests en dépendent | `scripts/wp_status.sh --check` → 0 stub ; inventaire à jour ; différentiel toujours à zéro diff | WP-01 → WP-13 |
+| **J1 — Suite Python 100 % portée** ✅ **Fait (2026-09-09)** | Tous les stubs activés et verts ; `DeepAssignation` (WP-01) et conversion legacy `convert_legacy_config` (WP-08) implémentées | Atteint : `scripts/wp_status.sh --check` → 0 stub ; 341 tests verts (67 + 274) ; inventaire à jour ; différentiel à zéro diff inexpliqué | WP-01 → WP-13 |
 | **J2 — Parité prouvée sans Python** | Corpus golden (examples × 9 formats + échantillon stdlib) committé, test Rust de rejeu, script de régénération, job CI | Job `differential` vert ; `scripts/diff_against_python.sh` finalisé et exécuté sur la stdlib | WP-14, WP-16 |
 | **J3 — Performance mesurée et gardée** | Benchs criterion complets, tableau Python vs Rust (examples, stdlib, gros fichier, mono-fichier), garde-fou de régression, profil et premières optimisations *mesurées* | `docs/plan/benchmarks.md` §Résultats rempli ; objectifs §benchmarks atteints (stdlib ≥ 20×, mono-fichier ≥ 10×) ; `scripts/bench_regression.sh` en place | WP-15 |
 | **J4 — Consolidation** | `PLAN.md` réécrit (état final), README, version `0.2.0`, éventuellement publication | Décision utilisateur | orchestrateur |

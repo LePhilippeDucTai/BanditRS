@@ -16,21 +16,21 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 
 | Fichier Python | Fichier Rust miroir | WP | Tests | porté | partiel | à porter | adapté | non portable |
 |---|---|---|---:|---:|---:|---:|---:|---:|
-| `tests/functional/test_baseline.py` | `tests/functional_baseline.rs` | [WP-02](wp/WP-02-functional-baseline.md) | 7 | 0 | 0 | 7 | 0 | 0 |
-| `tests/functional/test_functional.py` | `tests/functional.rs` | [WP-01](wp/WP-01-functional-config-profiles.md) | 79 | 68 | 0 | 11 | 0 | 0 |
+| `tests/functional/test_baseline.py` | `tests/functional_baseline.rs` | [WP-02](wp/WP-02-functional-baseline.md) | 7 | 7 | 0 | 0 | 0 | 0 |
+| `tests/functional/test_functional.py` | `tests/functional.rs` | [WP-01](wp/WP-01-functional-config-profiles.md) | 79 | 79 | 0 | 0 | 0 | 0 |
 | `tests/functional/test_runtime.py` | `tests/runtime.rs` | — | 9 | 9 | 0 | 0 | 0 | 0 |
 | `tests/unit/cli/test_baseline.py` | `tests/unit_cli_baseline.rs` | [WP-04](wp/WP-04-unit-cli-baseline.md) | 12 | 8 | 0 | 0 | 4 | 0 |
 | `tests/unit/cli/test_config_generator.py` | `tests/unit_cli_config_generator.rs` | [WP-05](wp/WP-05-unit-cli-config-generator.md) | 6 | 6 | 0 | 0 | 0 | 0 |
-| `tests/unit/cli/test_main.py` | `tests/unit_cli_main.rs` | [WP-03](wp/WP-03-unit-cli-main.md) | 20 | 0 | 0 | 14 | 5 | 1 |
+| `tests/unit/cli/test_main.py` | `tests/unit_cli_main.rs` | [WP-03](wp/WP-03-unit-cli-main.md) | 20 | 14 | 0 | 0 | 5 | 1 |
 | `tests/unit/core/test_blacklisting.py` | `tests/unit_core_blacklisting.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 2 | 0 | 0 | 0 | 0 |
-| `tests/unit/core/test_config.py` | `tests/unit_core_config.rs` | [WP-08](wp/WP-08-unit-core-config.md) | 26 | 0 | 0 | 26 | 0 | 0 |
+| `tests/unit/core/test_config.py` | `tests/unit_core_config.rs` | [WP-08](wp/WP-08-unit-core-config.md) | 26 | 26 | 0 | 0 | 0 | 0 |
 | `tests/unit/core/test_context.py` | `tests/unit_core_context.rs` | [WP-09](wp/WP-09-unit-core-context.md) | 19 | 0 | 0 | 0 | 17 | 2 |
 | `tests/unit/core/test_docs_util.py` | `tests/unit_core_docs_util.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 3 | 3 | 0 | 0 | 0 | 0 |
 | `tests/unit/core/test_issue.py` | `tests/unit_core_issue.rs` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 7 | 6 | 0 | 0 | 1 | 0 |
-| `tests/unit/core/test_manager.py` | `tests/unit_core_manager.rs` | [WP-06](wp/WP-06-unit-core-manager.md) | 21 | 13 | 0 | 0 | 7 | 1 |
+| `tests/unit/core/test_manager.py` | `tests/unit_core_manager.rs` | [WP-06](wp/WP-06-unit-core-manager.md) | 23 | 13 | 0 | 0 | 7 | 3 |
 | `tests/unit/core/test_meta_ast.py` | `—` | [WP-11](wp/WP-11-unit-core-issue-blacklisting-docs.md) | 2 | 0 | 0 | 0 | 0 | 2 |
 | `tests/unit/core/test_test_set.py` | `tests/unit_core_test_set.rs` | [WP-10](wp/WP-10-unit-core-test-set.md) | 13 | 13 | 0 | 0 | 0 | 0 |
-| `tests/unit/core/test_util.py` | `tests/unit_core_util.rs` | [WP-07](wp/WP-07-unit-core-util.md) | 30 | 26 | 0 | 0 | 0 | 4 |
+| `tests/unit/core/test_util.py` | `tests/unit_core_util.rs` | [WP-07](wp/WP-07-unit-core-util.md) | 30 | 22 | 0 | 0 | 4 | 4 |
 | `tests/unit/formatters/test_csv.py` | `tests/unit_formatters_csv.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_custom.py` | `tests/unit_formatters_custom.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_html.py` | `tests/unit_formatters_html.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 3 | 3 | 0 | 0 | 0 | 0 |
@@ -40,9 +40,12 @@ remplacés par des fixtures réelles) ; **non portable** = introspection Python 
 | `tests/unit/formatters/test_text.py` | `tests/unit_formatters_text.rs` | [WP-12](wp/WP-12-unit-formatters-text-screen.md) | 4 | 4 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_xml.py` | `tests/unit_formatters_xml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
 | `tests/unit/formatters/test_yaml.py` | `tests/unit_formatters_yaml.rs` | [WP-13](wp/WP-13-unit-formatters-structured.md) | 1 | 1 | 0 | 0 | 0 | 0 |
-| **Total** | | | **273** | **171** | **0** | **58** | **34** | **10** |
+| **Total** | | | **273** | **225** | **0** | **0** | **38** | **10** |
 
-Reste à porter/renforcer : **176** tests (175 stubs `#[ignore]` + 1 test partiel) ; 10 tests non portables ; 87 déjà au vert.
+Reste à porter/renforcer : **0** test — jalon **J1 atteint** (2026-09-09) : plus aucun stub `#[ignore]`
+(`scripts/wp_status.sh --check` → 0), **263** tests portés (225 à l'identique + 38 adaptés, mocks Python
+remplacés par des fixtures réelles) et **10** non portables (introspection Python sans équivalent,
+justifiés section par section et dans `DEVIATIONS.md` #8).
 
 ## `tests/functional/test_baseline.py` → `tests/functional_baseline.rs` ([WP-02](wp/WP-02-functional-baseline.md))
 

@@ -28,7 +28,7 @@ jobs:
       - run: cargo build --all-targets --locked
       - run: cargo test --all-targets --locked
       - name: Work-package dashboard
-        run: scripts/wp_status.sh
+        run: scripts/wp_status.sh --check
 
   lint:
     name: fmt + clippy
