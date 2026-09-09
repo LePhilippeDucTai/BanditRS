@@ -137,7 +137,10 @@ cat > "$GOLDEN_DIR/README.md" <<EOF
 Fige les sorties de la référence Python (\`$PY_VERSION\`, dépôt upstream
 \`$UPSTREAM_COMMIT\`) pour \`examples/\` : \`tests/golden/examples.<fmt>\` (huit
 formats, \`bandit -r examples -f <fmt>\`) et \`tests/golden/files/<nom>.json\`
-(\`bandit examples/<nom> -f json\`, un par fixture).
+(\`bandit examples/<nom> -f json\`, une par fixture qui produit au moins une
+issue ou une erreur — garde-fou de taille du corpus, WP-14 §critères
+d'acceptation ; les fixtures sans issue n'apportent rien de plus qu'un
+\`results: []\` déjà couvert par l'agrégat \`examples.json\`).
 
 Régénéré le $GENERATED_DATE avec :
 
