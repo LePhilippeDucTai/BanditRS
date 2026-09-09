@@ -1,0 +1,3 @@
+[bandit]
+exclude = /src/nonsense2.py
+number = 2

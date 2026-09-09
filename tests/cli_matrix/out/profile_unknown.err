@@ -1,0 +1,2 @@
+[config]	WARNING	Config file 'cfg/profiles.yml' contains deprecated legacy config data. Please consider upgrading to the new config format. The tool 'bandit-config-generator' can help you with this. Support for legacy configs will be removed in a future bandit version.
+[main]	ERROR	Unable to find profile (NoSuchProfile) in config file: cfg/profiles.yml

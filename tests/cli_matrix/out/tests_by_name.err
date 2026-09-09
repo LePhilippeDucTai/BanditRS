@@ -1,0 +1,6 @@
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: hardcoded_password_string
+[main]	INFO	cli exclude tests: None
+[extension_loader]	WARNING	Unknown test found in profile: hardcoded_password_string
+[main]	ERROR	No tests would be run, please check the profile.

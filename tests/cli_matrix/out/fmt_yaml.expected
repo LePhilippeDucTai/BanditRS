@@ -1,0 +1,4 @@
+DEVIATIONS.md #10: PyYAML anchors/aliases for a shared line_range list
+Golden recorded from BanditRS, not from Python: the two are
+known to differ here. The replay still guards against a Rust
+regression; scripts/cli_matrix.py diff reports it as expected.

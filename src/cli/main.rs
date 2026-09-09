@@ -34,55 +34,68 @@ fn print_help() {
     println!("\n{DESCRIPTION}\n");
     println!("positional arguments:");
     println!("  targets               source file(s) or directory(s) to be tested\n");
-    println!("options:");
-    println!("  -h, --help            show this help message and exit");
-    println!("  -r, --recursive       find and process files in subdirectories");
-    println!("  -a {{file,vuln}}, --aggregate {{file,vuln}}");
-    println!("                        aggregate output by vulnerability (default) or by filename");
-    println!("  -n CONTEXT_LINES, --number CONTEXT_LINES");
-    println!("                        maximum number of code lines to output for each issue");
-    println!("  -c CONFIG_FILE, --configfile CONFIG_FILE");
-    println!(
-        "                        optional config file to use for selecting plugins and overriding defaults"
-    );
-    println!("  -p PROFILE, --profile PROFILE");
-    println!("                        profile to use (defaults to executing all tests)");
-    println!("  -t TESTS, --tests TESTS");
-    println!("                        comma-separated list of test IDs to run");
-    println!("  -s SKIPS, --skip SKIPS");
-    println!("                        comma-separated list of test IDs to skip");
-    println!("  -l, --level           report only issues of a given severity level or higher");
-    println!("  --severity-level {{all,low,medium,high}}");
-    println!("                        report only issues of a given severity level or higher");
-    println!("  -i, --confidence      report only issues of a given confidence level or higher");
-    println!("  --confidence-level {{all,low,medium,high}}");
-    println!("                        report only issues of a given confidence level or higher");
-    println!(
-        "  -f {{csv,custom,html,json,sarif,screen,txt,xml,yaml}}, --format {{csv,custom,html,json,sarif,screen,txt,xml,yaml}}"
-    );
-    println!("                        specify output format");
-    println!("  --msg-template MSG_TEMPLATE");
-    println!(
-        "                        specify output message template (only usable with --format custom)"
-    );
-    println!("  -o [OUTPUT_FILE], --output [OUTPUT_FILE]");
-    println!("                        write report to filename");
-    println!("  -v, --verbose         output extra information like excluded and included files");
-    println!("  -d, --debug           turn on debug mode");
-    println!("  -q, --quiet, --silent");
-    println!("                        only show output in the case of an error");
-    println!("  --ignore-nosec        do not skip lines with # nosec comments");
-    println!("  -x EXCLUDED_PATHS, --exclude EXCLUDED_PATHS");
-    println!(
-        "                        comma-separated list of paths (glob patterns supported) to exclude from scan"
-    );
-    println!("  -b BASELINE, --baseline BASELINE");
-    println!(
-        "                        path of a baseline report to compare against (only JSON-formatted files are accepted)"
-    );
-    println!("  --ini INI_PATH        path to a .bandit file that supplies command line arguments");
-    println!("  --exit-zero           exit with 0, even with results found");
-    println!("  --version             show program's version number and exit");
+    // `parser.format_help()` of the reference bandit, byte for byte at the
+    // 80-column width argparse falls back to off a terminal. Kept as one
+    // literal rather than per-option `println!`s so the wrapping cannot
+    // drift; checked by the `help` case of scripts/cli_matrix.py.
+    println!("options:
+  -h, --help            show this help message and exit
+  -r, --recursive       find and process files in subdirectories
+  -a {{file,vuln}}, --aggregate {{file,vuln}}
+                        aggregate output by vulnerability (default) or by
+                        filename
+  -n CONTEXT_LINES, --number CONTEXT_LINES
+                        maximum number of code lines to output for each issue
+  -c CONFIG_FILE, --configfile CONFIG_FILE
+                        optional config file to use for selecting plugins and
+                        overriding defaults
+  -p PROFILE, --profile PROFILE
+                        profile to use (defaults to executing all tests)
+  -t TESTS, --tests TESTS
+                        comma-separated list of test IDs to run
+  -s SKIPS, --skip SKIPS
+                        comma-separated list of test IDs to skip
+  -l, --level           report only issues of a given severity level or higher
+                        (-l for LOW, -ll for MEDIUM, -lll for HIGH)
+  --severity-level {{all,low,medium,high}}
+                        report only issues of a given severity level or
+                        higher. \"all\" and \"low\" are likely to produce the same
+                        results, but it is possible for rules to be undefined
+                        which will not be listed in \"low\".
+  -i, --confidence      report only issues of a given confidence level or
+                        higher (-i for LOW, -ii for MEDIUM, -iii for HIGH)
+  --confidence-level {{all,low,medium,high}}
+                        report only issues of a given confidence level or
+                        higher. \"all\" and \"low\" are likely to produce the same
+                        results, but it is possible for rules to be undefined
+                        which will not be listed in \"low\".
+  -f {{csv,custom,html,json,sarif,screen,txt,xml,yaml}}, --format {{csv,custom,html,json,sarif,screen,txt,xml,yaml}}
+                        specify output format
+  --msg-template MSG_TEMPLATE
+                        specify output message template (only usable with
+                        --format custom), see CUSTOM FORMAT section for list
+                        of available values
+  -o [OUTPUT_FILE], --output [OUTPUT_FILE]
+                        write report to filename
+  -v, --verbose         output extra information like excluded and included
+                        files
+  -d, --debug           turn on debug mode
+  -q, --quiet, --silent
+                        only show output in the case of an error
+  --ignore-nosec        do not skip lines with # nosec comments
+  -x EXCLUDED_PATHS, --exclude EXCLUDED_PATHS
+                        comma-separated list of paths (glob patterns
+                        supported) to exclude from scan (note that these are
+                        in addition to the excluded paths provided in the
+                        config file) (default:
+                        .svn,CVS,.bzr,.hg,.git,__pycache__,.tox,.eggs,*.egg)
+  -b BASELINE, --baseline BASELINE
+                        path of a baseline report to compare against (only
+                        JSON-formatted files are accepted)
+  --ini INI_PATH        path to a .bandit file that supplies command line
+                        arguments
+  --exit-zero           exit with 0, even with results found
+  --version             show program's version number and exit");
     println!("{}", epilog());
 }
 
@@ -209,13 +222,16 @@ fn apply_ini_options(args: &mut Args, ini: &indexmap::IndexMap<String, String>) 
         "selected tests",
     );
 
-    if let Some(ini_targets) = ini.get("targets").filter(|v| !v.is_empty()) {
-        if args.targets == defaults.targets {
-            crate::log_info!("main", "Using ini file for selected targets");
-            args.targets = ini_targets.split(',').map(str::to_string).collect();
-        } else {
-            crate::log_info!("main", "Using command line arg for selected targets");
-        }
+    // `parser.get_default("targets")` is None for `nargs="*"`, so
+    // `_log_option_source` takes its `default_val is None` branch: command-line
+    // targets are announced whether or not the ini carries a `targets` key, and
+    // the ini value is only consulted when none were given (DEVIATIONS #14).
+    let ini_targets = ini.get("targets").filter(|v| !v.is_empty());
+    if !args.targets.is_empty() {
+        crate::log_info!("main", "Using command line arg for selected targets");
+    } else if let Some(t) = ini_targets {
+        crate::log_info!("main", "Using ini file for selected targets");
+        args.targets = t.split(',').map(str::to_string).collect();
     }
 
     if let Some(v) = ini.get("recursive")
@@ -370,7 +386,9 @@ pub fn main(argv: Vec<String>) -> i32 {
     };
 
     if args.targets.is_empty() {
-        eprint!("{}", argparse::USAGE);
+        // `parser.print_usage()` (main.py:607) writes to **stdout**; only
+        // `parser.error()` goes to stderr. Confirmed by the CLI matrix.
+        print!("{}", argparse::USAGE);
         return 2;
     }
 
@@ -445,12 +463,12 @@ pub fn main(argv: Vec<String>) -> i32 {
     }
     for inc in &profile.include {
         if !registry::check_id(inc) {
-            crate::log_warning!("main", "Unknown test found in profile: {}", inc);
+            crate::log_warning!("extension_loader", "Unknown test found in profile: {}", inc);
         }
     }
     for exc in &profile.exclude {
         if !registry::check_id(exc) {
-            crate::log_warning!("main", "Unknown test found in profile: {}", exc);
+            crate::log_warning!("extension_loader", "Unknown test found in profile: {}", exc);
         }
     }
     let overlap: Vec<&String> = profile.include.intersection(&profile.exclude).collect();

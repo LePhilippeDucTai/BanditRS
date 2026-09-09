@@ -1,0 +1,151 @@
+<WS>/src/assert.py:1: B101[bandit]: LOW: Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+<WS>/src/crypto-md5.py:2: B413[bandit]: HIGH: The pyCrypto library and its module MD2 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<WS>/src/crypto-md5.py:3: B413[bandit]: HIGH: The pyCrypto library and its module MD4 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<WS>/src/crypto-md5.py:4: B413[bandit]: HIGH: The pyCrypto library and its module MD5 are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<WS>/src/crypto-md5.py:5: B413[bandit]: HIGH: The pyCrypto library and its module SHA are no longer actively maintained and have been deprecated. Consider using pyca/cryptography library.
+<WS>/src/crypto-md5.py:13: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<WS>/src/crypto-md5.py:14: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<WS>/src/crypto-md5.py:16: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<WS>/src/crypto-md5.py:18: B324[bandit]: HIGH: Use of weak MD5 hash for security. Consider usedforsecurity=False
+<WS>/src/crypto-md5.py:20: B324[bandit]: HIGH: Use of weak SHA1 hash for security. Consider usedforsecurity=False
+<WS>/src/crypto-md5.py:24: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:25: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:26: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:27: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:29: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:30: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:31: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:32: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:34: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:35: B303[bandit]: MEDIUM: Use of insecure MD2, MD4, MD5, or SHA1 hash function.
+<WS>/src/crypto-md5.py:37: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_CRYPT hash function.
+<WS>/src/crypto-md5.py:38: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_MD5 hash function.
+<WS>/src/crypto-md5.py:39: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_BLOWFISH hash function.
+<WS>/src/crypto-md5.py:44: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_CRYPT hash function.
+<WS>/src/crypto-md5.py:45: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_MD5 hash function.
+<WS>/src/crypto-md5.py:46: B324[bandit]: MEDIUM: Use of insecure crypt.METHOD_BLOWFISH hash function.
+<WS>/src/flask_debug.py:10: B201[bandit]: HIGH: A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+<WS>/src/hardcoded-passwords.py:4: B105[bandit]: LOW: Possible hardcoded password: 'class_password'
+<WS>/src/hardcoded-passwords.py:8: B107[bandit]: LOW: Possible hardcoded password: 'Admin'
+<WS>/src/hardcoded-passwords.py:14: B105[bandit]: LOW: Possible hardcoded password: 'root'
+<WS>/src/hardcoded-passwords.py:20: B105[bandit]: LOW: Possible hardcoded password: ''
+<WS>/src/hardcoded-passwords.py:26: B105[bandit]: LOW: Possible hardcoded password: 'ajklawejrkl42348swfgkg'
+<WS>/src/hardcoded-passwords.py:33: B105[bandit]: LOW: Possible hardcoded password: 'this cool password'
+<WS>/src/hardcoded-passwords.py:38: B107[bandit]: LOW: Possible hardcoded password: 'blerg'
+<WS>/src/hardcoded-passwords.py:46: B106[bandit]: LOW: Possible hardcoded password: 'blerg'
+<WS>/src/hardcoded-passwords.py:50: B105[bandit]: LOW: Possible hardcoded password: 'blerg'
+<WS>/src/hardcoded-passwords.py:54: B105[bandit]: LOW: Possible hardcoded password: 'blerg'
+<WS>/src/hardcoded-passwords.py:58: B105[bandit]: LOW: Possible hardcoded password: 'secret'
+<WS>/src/hardcoded-passwords.py:62: B105[bandit]: LOW: Possible hardcoded password: 'emails_secret'
+<WS>/src/hardcoded-passwords.py:66: B105[bandit]: LOW: Possible hardcoded password: 'd6s$f9g!j8mg7hw?n&2'
+<WS>/src/hardcoded-passwords.py:70: B105[bandit]: LOW: Possible hardcoded password: '1234'
+<WS>/src/hardcoded-passwords.py:94: B105[bandit]: LOW: Possible hardcoded password: 'pass'
+<WS>/src/hardcoded-passwords.py:102: B105[bandit]: LOW: Possible hardcoded password: '12345'
+<WS>/src/imports.py:2: B403[bandit]: LOW: Consider possible security implications associated with pickle module.
+<WS>/src/imports.py:4: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<WS>/src/mark_safe.py:4: B308[bandit]: MEDIUM: Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed.
+<WS>/src/nosec.py:9: B607[bandit]: LOW: Starting a process with a partial executable path
+<WS>/src/nosec.py:9: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/nosec.py:11: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/nosec.py:17: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/nosec.py:18: B607[bandit]: LOW: Starting a process with a partial executable path
+<WS>/src/os-chmod.py:6: B103[bandit]: HIGH: Chmod setting a permissive mask 0o227 on file (/etc/passwd).
+<WS>/src/os-chmod.py:7: B103[bandit]: HIGH: Chmod setting a permissive mask 0o7 on file (/etc/passwd).
+<WS>/src/os-chmod.py:8: B103[bandit]: MEDIUM: Chmod setting a permissive mask 0o664 on file (/etc/passwd).
+<WS>/src/os-chmod.py:9: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (/etc/passwd).
+<WS>/src/os-chmod.py:10: B103[bandit]: MEDIUM: Chmod setting a permissive mask 0o770 on file (/etc/passwd).
+<WS>/src/os-chmod.py:11: B103[bandit]: HIGH: Chmod setting a permissive mask 0o776 on file (/etc/passwd).
+<WS>/src/os-chmod.py:12: B103[bandit]: MEDIUM: Chmod setting a permissive mask 0o760 on file (/etc/passwd).
+<WS>/src/os-chmod.py:13: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (~/.bashrc).
+<WS>/src/os-chmod.py:14: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (/etc/hosts).
+<WS>/src/os-chmod.py:15: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (/tmp/oh_hai).
+<WS>/src/os-chmod.py:15: B108[bandit]: MEDIUM: Probable insecure usage of temp file/directory.
+<WS>/src/os-chmod.py:17: B103[bandit]: HIGH: Chmod setting a permissive mask 0o777 on file (keyfile).
+<WS>/src/requests-missing-timeout.py:6: B113[bandit]: MEDIUM: Call to requests without timeout
+<WS>/src/requests-missing-timeout.py:7: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<WS>/src/requests-missing-timeout.py:8: B113[bandit]: MEDIUM: Call to requests without timeout
+<WS>/src/requests-missing-timeout.py:9: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<WS>/src/requests-missing-timeout.py:10: B113[bandit]: MEDIUM: Call to requests without timeout
+<WS>/src/requests-missing-timeout.py:11: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<WS>/src/requests-missing-timeout.py:12: B113[bandit]: MEDIUM: Call to requests without timeout
+<WS>/src/requests-missing-timeout.py:13: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<WS>/src/requests-missing-timeout.py:14: B113[bandit]: MEDIUM: Call to requests without timeout
+<WS>/src/requests-missing-timeout.py:15: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<WS>/src/requests-missing-timeout.py:16: B113[bandit]: MEDIUM: Call to requests without timeout
+<WS>/src/requests-missing-timeout.py:17: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<WS>/src/requests-missing-timeout.py:18: B113[bandit]: MEDIUM: Call to requests without timeout
+<WS>/src/requests-missing-timeout.py:19: B113[bandit]: MEDIUM: Call to requests with timeout set to None
+<WS>/src/requests-missing-timeout.py:21: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:23: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:25: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:27: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:29: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:31: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:33: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:35: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:37: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:40: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/requests-missing-timeout.py:44: B113[bandit]: MEDIUM: Call to httpx with timeout set to None
+<WS>/src/sql_statements.py:4: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:5: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:6: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:7: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:8: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:9: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:12: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:13: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:14: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:17: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:18: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:19: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:20: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:21: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:23: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:24: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:25: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:28: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:29: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:30: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:31: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:32: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/sql_statements.py:47: B608[bandit]: MEDIUM: Possible SQL injection vector through string-based query construction.
+<WS>/src/subprocess_shell.py:1: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<WS>/src/subprocess_shell.py:2: B404[bandit]: LOW: Consider possible security implications associated with the subprocess module.
+<WS>/src/subprocess_shell.py:11: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:12: B604[bandit]: MEDIUM: Function call with shell=True parameter identified, possible security issue.
+<WS>/src/subprocess_shell.py:14: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:15: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:16: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:18: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:21: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:23: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:24: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:26: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:27: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:28: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:30: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:31: B605[bandit]: LOW: Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:33: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:34: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:36: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:37: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:38: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:41: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:43: B602[bandit]: LOW: subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+<WS>/src/subprocess_shell.py:46: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:47: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:48: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:49: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:51: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:52: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:53: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:54: B602[bandit]: HIGH: subprocess call with shell=True identified, security issue.
+<WS>/src/subprocess_shell.py:56: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:57: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:58: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:59: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/subprocess_shell.py:60: B603[bandit]: LOW: subprocess call - check for execution of untrusted input.
+<WS>/src/try_except_pass.py:4: B110[bandit]: LOW: Try, Except, Pass detected.
+<WS>/src/try_except_pass.py:11: B110[bandit]: LOW: Try, Except, Pass detected.
+<WS>/src/yaml_load.py:9: B506[bandit]: MEDIUM: Use of unsafe yaml load. Allows instantiation of arbitrary objects. Consider yaml.safe_load().
+<WS>/src/yaml_load.py:22: B506[bandit]: MEDIUM: Use of unsafe yaml load. Allows instantiation of arbitrary objects. Consider yaml.safe_load().

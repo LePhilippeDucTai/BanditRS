@@ -1,0 +1,6 @@
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: B999999
+[main]	INFO	cli exclude tests: None
+[extension_loader]	WARNING	Unknown test found in profile: B999999
+[main]	ERROR	No tests would be run, please check the profile.

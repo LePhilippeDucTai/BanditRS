@@ -87,7 +87,9 @@ fn is_dirty(cwd: &Path) -> bool {
 }
 
 fn name_rev(cwd: &Path, sha: &str) -> String {
-    git(cwd, &["name-rev", "--name-only", sha]).unwrap_or_else(|_| sha.to_string())
+    // GitPython's `commit.name_rev` is `git name-rev <sha>`, which prints
+    // "<sha> <name>"; `--name-only` would drop the sha (DEVIATIONS #15).
+    git(cwd, &["name-rev", sha]).unwrap_or_else(|_| sha.to_string())
 }
 
 fn reset_hard(cwd: &Path, commit: &str) -> Result<(), String> {

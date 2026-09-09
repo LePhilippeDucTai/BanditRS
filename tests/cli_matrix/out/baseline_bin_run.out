@@ -1,0 +1,5 @@
+[   INFO ] Got current commit: [<SHA> main]
+[   INFO ] Got parent commit: [<SHA> main~1]
+[   INFO ] Getting Bandit baseline results
+[   INFO ] Comparing Bandit results to baseline
+[   INFO ] Successfully wrote bandit_baseline_result.json

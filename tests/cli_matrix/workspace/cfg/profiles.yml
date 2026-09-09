@@ -1,0 +1,10 @@
+profiles:
+  ShellInjection:
+    include:
+      - subprocess_popen_with_shell_equals_true
+      - any_other_function_with_shell_equals_true
+      - start_process_with_a_shell
+  Crypto:
+    include:
+      - hashlib
+      - weak_cryptographic_key

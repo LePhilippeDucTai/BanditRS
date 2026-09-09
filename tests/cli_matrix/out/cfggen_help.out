@@ -1,0 +1,23 @@
+usage: bandit-config-generator [-h] [--show-defaults] [-o OUTPUT_FILE]
+                               [-t TESTS] [-s SKIPS]
+
+Bandit Config Generator
+
+    This tool is used to generate an optional profile.  The profile may be used
+    to include or skip tests and override values for plugins.
+
+    When used to store an output profile, this tool will output a template that
+    includes all plugins and their default settings.  Any settings which aren't
+    being overridden can be safely removed from the profile and default values
+    will be used.  Bandit will prefer settings from the profile over the built
+    in values.
+
+options:
+  -h, --help            show this help message and exit
+  --show-defaults       show the default settings values for each plugin but do not output a profile
+  -o OUTPUT_FILE, --out OUTPUT_FILE
+                        output file to save profile
+  -t TESTS, --tests TESTS
+                        list of test names to run
+  -s SKIPS, --skip SKIPS
+                        list of test names to skip

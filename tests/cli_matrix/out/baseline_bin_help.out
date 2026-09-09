@@ -1,0 +1,12 @@
+usage: bandit-baseline [-h] [-f {txt,html,json}] targets [targets ...]
+
+Bandit Baseline - Generates Bandit results compared to a baseline
+
+positional arguments:
+  targets             source file(s) or directory(s) to be tested
+
+options:
+  -h, --help          show this help message and exit
+  -f {txt,html,json}  specify output format
+
+Additional Bandit arguments such as severity filtering (-ll) can be added and will be passed to Bandit.
