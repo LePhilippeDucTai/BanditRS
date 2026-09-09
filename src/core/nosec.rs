@@ -29,6 +29,16 @@ use crate::core::issue::LineRange;
 pub static NOSEC_COMMENT: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"#\s*nosec:?\s*(?P<tests>[^#]+)?#?").unwrap());
 
+/// `manager.NOSEC_COMMENT_TESTS`, ported verbatim. The token list is *not* a
+/// whitespace split: Python iterates this regex over the `tests` group and
+/// takes `group(1)`, so punctuation between tokens is skipped entirely
+/// (`#nosec (on the line)` yields `on`, `the`, `line`, never `(on`), and a
+/// repeated group keeps only its **last** repetition, so `B101,B102` (no
+/// space) yields the single token `B102`. Rust's `regex` crate reproduces
+/// both behaviours exactly, verified against CPython's `re`.
+pub static NOSEC_COMMENT_TESTS: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)(?:(B\d+|[a-z\d_]+),?)+").unwrap());
+
 /// Map: line number → `None` (plain comment) / `Some(ids)` (nosec).
 #[derive(Debug, Clone, Default)]
 pub struct NosecLines {
@@ -64,10 +74,10 @@ pub fn parse_nosec_comment(comment: &str) -> Option<FxHashSet<String>> {
     let caps = NOSEC_COMMENT.captures(comment)?;
     let mut ids = FxHashSet::default();
     if let Some(tests) = caps.name("tests") {
-        for token in tests
-            .as_str()
-            .split(|c: char| c == ',' || c.is_whitespace())
-            .filter(|t| !t.is_empty())
+        for token in NOSEC_COMMENT_TESTS
+            .captures_iter(tests.as_str())
+            .filter_map(|c| c.get(1))
+            .map(|m| m.as_str())
         {
             if let Some(id) = crate::core::registry::resolve_test_token(token) {
                 ids.insert(id);
@@ -96,12 +106,11 @@ mod tests {
         assert!(ids.contains("B101") && ids.len() == 1);
         let ids = parse_nosec_comment("# nosec B101, B102").unwrap();
         assert!(ids.contains("B101") && ids.contains("B102"));
+        // A repeated capture group keeps only its last repetition, so a comma
+        // without a space collapses to the final id (mirrors CPython's `re`).
         let ids = parse_nosec_comment("# nosec B101,B102").unwrap();
-        assert_eq!(
-            ids.len(),
-            2,
-            "deliberate deviation: comma without space keeps both ids"
-        );
+        assert_eq!(ids.len(), 1);
+        assert!(ids.contains("B102"));
         let ids = parse_nosec_comment("# type: ... # nosec B607 # noqa: E501").unwrap();
         assert!(ids.contains("B607") && ids.len() == 1);
         assert_eq!(

@@ -5,7 +5,14 @@ connus uniquement quand aucun test n'en dépend. Tout le reste (coquilles dans l
 `bad_calls`/`bad_imports` de la conversion legacy — testée —, premier match des blacklists, « premier hit » du
 nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reproduit à l'identique.
 
-1. `# nosec B101,B102` (virgule sans espace) : Python n'ignore que le dernier id ; BanditRS prend tous les ids.
+1. ~~`# nosec B101,B102` (virgule sans espace) : Python n'ignore que le dernier id ; BanditRS prend tous les
+   ids.~~ **Résorbé le 2026-09-09 (J5).** La matrice différentielle CLI (WP-18) a montré que BanditRS
+   découpait les jetons d'un commentaire `nosec` sur les espaces et les virgules, là où Python itère
+   `NOSEC_COMMENT_TESTS = (?:(B\d+|[a-z\d_]+),?)+` et prend `group(1)` : la ponctuation est ignorée
+   (`#nosec (on the line)` donne `on`, `the`, `line`, jamais `(on`) et un groupe répété ne conserve que sa
+   **dernière** répétition (`B101,B102` donne le seul jeton `B102`). Le crate `regex` reproduit les deux
+   comportements à l'identique ; `src/core/nosec.rs` porte donc désormais la regex telle quelle et il n'y a
+   plus d'écart — ni sur les ids retenus, ni sur les avertissements `Test in comment: …` de stderr.
 2. Formatter CSV : un test sans CWE (NOTSET) plante en Python (`KeyError: 'link'`) ; BanditRS écrit une colonne vide.
 3. Fichier `.bandit` (INI) : `level`, `confidence`, `number` sont convertis en entiers (Python garde des chaînes et
    plante) ; la clé `configfile` est réellement honorée (Python lisait la mauvaise clé de défaut).
