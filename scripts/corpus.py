@@ -337,8 +337,36 @@ def parse_check(dest, python):
     return [b for b in bad if not any(a in b for a in allowed)]
 
 
+def reference_python(explicit=None):
+    """The interpreter `--parse` should use.
+
+    This has to be the interpreter the *reference bandit* runs on, not merely
+    some Python: the parse check is the precondition that makes a divergence
+    mean something ("both tools saw code they can both parse"), so an
+    interpreter that drifts from the reference silently weakens the guarantee
+    it is there to provide. Deriving it from PY_BANDIT — which every other
+    harness in this repository already honours, and which CI exports — keeps
+    the two in lock-step by construction.
+    """
+    if explicit:
+        return explicit
+    if os.environ.get("PY_REF"):
+        return os.environ["PY_REF"]
+    for var, sub in (("PY_BANDIT", ".."), ("PY_BANDIT_BIN", ".")):
+        if os.environ.get(var):
+            cand = (Path(os.environ[var]) / sub / "python").resolve()
+            if cand.exists():
+                return str(cand)
+    dev = Path("/home/user/.pyenv-bandit/bin/python")
+    return str(dev) if dev.exists() else sys.executable
+
+
 def cmd_verify(args):
     rows = select(read_manifest(), args.tier)
+    python = reference_python(args.python)
+    if args.parse and not Path(python).exists():
+        print(f"no interpreter at {python} — set PY_BANDIT or pass --python", file=sys.stderr)
+        return 1
     failures = 0
     for row in rows:
         dest = target_dir(row)
@@ -353,12 +381,12 @@ def cmd_verify(args):
             continue
         msg = f"ok      {row['name']} {row['version']} ({files} files, {lines} lines)"
         if args.parse:
-            bad = parse_check(dest, args.python)
+            bad = parse_check(dest, python)
             if bad:
                 # A frontier package failing here is the point of the tier: it
                 # carries syntax the reference interpreter does not know.
                 tag = "expected" if row["tier"] == "frontier" else "FAIL"
-                print(f"{tag:<7} {row['name']}: {len(bad)} file(s) rejected by {args.python}")
+                print(f"{tag:<7} {row['name']}: {len(bad)} file(s) rejected by {python}")
                 for b in bad[:5]:
                     print(f"          {b}")
                 if row["tier"] != "frontier":
@@ -404,7 +432,11 @@ def main():
     p = sub.add_parser("verify")
     p.add_argument("--tier", **tier)
     p.add_argument("--parse", action="store_true")
-    p.add_argument("--python", default=os.environ.get("PY_REF", "/home/user/.pyenv-bandit/bin/python"))
+    p.add_argument(
+        "--python",
+        default=None,
+        help="interpreter used by `--parse` (default: the one the reference bandit runs on)",
+    )
     p.set_defaults(fn=cmd_verify)
     p = sub.add_parser("list")
     p.add_argument("--tier", **tier)

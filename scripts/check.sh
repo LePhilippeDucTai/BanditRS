@@ -104,6 +104,14 @@ parity_job() {
     echo "bandit de référence introuvable : $py_bandit (voir PLAN.md §2)" >&2
     return 1
   fi
+  # Exporter la référence, et ne pas se contenter de la résoudre pour soi :
+  # sans cela, chaque script enfant repartait de SA propre valeur par défaut.
+  # Sur la machine de dév tous ces défauts existent, donc la porte passait ;
+  # en CI ils n'existent pas, et le job « parity » échouait sur un chemin en
+  # dur — porte verte, CI rouge, six runs de suite (cf. PLAN.md §6). La porte
+  # emprunte désormais le même chemin de résolution que `.github/workflows/ci.yml`.
+  export PY_BANDIT="$py_bandit"
+  export PY_BANDIT_BIN="$(dirname "$py_bandit")"
   cargo build --release --locked || return 1
   python3 scripts/corpus.py fetch  --tier smoke || return 1
   python3 scripts/corpus.py verify --parse --tier smoke || return 1

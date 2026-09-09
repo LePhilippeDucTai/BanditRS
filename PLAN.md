@@ -308,6 +308,16 @@ qu'ils disent où se cachent les écarts de ce genre :
   **aucune baseline** ; il en crée une silencieusement à partir du worktree courant et compare le dépôt à
   lui-même — « aucune régression » quel que soit le ralentissement. D'où `benches/baseline.json`, committé
   (WP-20), utilisé en repli et rafraîchi par `scripts/bench_regression.sh --record`.
+- **Une porte de qualité qui ne peut pas échouer comme la CI n'est pas une porte.** `scripts/check.sh parity`
+  est resté vert pendant six runs de CI rouges : il résolvait le bandit de référence pour lui-même sans
+  l'**exporter**, si bien que chaque script enfant repartait de sa propre valeur par défaut — et sur la
+  machine de dév, tous ces chemins en dur (`/home/user/.pyenv-bandit/…`) existent. En CI aucun n'existe :
+  `corpus.py verify --parse` lisait `PY_REF`, que rien ne définit, et échouait sur `FileNotFoundError`.
+  Deux règles en découlent : un script du dépôt résout l'interpréteur de référence **depuis `PY_BANDIT`**
+  (jamais depuis une variable qui lui est propre), et `check.sh` exporte la référence pour que la porte
+  emprunte le chemin de résolution de `.github/workflows/ci.yml`. Corollaire : la version de
+  l'interpréteur qui vérifie la précondition `--parse` doit être **celle du bandit de référence**, sinon
+  la précondition dérive de la comparaison qu'elle protège.
 - Comparer à une référence, c'est **aligner la version d'interpréteur** : `BANDITRS_PYTHON_COMPAT` fixe la
   version cible du parseur `ruff`, pas seulement les positions de f-strings. Sans cet alignement, BanditRS
   analyse normalement des fichiers que CPython 3.11 range dans `errors[]` et remonte donc *plus* d'issues
