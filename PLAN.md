@@ -40,12 +40,15 @@
 ## 3. État d'avancement (ce qui est FAIT et VALIDÉ)
 
 `cargo build --all-targets`, `cargo clippy --all-targets -- -D warnings` et `cargo fmt --check` propres.
-`cargo test --all-targets` : **67 tests unitaires** (`src/`) + **274 tests d'intégration** (`tests/`, un fichier
-miroir par fichier de test Python) = **341 tests, tous actifs et au vert, zéro `#[ignore]`**
-(`scripts/wp_status.sh --check` → 0). **Jalon J1 atteint le 2026-09-09** : les 273 tests de la suite Python
+`cargo test --all-targets` : **67 tests unitaires** (`src/`) + **283 tests d'intégration** (`tests/`, un fichier
+miroir par fichier de test Python, plus `tests/golden.rs` (9 tests, WP-14) qui rejoue le corpus golden sans
+Python) = **350 tests, tous actifs et au vert, zéro `#[ignore]`** (`scripts/wp_status.sh --check` → 0).
+**Jalon J1 atteint le 2026-09-09** : les 273 tests de la suite Python
 ont un homologue Rust homonyme (263 portés — 225 à l'identique, 38 adaptés — et 10 non portables, justifiés
 dans `docs/plan/test-inventory.md` et `DEVIATIONS.md` #8). La table complète des exemples upstream
-(comptes de sévérité/confiance) correspond bit à bit à bandit Python.
+(comptes de sévérité/confiance) correspond bit à bit à bandit Python. **Jalons J2 et J3 également atteints le
+2026-09-09** (vague B, WP-14 et WP-15 — cf. tableau ci-dessous) : parité prouvée sans Python installé (corpus
+golden rejoué par `cargo test`) et performance mesurée avec garde-fou de régression.
 
 Différentiel complet rejoué en fin de vague A2 (2026-09-09) via `scripts/diff_against_python.sh examples` :
 traces de parcours **91/91 identiques**, et `examples/` × {json, txt, csv, xml, yaml, custom, sarif, html}
@@ -60,8 +63,8 @@ plus de diff (`DeepAssignation` implémenté, DEVIATIONS.md #9 réécrite en con
 |---|---|---|
 | J0 | Restructuration : squelette miroir de la suite Python, `docs/plan/` (inventaire, 16 fiches de lots, playbook, benchmarks), agents `.claude/agents/banditrs-wp-*`, skill `banditrs-dispatch`, `benches/e2e.rs`, `scripts/{wp_status,bench_vs_python}.sh`, CI | **Fait** (2026-09-08) |
 | J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | **Fait** (2026-09-09) : vague A1 (WP-02, 05, 07, 11, 12, 13) puis vague A2 (WP-01, 03, 04, 06, 09, 10, puis WP-08) — 176 stubs activés, 0 restant, `scripts/wp_status.sh --check` → 0 |
-| J2 | Corpus golden + différentiel rejoué **en local** (WP-14 ; WP-16 suspendu, cf. ci-dessous) | à lancer (vague B) |
-| J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | à lancer (vague B) |
+| J2 | Corpus golden + différentiel rejoué **en local** (WP-14 ; WP-16 suspendu, cf. ci-dessous) | **Fait** (2026-09-09) : corpus `tests/golden/**` committé (examples × 8 formats + 86 fixtures JSON) rejoué sans Python par `cargo test --test golden` (9 tests) ; `scripts/diff_against_python.sh` finalisé (mode fichier-par-fichier JSON autoritaire) et exécuté sur `examples/` (94/94 identiques) et la stdlib 3.11 (672/672 identiques), zéro diff inattendu |
+| J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | **Fait** (2026-09-09) : campagne complète dans `docs/plan/benchmarks.md` §5 (examples 19,0×, stdlib 49,9×, subprocess_shell.py 33,3×, long_set.py 17,4×, mémoire Rust −57 %) — tous les objectifs §2 dépassés ; `scripts/bench_regression.sh` en place (garde-fou +10 %) ; profil `valgrind --callgrind` en §6 (2 pistes d'optimisation chiffrées non appliquées, hors propriété WP-15) |
 
 > **CI GitHub Actions désactivée le 2026-09-09 à la demande de l'utilisateur** (aucun coût souhaité). Le
 > workflow est conservé, inerte, dans `.github/workflows/ci.yml.disabled` (GitHub ne lit que `*.yml`/`*.yaml`).
@@ -176,8 +179,12 @@ Bugs réels trouvés et corrigés pendant cette passe :
   `linerange[0]` ; `to_uri` doit normaliser via `PurePath.as_posix()` (`pycompat::path::posix_normalize`, retire
   un `./` initial) avant de percent-encoder.
 
-À refaire avant de clore M9 : mettre à jour `scripts/diff_against_python.sh` pour automatiser cette comparaison
-(actuellement faite via une boucle shell ad hoc) et l'exécuter aussi sur `/usr/lib/python3.11` (`BANDITRS_PYTHON_COMPAT=3.11`).
+**Fait par WP-14 (2026-09-09, jalon J2)** : `scripts/diff_against_python.sh` finalisé (mode fichier-par-fichier
+JSON autoritaire, liste blanche des déviations documentées, option `--stdlib`) et exécuté sur `examples/`
+(94/94 identiques) et sur `/usr/lib/python3.11` (672/672 identiques, `BANDITRS_PYTHON_COMPAT=3.11`) : zéro
+diff inattendu. Le corpus golden (`tests/golden/**`, examples × 8 formats + 86 fixtures JSON) est en outre
+committé et rejoué sans Python par `cargo test --test golden` (9 tests) — la parité est désormais prouvée
+par `cargo test` seul, sans dépendre d'un venv Python à chaque run.
 
 ### M10 — `cargo clippy --all-targets -- -D warnings` (63 avertissements à nettoyer, aucun bloquant), `cargo fmt`,
 benchmark (`time bandit -r /usr/lib/python3.11` Python vs Rust `--release`, objectif ≥ 20×), README, commit/push.
@@ -215,12 +222,14 @@ benchmark (`time bandit -r /usr/lib/python3.11` Python vs Rust `--release`, obje
 ```bash
 scripts/check.sh                                          # PORTE DE QUALITÉ LOCALE (remplace la CI) — à lancer avant tout push
 scripts/check.sh fast                                     # idem sans la compilation des benchs (boucle de dév)
-cargo build --release && cargo test --all-targets         # 341 tests (67 unitaires + 274 d'intégration), 0 ignoré
+cargo build --release && cargo test --all-targets         # 350 tests (67 unitaires + 283 d'intégration), 0 ignoré
 scripts/wp_status.sh                                      # stubs restants par lot (docs/plan/README.md)
 cargo bench --bench e2e                                   # benchs criterion ; scripts/bench_vs_python.sh pour Python vs Rust
+scripts/bench_regression.sh [ref]                         # garde-fou de régression (J3, WP-15) : échec si un bench > +10 % vs la baseline
+cargo test --test golden                                  # rejeu du corpus golden (J2, WP-14), sans Python installé
 BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit --dump-walk examples/nosec.py   # trace Rust
 /home/user/.pyenv-bandit/bin/python scripts/dump_walk.py examples/nosec.py           # trace Python
-scripts/diff_against_python.sh examples                   # harnais différentiel (script à finaliser, cf. §5)
+scripts/diff_against_python.sh examples                   # harnais différentiel finalisé (J2, WP-14) ; --stdlib pour /usr/lib/python3.11
 BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit -r examples -f json   # équivalent Rust
 /home/user/.pyenv-bandit/bin/bandit -r examples -f json   # référence Python (venv à recréer si absent, cf. §2)
 ```

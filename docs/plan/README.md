@@ -14,10 +14,11 @@
 | | État au 2026-09-08 (fin de la session de restructuration) |
 |---|---|
 | Moteur | 42 plugins, 9 formatters, 3 exécutables, parité bit à bit validée par différentiel (`PLAN.md` §3) |
-| Suite Rust | 67 tests unitaires (`src/`) + 274 tests d'intégration (`tests/`) — **341 tests, tous actifs et verts, 0 stub** depuis le 2026-09-09 |
+| Suite Rust | 67 tests unitaires (`src/`) + 283 tests d'intégration (`tests/`, dont `tests/golden.rs`) — **350 tests, tous actifs et verts, 0 stub** |
 | Suite Python de référence | 273 tests (`/home/user/bandit` @ `1d3053d`), tous au vert (`pytest`, Python 3.11) |
 | Couverture du port | **263 tests portés** (225 à l'identique, 38 adaptés), 0 restant, 10 non portables |
-| Performance (4 CPU) | `examples/` : Python 6,74 s → Rust 0,38 s (**17,7×**, dominé par le démarrage) ; stdlib 3.11 (672 fichiers, 307 k lignes) : ~70× (`PLAN.md` M10, à re-mesurer par WP-15) |
+| Parité sans Python | Corpus golden committé (`tests/golden/**`, examples × 8 formats + 86 fixtures JSON), rejoué par `cargo test --test golden` ; `scripts/diff_against_python.sh` : 0 diff inattendu sur `examples/` (94/94) et la stdlib 3.11 (672/672) (WP-14, J2, 2026-09-09) |
+| Performance (4 CPU) | `examples/` : **19,0×** ; stdlib 3.11 (672 fichiers, 307 k lignes) : **49,9×** ; mémoire RSS Rust −57 % vs Python ; garde-fou de régression (`scripts/bench_regression.sh`, +10 %) en place (WP-15, J3, 2026-09-09 — détails `docs/plan/benchmarks.md` §5) |
 
 Trois objectifs pour la phase qui s'ouvre, dans cet ordre de priorité :
 
@@ -75,8 +76,8 @@ principale (l'orchestrateur) après une passe de vérification identique pour to
 |---|---|---|---|
 | **J0 — Restructuration** (fait) | Squelette miroir de la suite Python (176 stubs), inventaire, fiches de lots, agents, benchs, CI | `cargo test --all-targets` vert, `scripts/wp_status.sh` opérationnel | — |
 | **J1 — Suite Python 100 % portée** ✅ **Fait (2026-09-09)** | Tous les stubs activés et verts ; `DeepAssignation` (WP-01) et conversion legacy `convert_legacy_config` (WP-08) implémentées | Atteint : `scripts/wp_status.sh --check` → 0 stub ; 341 tests verts (67 + 274) ; inventaire à jour ; différentiel à zéro diff inexpliqué | WP-01 → WP-13 |
-| **J2 — Parité prouvée sans Python** | Corpus golden (examples × 9 formats + échantillon stdlib) committé, test Rust de rejeu, script de régénération | `cargo test` rejoue le golden sans Python installé ; `scripts/diff_against_python.sh` finalisé et exécuté sur la stdlib | WP-14 |
-| **J3 — Performance mesurée et gardée** | Benchs criterion complets, tableau Python vs Rust (examples, stdlib, gros fichier, mono-fichier), garde-fou de régression, profil et premières optimisations *mesurées* | `docs/plan/benchmarks.md` §Résultats rempli ; objectifs §benchmarks atteints (stdlib ≥ 20×, mono-fichier ≥ 10×) ; `scripts/bench_regression.sh` en place | WP-15 |
+| **J2 — Parité prouvée sans Python** ✅ **Fait (2026-09-09)** | Corpus golden (examples × 8 formats + 86 fixtures stdlib) committé, test Rust de rejeu, script de régénération | Atteint : `cargo test --test golden` rejoue le golden sans Python installé (9 tests) ; `scripts/diff_against_python.sh` finalisé et exécuté sur `examples/` (94/94) et la stdlib (672/672), zéro diff inattendu | WP-14 |
+| **J3 — Performance mesurée et gardée** ✅ **Fait (2026-09-09)** | Benchs criterion complets, tableau Python vs Rust (examples, stdlib, gros fichier, mono-fichier), garde-fou de régression, profil et premières optimisations *mesurées* | Atteint : `docs/plan/benchmarks.md` §5 rempli, tous les objectifs §2 dépassés (examples 19,0×, stdlib 49,9×, mono-fichier 17,4-33,3×, mémoire −57 %) ; `scripts/bench_regression.sh` en place ; profil §6 (2 pistes chiffrées non appliquées, hors propriété WP-15) | WP-15 |
 | **J4 — Consolidation** | `PLAN.md` réécrit (état final), README, version `0.2.0`, éventuellement publication | Décision utilisateur | orchestrateur |
 
 Ordre recommandé : **J1 d'abord et en priorité absolue** (c'est la demande « test-driven »), J2 et J3 peuvent
