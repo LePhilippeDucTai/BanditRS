@@ -18,6 +18,38 @@ with **57% less memory**.
 
 ---
 
+## Install
+
+Fastest way to try it: `uvx` fetches, builds and runs BanditRS in one shot, installing nothing
+permanent. Here it scans the current directory:
+
+```bash
+uvx --from git+https://github.com/LePhilippeDucTai/BanditRS bandit -r .
+```
+
+To keep it around, install it as a tool — `bandit`, `banditrs`, `bandit-baseline` and
+`bandit-config-generator` all land on your `PATH`:
+
+```bash
+uv tool install git+https://github.com/LePhilippeDucTai/BanditRS
+bandit -r .
+```
+
+Both commands build the Rust crate from source, so they need `rustc` ≥ 1.96 and take a couple of
+minutes the first time. To skip compiling altogether, grab the prebuilt wheel for your platform from
+the [latest release](https://github.com/LePhilippeDucTai/BanditRS/releases) — no Rust toolchain
+involved, and it works with every supported Python:
+
+```bash
+pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>
+uvx --from <same-wheel-url> bandit -r .     # or run it on the fly, still without Rust
+```
+
+Platform wheel names, coexisting with the PyCQA `bandit` command, `pre-commit`, and building from
+source: [§7](#7-usage-and-installation-details).
+
+---
+
 ## Contents
 
 1. [In one minute](#1-in-one-minute)
@@ -26,7 +58,7 @@ with **57% less memory**.
 4. [Why it's faster](#4-why-its-faster)
 5. [How parity is proven](#5-how-parity-is-proven)
 6. [Remaining differences](#6-remaining-differences-deliberate)
-7. [Installation and usage](#7-installation-and-usage)
+7. [Usage and installation details](#7-usage-and-installation-details)
 8. [Architecture](#8-architecture)
 9. [Development](#9-development)
 10. [License and credits](#10-license-and-credits)
@@ -519,26 +551,37 @@ that Python clearly mishandles).
 
 ---
 
-## 7. Installation and usage
+## 7. Usage and installation details
 
 ### Installing
 
 BanditRS ships as a Python package, so it drops into any environment that already
-has `pip` — no Rust knowledge required to *use* it.
+has `pip`, `uv` or `pipx` — no Rust knowledge required to *use* it. The quick
+commands are at the [top of this README](#install); here is the full matrix.
 
 | Method | Command | Needs a Rust toolchain? |
 | --- | --- | --- |
 | **Prebuilt wheel** (recommended) | `pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>` | **No** |
+| **Prebuilt wheel, no install** | `uvx --from <same-wheel-url> bandit -r .` | **No** |
+| **uv, on the fly** | `uvx --from git+https://github.com/LePhilippeDucTai/BanditRS bandit -r .` | **Yes** |
+| **uv, as a tool** | `uv tool install git+https://github.com/LePhilippeDucTai/BanditRS` | **Yes** |
 | **From git** | `pip install git+https://github.com/LePhilippeDucTai/BanditRS` | **Yes** |
 | **From source** | `cargo build --release` | Yes |
 
-> **Why `git+` needs Rust.** `pip install git+…` always builds from source: pip
-> clones the repository and builds a wheel from the checkout on the spot. No
-> prebuilt artifact is involved, so `rustc` ≥ 1.96 and `cargo` must be present,
-> and the build takes a couple of minutes. That is inherent to the `git+` syntax,
-> not a limitation of this package. The prebuilt wheels attached to each
+> **Why `git+` needs Rust.** `pip install git+…` and `uvx --from git+…` always
+> build from source: the tool clones the repository and builds a wheel from the
+> checkout on the spot. No prebuilt artifact is involved, so `rustc` ≥ 1.96 and
+> `cargo` must be present, and the build takes a couple of minutes. That is
+> inherent to the `git+` syntax, not a limitation of this package. The prebuilt
+> wheels attached to each
 > [release](https://github.com/LePhilippeDucTai/BanditRS/releases) exist precisely
 > to avoid it — pick the one matching your platform from the table below.
+
+> **Why `--from`.** The distribution is named `banditrs`, but the command you
+> usually want is `bandit`. `uvx` assumes the two match, so plain `uvx bandit`
+> would look for a *different* project; `--from` names the package explicitly and
+> lets you pick any of the four commands it ships. `uvx --from git+… banditrs -r .`
+> runs the same program under the non-conflicting alias.
 
 Every release publishes one wheel per platform. Because the wheels contain native
 executables that do not link against libpython, each one is tagged
