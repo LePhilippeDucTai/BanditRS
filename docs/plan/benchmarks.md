@@ -68,9 +68,14 @@ est retombé sur sa boucle bash de secours (médiane de N runs). Tableaux bruts 
 | Date | Machine | Cible | Python (s) | Rust (s) | Facteur | Objectif §2 |
 |---|---|---|---:|---:|---:|---|
 | 2026-09-09 | 4 CPU, conteneur | `examples/` (94 fichiers `*.py`, 9 534 lignes, JSON, 7 runs) | 6,464 | 0,340 | **19,0×** | ≥ 15× — atteint |
-| 2026-09-09 | 4 CPU, conteneur | `/usr/lib/python3.11` (672 fichiers, 307 504 lignes, JSON, 7 runs) | 17,320 | 0,347 | **49,9×** | ≥ 20× — atteint |
+| 2026-09-09 | 4 CPU, conteneur | `/usr/lib/python3.11` (672 fichiers, 307 504 lignes, JSON, 7 runs) | 18,395 | 0,214 | **86,0×** | ≥ 20× — atteint |
 | 2026-09-09 | 4 CPU, conteneur | `examples/subprocess_shell.py` (60 lignes, JSON, 15 runs) | 0,203 | 0,006 | **33,3×** | ≥ 10× et < 10 ms — atteint (6 ms) |
 | 2026-09-09 | 4 CPU, conteneur | `examples/long_set.py` (65 KiB, 7 279 lignes, JSON, 15 runs) | 6,308 | 0,362 | **17,4×** | ≥ 10× — atteint |
+
+> **Ligne stdlib corrigée le 2026-09-09 (J5).** Elle portait 17,320 s / 0,347 s / 49,9×. Le 0,347 s était
+> un artefact de la boucle de chronométrage bash de `bench_vs_python.sh` (repli faute de `hyperfine`) :
+> il coïncidait avec le 0,340 s d'`examples/`, un corpus 30 fois plus petit. Re-mesuré au protocole §4 sur
+> machine au repos — voir §7.5 pour la mesure d'arbitrage complète.
 
 Note : `examples/` compte 94 fichiers `*.py` avec le protocole (`find -name '*.py'`), contre 96 cités en
 §2/PLAN.md — l'écart vient de deux fichiers `__init__.py` vides ; sans effet sur la mesure.
@@ -156,20 +161,22 @@ parité prime), sauf à passer par une entrée `DEVIATIONS.md` validée par l'ut
 pauvre en findings) sont non représentatifs, dans deux directions opposées. Les chiffres ci-dessous portent
 sur des librairies tierces réelles (`tests/corpus/manifest.tsv`, sdists PyPI épinglés par sha256).
 
-### 7.1 Débit sur le corpus complet (tier `standard`)
+### 7.1 Débit sur le corpus complet (tier `full`)
 
-Mesuré pendant `scripts/diff_corpus.py --tier standard` (une exécution par outil et par paquet,
-`-r <paquet> -f json -q`, mêmes 24 paquets, 11 624 fichiers, 3 640 954 lignes) :
+Mesuré pendant `scripts/diff_corpus.py --tier full` (une exécution par outil et par paquet,
+`-r <paquet> -f json -q`, 36 paquets, 21 536 fichiers, 7 170 763 lignes) :
 
 | Mesure | Python | Rust | Facteur |
 |---|---:|---:|---:|
-| Corpus entier | 286,0 s | 5,4 s | **53,3×** |
-| Meilleur paquet (`pycryptodome`) | | | 71,7× |
-| Moins bon paquet (`pip`, beaucoup de `_vendor/`) | | | 38,1× |
+| Corpus entier | 506,9 s | 8,3 s | **61,0×** |
+| Meilleur paquet (`transformers`) | | | 88,0× |
+| Moins bon paquet (`fabric`) | | | 37,6× |
+| Tier `standard` seul (24 paquets, 3,64 M lignes) | 286,0 s | 5,4 s | 53,3× |
 
-Le facteur sur du vrai code applicatif (≈ 53×) se situe entre celui d'`examples/` (19×, dominé par le
-démarrage sur des fichiers minuscules) et celui de la stdlib. Il est plus élevé qu'`examples/` parce que le
-coût fixe de démarrage de Python — ~190 ms, cf. §7.3 — pèse d'autant moins que le corpus est gros.
+Le facteur sur du vrai code applicatif (≈ 61×) se situe entre celui d'`examples/` (19×) et celui de la
+stdlib (86×, §7.5). L'ordre s'explique par le coût fixe de démarrage de Python (~190 ms, §7.3), qui pèse
+d'autant moins que le corpus est gros : `examples/` est dominé par un seul fichier pathologique, la stdlib
+est le corpus le plus gros et le plus pauvre en findings, le code applicatif réel est entre les deux.
 
 ### 7.2 Détail par paquet, mémoire, et passage à l'échelle
 
@@ -220,12 +227,24 @@ WP-15) et **86,9×** (`README.md` §3.2, campagne ultérieure). Les deux sont de
 la même machine à des moments différents, sans changement de code entre les deux — un facteur 1,7 d'écart
 que la seule variance de charge explique mal.
 
-L'arbitrage demande une troisième mesure, prise dans les conditions du protocole §4 sur une machine au
-repos ; elle n'a pas pu être faite pendant la campagne J5 (le conteneur exécutait le différentiel du tier
-`full` en parallèle, ce qui invalide toute mesure de temps). En attendant, **c'est §5 qui fait foi** :
-c'est la seule des deux à avoir été produite avec le protocole complet (médiane de 7 exécutions après
-chauffe), là où le chiffre du README vient d'une campagne à 3 exécutions. Le README conserve sa valeur
-avec sa propre note de variance ; les deux ne doivent pas être additionnées ni moyennées.
+L'arbitrage a été fait par une troisième mesure, prise dans les conditions du protocole §4 sur une
+machine au repos (charge 0,97, aucun autre travail en cours), 7 exécutions par outil après chauffe :
+
+| Outil | Médiane | min | max |
+|---|---:|---:|---:|
+| `bandit` (Python) | 18,395 s | 17,921 s | 18,604 s |
+| `target/release/bandit` | **0,214 s** | 0,212 s | 0,271 s |
+| **Facteur** | **86,0×** | | |
+
+**C'est donc le chiffre du README (86,9×) qui était juste, et le 49,9× de §5 qui est l'aberrant.** La
+distribution ci-dessus est serrée des deux côtés (±2 % côté Python), ce qui exclut la variance de charge
+comme explication. En relisant §5, son point stdlib est d'ailleurs invraisemblable de l'intérieur : il
+donne 0,347 s pour la stdlib (672 fichiers, 307 k lignes) et 0,340 s pour `examples/` (94 fichiers,
+9,5 k lignes) — deux corpus d'un facteur 30 en taille ne peuvent pas coûter le même temps. La mesure Rust
+de §5 mesurait autre chose que le scan (vraisemblablement un plancher imposé par la boucle de chronométrage
+en bash, `bench_vs_python.sh` étant retombé sur sa boucle de secours faute de `hyperfine`).
+
+Le tableau §5 est corrigé en conséquence et la valeur de référence pour la stdlib est **86,0×**.
 
 Règle retenue pour la suite : **une seule valeur stdlib vit dans le dépôt à la fois.** Une nouvelle
 campagne écrase la précédente au lieu de coexister avec elle, et cite sa machine, son nombre de runs et

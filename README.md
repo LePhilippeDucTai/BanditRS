@@ -282,18 +282,18 @@ The full protocol, the non-regression thresholds and the `callgrind` profile are
 
 | Target | Files | Lines | `bandit` (Python) | **BanditRS** | Factor |
 |---|---:|---:|---:|---:|---:|
-| `/usr/lib/python3.11` (CPython stdlib) | 672 | 307,504 | 17.02 s | **0.196 s** | **86.9×** |
+| `/usr/lib/python3.11` (CPython stdlib) | 672 | 307,504 | 18.40 s | **0.214 s** | **86.0×** |
 | `examples/` (bandit fixtures) | 94 | 9,534 | 6.497 s | **0.341 s** | **19.0×** |
 | `examples/long_set.py` (the largest, 65 KiB) | 1 | 7,279 | 6.247 s | **0.359 s** | **17.4×** |
 | `examples/subprocess_shell.py` (a typical file) | 1 | 60 | 0.197 s | **0.006 s** | **32.3×** |
 
-Cost per line on the stdlib: **55 µs/line** on the Python side against **0.64 µs/line** on the Rust side —
-i.e. 18 kloc/s against 1.57 Mloc/s.
+Cost per line on the stdlib: **60 µs/line** on the Python side against **0.70 µs/line** on the Rust side —
+i.e. 17 kloc/s against 1.44 Mloc/s.
 
-> **Why is `examples/` "only" 19× when the stdlib is 87×?**
+> **Why is `examples/` "only" 19× when the stdlib is 86×?**
 > Because `examples/` is dominated by a single pathological file: `long_set.py` accounts for 6.25 s out of
 > the corpus's 6.50 s on the Python side. Measuring `examples/` therefore essentially means measuring *one*
-> file — and parallelism does not help on a single file. The 19× is the **pure sequential** gain; the 87× on
+> file — and parallelism does not help on a single file. The 19× is the **pure sequential** gain; the 86× on
 > the stdlib is that same gain multiplied by parallelism. Both numbers are consistent, see §3.4.
 
 ### 3.3 Latency and memory

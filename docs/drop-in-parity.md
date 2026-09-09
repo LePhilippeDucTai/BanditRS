@@ -7,10 +7,10 @@ nothing is asserted that a command in this repository cannot reproduce.
 
 | Question | Answer |
 |---|---|
-| Same issues on real third-party code? | **24/24 packages identical** — 11,624 files, 3,640,954 lines, 73,577 issues |
+| Same issues on real third-party code? | **36/36 packages identical** — 21,536 files, 7,170,763 lines, 130,730 issues |
 | Same stdout, stderr **and exit code** across the CLI? | **85/88 invocations identical**, 3 documented divergence(s) |
-| How much of the tool does that exercise? | **56/75 test ids** triggered by the corpus; the rest are covered by `examples/` (see §3) |
-| How much faster? | **53.3×** over the whole corpus (286.0 s → 5.4 s) |
+| How much of the tool does that exercise? | **60/75 test ids** triggered by the corpus; the rest are covered by `examples/` (see §3) |
+| How much faster? | **61.0×** over the whole corpus (506.9 s → 8.3 s) |
 
 ## 1. Real third-party code, package by package
 
@@ -21,31 +21,43 @@ counts.
 
 | package | files | lines | issues | errors | verdict | python (s) | rust (s) | speed-up |
 |---|---:|---:|---:|---:|---|---:|---:|---:|
-| `pandas 3.0.5` | 1,423 | 635,307 | 17,698 | 0 | identical | 52.84 | 1.19 | 44.4× |
-| `SQLAlchemy 2.0.52` | 707 | 604,826 | 5,969 | 0 | identical | 42.81 | 0.67 | 64.4× |
-| `Django 5.2.17` | 2,819 | 491,520 | 1,233 | 1 | identical | 40.08 | 0.63 | 63.8× |
-| `numpy 2.4.6` | 1,129 | 407,157 | 4,812 | 0 | identical | 34.51 | 0.59 | 58.8× |
-| `ansible-core 2.19.13` | 1,773 | 267,084 | 3,727 | 0 | identical | 16.79 | 0.30 | 56.7× |
-| `redis 8.1.0` | 267 | 181,023 | 13,438 | 0 | identical | 14.07 | 0.32 | 44.7× |
-| `pymongo 4.18.0` | 434 | 173,884 | 805 | 0 | identical | 13.52 | 0.20 | 69.3× |
-| `pip 26.2.1` | 407 | 134,705 | 412 | 0 | identical | 17.05 | 0.45 | 38.1× |
-| `botocore 1.43.90` | 291 | 108,223 | 909 | 0 | identical | 7.28 | 0.13 | 57.8× |
-| `celery 5.6.3` | 412 | 96,901 | 4,874 | 0 | identical | 7.71 | 0.15 | 49.7× |
-| `Scrapy 2.18.0` | 481 | 87,513 | 5,690 | 0 | identical | 6.54 | 0.14 | 45.4× |
-| `setuptools 84.0.0` | 333 | 81,941 | 1,531 | 0 | identical | 5.71 | 0.09 | 62.1× |
-| `cryptography 50.0.1` | 237 | 76,193 | 3,451 | 0 | identical | 6.25 | 0.13 | 49.6× |
-| `pycryptodome 3.23.0` | 224 | 65,497 | 959 | 0 | identical | 4.56 | 0.06 | 71.3× |
-| `tornado 6.5.8` | 75 | 44,519 | 273 | 0 | identical | 3.13 | 0.05 | 62.6× |
-| `Werkzeug 3.1.8` | 138 | 35,090 | 1,889 | 0 | identical | 2.50 | 0.06 | 45.5× |
-| `urllib3 2.7.0` | 81 | 32,241 | 1,709 | 0 | identical | 2.45 | 0.05 | 45.4× |
-| `paramiko 5.0.0` | 65 | 26,972 | 609 | 0 | identical | 1.77 | 0.03 | 52.0× |
-| `Jinja2 3.1.6` | 52 | 22,755 | 1,229 | 0 | identical | 1.67 | 0.04 | 44.0× |
-| `Mako 1.4.1` | 71 | 20,199 | 531 | 0 | identical | 1.20 | 0.03 | 48.0× |
-| `Flask 3.1.3` | 83 | 17,889 | 1,033 | 0 | identical | 1.20 | 0.03 | 42.9× |
-| `requests 2.34.2` | 35 | 11,526 | 702 | 0 | identical | 0.97 | 0.03 | 32.4× |
-| `PyYAML 6.0.3` | 47 | 9,371 | 94 | 0 | identical | 0.88 | 0.01 | 58.9× |
-| `boto3 1.43.90` | 40 | 8,618 | 0 | 0 | identical | 0.51 | 0.01 | 51.2× |
-| **total** | **11,624** | **3,640,954** | **73,577** | | **24/24** | **286.0** | **5.4** | **53.3×** |
+| `transformers 5.17.0` | 2,701 | 1,151,689 | 774 | 0 | identical | 71.94 | 0.82 | 87.9× |
+| `salt 3008.2` | 2,899 | 980,155 | 29,547 | 4 | identical | 56.13 | 1.11 | 50.4× |
+| `pandas 3.0.5` | 1,423 | 635,307 | 17,698 | 0 | identical | 51.13 | 0.73 | 69.8× |
+| `SQLAlchemy 2.0.52` | 707 | 604,826 | 5,969 | 0 | identical | 41.24 | 0.71 | 57.8× |
+| `scipy 1.17.1` | 1,202 | 601,037 | 6,179 | 0 | identical | 43.89 | 0.59 | 73.8× |
+| `Django 5.2.17` | 2,819 | 491,520 | 1,233 | 1 | identical | 37.46 | 0.55 | 67.6× |
+| `numpy 2.4.6` | 1,129 | 407,157 | 4,812 | 0 | identical | 34.57 | 0.51 | 67.3× |
+| `matplotlib 3.11.1` | 911 | 278,336 | 4,312 | 0 | identical | 19.56 | 0.28 | 71.1× |
+| `ansible-core 2.19.13` | 1,773 | 267,084 | 3,727 | 0 | identical | 17.26 | 0.30 | 57.0× |
+| `redis 8.1.0` | 267 | 181,023 | 13,438 | 0 | identical | 14.52 | 0.31 | 46.7× |
+| `pymongo 4.18.0` | 434 | 173,884 | 805 | 0 | identical | 13.45 | 0.19 | 71.5× |
+| `apache-airflow-core 3.3.1` | 747 | 142,182 | 179 | 0 | identical | 8.68 | 0.13 | 64.8× |
+| `pip 26.2.1` | 407 | 134,705 | 412 | 0 | identical | 16.75 | 0.43 | 38.6× |
+| `botocore 1.43.90` | 291 | 108,223 | 909 | 0 | identical | 6.86 | 0.14 | 49.7× |
+| `celery 5.6.3` | 412 | 96,901 | 4,874 | 0 | identical | 7.86 | 0.14 | 54.2× |
+| `aiohttp 3.14.3` | 168 | 96,551 | 7,222 | 0 | identical | 7.44 | 0.17 | 43.0× |
+| `ipython 9.17.1` | 316 | 96,512 | 3,896 | 0 | identical | 6.18 | 0.14 | 44.8× |
+| `Scrapy 2.18.0` | 481 | 87,513 | 5,690 | 0 | identical | 6.77 | 0.17 | 39.3× |
+| `setuptools 84.0.0` | 333 | 81,941 | 1,531 | 0 | identical | 5.62 | 0.10 | 58.6× |
+| `poetry 2.4.3` | 438 | 77,563 | 3,556 | 0 | identical | 5.42 | 0.12 | 46.4× |
+| `cryptography 50.0.1` | 237 | 76,193 | 3,451 | 0 | identical | 5.96 | 0.14 | 43.5× |
+| `pycryptodome 3.23.0` | 224 | 65,497 | 959 | 0 | identical | 4.99 | 0.07 | 76.8× |
+| `black 26.5.1` | 318 | 46,722 | 482 | 16 | identical | 2.51 | 0.05 | 54.5× |
+| `tornado 6.5.8` | 75 | 44,519 | 273 | 0 | identical | 2.87 | 0.04 | 66.8× |
+| `supervisor 4.3.0` | 70 | 37,345 | 153 | 0 | identical | 3.27 | 0.05 | 68.1× |
+| `Werkzeug 3.1.8` | 138 | 35,090 | 1,889 | 0 | identical | 2.34 | 0.05 | 46.8× |
+| `urllib3 2.7.0` | 81 | 32,241 | 1,709 | 0 | identical | 2.30 | 0.05 | 46.9× |
+| `paramiko 5.0.0` | 65 | 26,972 | 609 | 0 | identical | 1.76 | 0.03 | 53.5× |
+| `Jinja2 3.1.6` | 52 | 22,755 | 1,229 | 0 | identical | 1.63 | 0.03 | 49.4× |
+| `Mako 1.4.1` | 71 | 20,199 | 531 | 0 | identical | 1.22 | 0.03 | 40.8× |
+| `Flask 3.1.3` | 83 | 17,889 | 1,033 | 0 | identical | 1.21 | 0.03 | 43.1× |
+| `pexpect 4.9.0` | 93 | 13,071 | 342 | 7 | identical | 1.00 | 0.02 | 58.6× |
+| `requests 2.34.2` | 35 | 11,526 | 702 | 0 | identical | 0.99 | 0.03 | 35.2× |
+| `PyYAML 6.0.3` | 47 | 9,371 | 94 | 0 | identical | 0.89 | 0.02 | 52.4× |
+| `fabric 3.2.3` | 49 | 8,646 | 511 | 0 | identical | 0.69 | 0.02 | 38.4× |
+| `boto3 1.43.90` | 40 | 8,618 | 0 | 0 | identical | 0.51 | 0.01 | 56.4× |
+| **total** | **21,536** | **7,170,763** | **130,730** | | **36/36** | **506.9** | **8.3** | **61.0×** |
 
 ## 2. The command-line surface
 
@@ -56,8 +68,7 @@ and config files, all nine formatters, `--msg-template`, `-o`, context lines, ag
 paths, empty directories, non-UTF-8 and unparsable files), `.bandit` handling, every usage error that
 exits 2, baselines, and the `bandit-baseline` / `bandit-config-generator` binaries.
 
-Result: **85/88 identical**.
- The 3 exception(s) are documented in `DEVIATIONS.md`:
+Result: **85/88 identical**. The 3 exception(s) are documented in `DEVIATIONS.md`:
 
 - `config_bad` — DEVIATIONS.md #19: PyYAML's parse-error wording for an invalid config
 - `debug` — DEVIATIONS.md #18: -d dumps the Python Context dict, ast node reprs included
@@ -68,7 +79,7 @@ regression in any of these is caught by the ordinary test run.
 
 ## 3. What the evidence actually exercises
 
-The corpus triggers **56 of the 75 loaded test ids**. Parity on code that never wakes
+The corpus triggers **60 of the 75 loaded test ids**. Parity on code that never wakes
 a plugin would prove very little, so here are the ones it never reaches, and where each is covered
 instead:
 
@@ -79,7 +90,6 @@ instead:
 | B315 | xml_bad_expatreader | yes — golden corpus |
 | B316 | xml_bad_expatbuilder | yes — golden corpus |
 | B317 | xml_bad_sax | yes — golden corpus |
-| B323 | unverified_context | yes — golden corpus |
 | B401 | import_telnetlib | yes — golden corpus |
 | B407 | import_xml_expat | yes — golden corpus |
 | B409 | import_xml_pulldom | yes — golden corpus |
@@ -87,18 +97,15 @@ instead:
 | B415 | import_pyghmi | yes — golden corpus |
 | B501 | request_with_no_cert_validation | yes — golden corpus |
 | B502 | ssl_with_bad_version | yes — golden corpus |
-| B504 | ssl_with_no_version | yes — golden corpus |
 | B508 | snmp_insecure_version | yes — golden corpus |
 | B509 | snmp_weak_cryptography | yes — golden corpus |
 | B612 | logging_config_insecure_listen | yes — golden corpus |
-| B614 | pytorch_load | yes — golden corpus |
-| B615 | huggingface_unsafe_download | yes — golden corpus |
 
-19 id(s) are not reached by the corpus; 19 of them are covered by
+15 id(s) are not reached by the corpus; 15 of them are covered by
 the `examples/` golden corpus, which is compared against the same reference. That leaves
 **0 genuinely unexercised**.
 
-Triggered by the corpus: B101, B102, B103, B104, B105, B106, B107, B108, B110, B112, B113, B201, B202, B301, B302, B303, B304, B305, B306, B307, B308, B310, B311, B314, B318, B319, B321, B324, B402, B403, B404, B405, B406, B408, B411, B413, B503, B505, B506, B507, B601, B602, B603, B604, B605, B606, B607, B608, B609, B610, B611, B613, B701, B702, B703, B704.
+Triggered by the corpus: B101, B102, B103, B104, B105, B106, B107, B108, B110, B112, B113, B201, B202, B301, B302, B303, B304, B305, B306, B307, B308, B310, B311, B314, B318, B319, B321, B323, B324, B402, B403, B404, B405, B406, B408, B411, B413, B503, B504, B505, B506, B507, B601, B602, B603, B604, B605, B606, B607, B608, B609, B610, B611, B613, B614, B615, B701, B702, B703, B704.
 
 ## 4. The parser target, measured
 
