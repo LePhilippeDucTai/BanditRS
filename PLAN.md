@@ -1,8 +1,10 @@
 # BanditRS — plan de réécriture de bandit en Rust (document de passation)
 
-> Ce document permet de reprendre l'implémentation dans une nouvelle session. Lire dans l'ordre :
+> **Projet terminé (v0.2.0, jalon J4, 2026-09-09).** Les quatre jalons du plan parallèle (J0–J4) sont
+> atteints ; J4 est le dernier jalon défini, il n'y a pas de J5. Ce document reste la référence pour
+> reprendre le projet dans une nouvelle session (état, architecture, pièges, écarts). Lire dans l'ordre :
 > 0. **`docs/plan/README.md`** — le plan de développement parallèle (TDD : port des 273 tests Python,
->    performance, 16 lots de travail pour sous-agents) qui remplace le §5 « prochaines étapes » ;
+>    performance, 16 lots de travail pour sous-agents), conservé à titre d'historique du chantier ;
 > 1. cette page (état, décisions, jalons, architecture, pièges) ;
 > 2. `docs/spec/core.md` (sémantique exacte du cœur Python) ;
 > 3. `docs/spec/plugins.md` (les 42 plugins + blacklists, messages/regex/défauts verbatim) ;
@@ -65,6 +67,7 @@ plus de diff (`DeepAssignation` implémenté, DEVIATIONS.md #9 réécrite en con
 | J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | **Fait** (2026-09-09) : vague A1 (WP-02, 05, 07, 11, 12, 13) puis vague A2 (WP-01, 03, 04, 06, 09, 10, puis WP-08) — 176 stubs activés, 0 restant, `scripts/wp_status.sh --check` → 0 |
 | J2 | Corpus golden + différentiel rejoué **en local** (WP-14 ; WP-16 suspendu, cf. ci-dessous) | **Fait** (2026-09-09) : corpus `tests/golden/**` committé (examples × 8 formats + 86 fixtures JSON) rejoué sans Python par `cargo test --test golden` (9 tests) ; `scripts/diff_against_python.sh` finalisé (mode fichier-par-fichier JSON autoritaire) et exécuté sur `examples/` (94/94 identiques) et la stdlib 3.11 (672/672 identiques), zéro diff inattendu |
 | J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | **Fait** (2026-09-09) : campagne complète dans `docs/plan/benchmarks.md` §5 (examples 19,0×, stdlib 49,9×, subprocess_shell.py 33,3×, long_set.py 17,4×, mémoire Rust −57 %) — tous les objectifs §2 dépassés ; `scripts/bench_regression.sh` en place (garde-fou +10 %) ; profil `valgrind --callgrind` en §6 (2 pistes d'optimisation chiffrées non appliquées, hors propriété WP-15) |
+| J4 | Consolidation : `PLAN.md` réécrit en état final, `README.md` à jour, version `0.2.0` | **Fait** (2026-09-09) : décision utilisateur — consolidation sans publication externe. Porte de qualité (`scripts/check.sh`) verte avant et après (350 tests, clippy 0 avertissement, fmt propre) ; version du crate passée à `0.2.0` (`Cargo.toml`/`Cargo.lock`) ; `README.md` reflète l'état final ; `docs/plan/README.md` §3 mis à jour. **J4 est le dernier jalon du plan parallèle** ; aucun J5 n'est défini — toute suite (publication, nouvelles fonctionnalités hors périmètre bandit) demande une nouvelle décision utilisateur et un nouveau plan. |
 
 > **CI GitHub Actions désactivée le 2026-09-09 à la demande de l'utilisateur** (aucun coût souhaité). Le
 > workflow est conservé, inerte, dans `.github/workflows/ci.yml.disabled` (GitHub ne lit que `*.yml`/`*.yaml`).
@@ -124,42 +127,44 @@ Invariants clés (tous validés par la trace de parcours) :
 - `PyErr` : là où Python lèverait (KeyError de config, IndexError, TypeError…), renvoyer `Err(PyErr)` → le tester
   journalise `Bandit internal error running: <test> on file <f> at line <n>: <err>` et n'émet rien.
 
-## 5. Prochaines étapes
+## 5. État final et clôture (jalon J4, 2026-09-09)
 
-**Les prochaines étapes sont désormais décrites, lot par lot, dans `docs/plan/README.md`** (jalons J1–J3,
-tableau de dispatch, propriété des fichiers, protocole de fusion) et `docs/plan/wp/WP-01…16`. Ce qui suit
-reste comme rappel des limitations connues qui motivent ces lots (chacune est reprise dans une fiche) :
+Le plan parallèle (`docs/plan/README.md`) est **clos** : J0 → J4 sont tous atteints, et J4 est le dernier
+jalon qu'il définit — **aucun J5 n'existe**. `docs/plan/README.md`, `docs/plan/test-inventory.md` et
+`docs/plan/wp/WP-01…15` restent en place à titre d'historique du chantier (méthode, fiches de lots, protocole
+de fusion), mais ne décrivent plus de travail restant.
 
-M0–M9 sont **faits** dans les grandes lignes (moteur de tests, 42 plugins, formatters, CLI complet — `bandit`,
-`bandit-baseline`, `bandit-config-generator`). Limitations connues restantes (aucune ne bloque la suite de base) :
+M0–M9 sont **faits** intégralement (moteur de tests, 42 plugins, formatters, CLI complet — `bandit`,
+`bandit-baseline`, `bandit-config-generator`). Aucun `todo!()` ne subsiste. Deux limitations pré-existantes,
+repérées hors périmètre lors des revues WP-03 et WP-04, ont été tranchées en clôture de J4 : plutôt que
+corrigées (aucun test de la suite ne les observe), elles sont **assumées comme déviations documentées**
+(`DEVIATIONS.md` #14 et #15) :
 
-- DEVIATIONS.md #9 : `DeepAssignation` est complet depuis WP-01 ; ne subsistent que deux divergences volontaires (bugs Python non reproduits), sans impact sur la suite ni sur les fixtures.
-- ~~`test_asserts`, `test_try_except_*`, `test_markupsafe_*`, `test_django_xss_*`~~ : **portés par WP-01**
-  (helpers `manager_with`/`check_example_with` dans `tests/common/mod.rs`, qui construisent un `Manager` à
-  partir d'un config/profil explicites au lieu de `manager_for_default()`).
 - `apply_ini_options` (`src/cli/main.rs`) ne journalise « Using command line arg for selected targets » que si
-  la clé `targets` est présente dans le `.bandit`, alors que Python l'émet dès que `args.targets` est fourni en
-  ligne de commande, indépendamment de la clé ini. Écart pré-existant repéré lors de la revue de WP-03 (hors de
-  son périmètre) : à corriger, ou à assumer avec une entrée `DEVIATIONS.md`.
-- ~~`BanditConfig::profile()` ne fait pas la conversion legacy `blacklist_calls`/`blacklist_imports`~~ :
-  **implémenté par WP-08** (`convert_legacy_config` + `validate`, appelés une fois depuis `new()`, avec
-  l'inversion amont `bad_calls`/`bad_imports` conservée telle quelle). C'était le dernier `todo!()`
-  fonctionnel du projet.
-- **Piège découvert par WP-08, à connaître avant de toucher aux profils** : `Profile::blacklist` est un
-  `Option<IndexMap<…>>` dont `TestSet::new` ne distingue que `Some` (« remplace la table intégrée ») et
-  `None` (« utilise la table intégrée filtrée »). Un `Some(map vide)` y est donc lu comme « remplace par
-  rien » et fait disparaître **silencieusement** tous les résultats de la blacklist intégrée pour un scan
-  `-p <profil>` dont la section `profiles` ne référence ni `blacklist_calls` ni `blacklist_imports`
-  (reproduit : `-p test_4 examples/xml_sax.py`, 8 résultats côté Python contre 0 côté Rust). La conversion
-  legacy produit donc `None`, pas `Some(vide)`, quand elle n'a rien à ajouter — c'est le comportement de
-  `if not blacklist:` en Python, où « absent » et « vide » sont indiscernables. Toute évolution de ce type
-  doit préserver cette équivalence.
+  la clé `targets` est présente dans le `.bandit`, alors que Python l'émet dès que `args.targets` est fourni
+  en ligne de commande, indépendamment de la clé ini.
 - `src/cli/baseline.rs::name_rev()` rend `master` là où Python (`commit.name_rev`) rend `<sha> master`, dans
-  le message « Got current/parent commit: … ». Écart pré-existant confirmé lors de la revue de WP-04 (hors de
-  son périmètre, aucun test de `test_baseline.py` ne l'observe) : à corriger, ou à assumer avec une entrée
-  `DEVIATIONS.md`.
-- Tests unitaires et fonctionnels : **tous portés** (J1 atteint, 0 stub — cf. §3 et
-  `docs/plan/test-inventory.md`).
+  le message « Got current/parent commit: … ».
+
+**Piège à connaître avant de toucher aux profils** (découvert par WP-08) : `Profile::blacklist` est un
+`Option<IndexMap<…>>` dont `TestSet::new` ne distingue que `Some` (« remplace la table intégrée ») et `None`
+(« utilise la table intégrée filtrée »). Un `Some(map vide)` y est donc lu comme « remplace par rien » et
+fait disparaître **silencieusement** tous les résultats de la blacklist intégrée pour un scan `-p <profil>`
+dont la section `profiles` ne référence ni `blacklist_calls` ni `blacklist_imports` (reproduit : `-p test_4
+examples/xml_sax.py`, 8 résultats côté Python contre 0 côté Rust). La conversion legacy produit donc `None`,
+pas `Some(vide)`, quand elle n'a rien à ajouter — c'est le comportement de `if not blacklist:` en Python, où
+« absent » et « vide » sont indiscernables. Toute évolution de ce type doit préserver cette équivalence.
+
+Tests unitaires et fonctionnels : **tous portés** (J1 atteint, 0 stub — cf. §3 et
+`docs/plan/test-inventory.md`).
+
+### Reprendre après J4
+
+Ce dépôt n'a plus d'étapes planifiées. Une reprise éventuelle (publication du crate, nouvelles
+fonctionnalités hors périmètre de bandit Python, mise à jour vers une version plus récente de bandit comme
+référence) demande une nouvelle décision utilisateur et, si le travail est substantiel, un nouveau document
+de plan (le modèle `docs/plan/README.md` — jalons, lots à fichiers disjoints, porte de qualité — peut être
+réutilisé tel quel).
 
 ### Harnais différentiel — méthode et résultat (fait ad hoc, à refaire via `scripts/diff_against_python.sh`)
 
@@ -186,8 +191,8 @@ diff inattendu. Le corpus golden (`tests/golden/**`, examples × 8 formats + 86 
 committé et rejoué sans Python par `cargo test --test golden` (9 tests) — la parité est désormais prouvée
 par `cargo test` seul, sans dépendre d'un venv Python à chaque run.
 
-### M10 — `cargo clippy --all-targets -- -D warnings` (63 avertissements à nettoyer, aucun bloquant), `cargo fmt`,
-benchmark (`time bandit -r /usr/lib/python3.11` Python vs Rust `--release`, objectif ≥ 20×), README, commit/push.
+### M10 — `cargo clippy --all-targets -- -D warnings` (0 avertissement), `cargo fmt`, benchmark (`time bandit -r
+/usr/lib/python3.11` Python vs Rust `--release`, objectif ≥ 20× — dépassé, cf. J3), README, commit/push : **fait**.
 
 ## 6. Pièges connus (déjà rencontrés ou anticipés)
 
@@ -214,8 +219,7 @@ benchmark (`time bandit -r /usr/lib/python3.11` Python vs Rust `--release`, obje
 - SARIF : `get_code` toujours avec `max_lines=3` (indépendant de `-n`) ; `region.endLine` = `line_range[1]`
   (bug Python, pas la vraie fin) ; indexation négative Python reproduite pour `region.snippet` ; `to_uri` via
   `PurePath.as_posix()` (`pycompat::path::posix_normalize`).
-- clippy : 63 avertissements mineurs restants (`if` imbriqués, doc list indentation, lifetimes explicites) à
-  nettoyer en M10 ; aucun n'est bloquant (`#[deny(clippy::approx_constant)]` est le seul deny actif, déjà propre).
+- clippy : `cargo clippy --all-targets -- -D warnings` propre, 0 avertissement (nettoyé en M10/J4).
 
 ## 7. Commandes utiles
 

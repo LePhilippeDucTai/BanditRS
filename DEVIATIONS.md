@@ -65,3 +65,12 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
     (`docs/plan/wp/WP-09-unit-core-context.md`) donne donc à `statement()` une vraie implémentation — le plus
     proche ancêtre de type `Stmt` — pour que la propriété soit testable avec un extrait réel. Sans impact
     observable : `statement()` n'est utilisé par aucun plugin ni aucune sortie.
+14. `apply_ini_options` (`src/cli/main.rs`) ne journalise « Using command line arg for selected targets » que
+    si la clé `targets` est présente dans le `.bandit` (INI), alors que Python l'émet dès que `args.targets`
+    est fourni en ligne de commande, indépendamment de la clé ini. Repéré lors de la revue de WP-03 (hors de
+    son périmètre) ; assumé comme déviation en clôture du jalon J4 (2026-09-09) plutôt que corrigé, faute de
+    test de la suite qui l'observe.
+15. `src/cli/baseline.rs::name_rev()` rend `master` là où Python (`commit.name_rev`) rend `<sha> master` dans
+    le message « Got current/parent commit: … ». Repéré lors de la revue de WP-04 (hors de son périmètre) ;
+    assumé comme déviation en clôture du jalon J4 (2026-09-09), aucun test de `test_baseline.py` ne
+    l'observe.

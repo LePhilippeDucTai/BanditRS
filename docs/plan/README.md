@@ -11,6 +11,10 @@
 
 ## 0. Résumé
 
+> **Clôture du plan (J4, 2026-09-09) : voir `PLAN.md` §5.** Le tableau ci-dessous est un instantané
+> pris à la fin de la vague B (J2/J3) ; les chiffres n'ont pas changé depuis (aucun code n'a été touché
+> pendant J4, qui n'a fait que consolider la documentation et la version).
+
 | | État au 2026-09-08 (fin de la session de restructuration) |
 |---|---|
 | Moteur | 42 plugins, 9 formatters, 3 exécutables, parité bit à bit validée par différentiel (`PLAN.md` §3) |
@@ -78,11 +82,15 @@ principale (l'orchestrateur) après une passe de vérification identique pour to
 | **J1 — Suite Python 100 % portée** ✅ **Fait (2026-09-09)** | Tous les stubs activés et verts ; `DeepAssignation` (WP-01) et conversion legacy `convert_legacy_config` (WP-08) implémentées | Atteint : `scripts/wp_status.sh --check` → 0 stub ; 341 tests verts (67 + 274) ; inventaire à jour ; différentiel à zéro diff inexpliqué | WP-01 → WP-13 |
 | **J2 — Parité prouvée sans Python** ✅ **Fait (2026-09-09)** | Corpus golden (examples × 8 formats + 86 fixtures stdlib) committé, test Rust de rejeu, script de régénération | Atteint : `cargo test --test golden` rejoue le golden sans Python installé (9 tests) ; `scripts/diff_against_python.sh` finalisé et exécuté sur `examples/` (94/94) et la stdlib (672/672), zéro diff inattendu | WP-14 |
 | **J3 — Performance mesurée et gardée** ✅ **Fait (2026-09-09)** | Benchs criterion complets, tableau Python vs Rust (examples, stdlib, gros fichier, mono-fichier), garde-fou de régression, profil et premières optimisations *mesurées* | Atteint : `docs/plan/benchmarks.md` §5 rempli, tous les objectifs §2 dépassés (examples 19,0×, stdlib 49,9×, mono-fichier 17,4-33,3×, mémoire −57 %) ; `scripts/bench_regression.sh` en place ; profil §6 (2 pistes chiffrées non appliquées, hors propriété WP-15) | WP-15 |
-| **J4 — Consolidation** | `PLAN.md` réécrit (état final), README, version `0.2.0`, éventuellement publication | Décision utilisateur | orchestrateur |
+| **J4 — Consolidation** ✅ **Fait (2026-09-09)** | `PLAN.md` réécrit (état final), README, version `0.2.0`, éventuellement publication | Décision utilisateur : consolidation sans publication externe | orchestrateur |
 
 Ordre recommandé : **J1 d'abord et en priorité absolue** (c'est la demande « test-driven »), J2 et J3 peuvent
 démarrer en parallèle de J1 car leurs fichiers sont disjoints, mais on les fusionne après J1 pour garder
 un signal CI lisible.
+
+> **J4 est le dernier jalon de ce plan — il n'y a pas de J5.** Le plan parallèle est clos ; ce document
+> (et `test-inventory.md`, `agent-playbook.md`, `wp/WP-01…15`) reste comme historique du chantier. Une
+> suite éventuelle (publication, nouvelles fonctionnalités) demande une nouvelle décision utilisateur.
 
 ## 4. Tableau de dispatch des lots
 
