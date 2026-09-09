@@ -85,14 +85,19 @@ nosec sur `linerange`, absent ≠ `None` dans `check_call_arg_value`) est reprod
 
 ## Écarts constatés au jalon J5 (matrice CLI et corpus réel)
 
-16. **Plancher de syntaxe.** BanditRS analyse avec `ruff_python_parser` (syntaxe Python 3.13) ; bandit Python
-    analyse avec l'`ast` de l'interpréteur hôte, soit 3.11 pour l'exécutable de référence de ce dépôt. Sur un
-    fichier écrit en syntaxe 3.12+ (PEP 695 `type X = …`, paramètres de type génériques), Python remonte une
-    `SyntaxError` dans `errors[]` et n'analyse rien, là où BanditRS analyse le fichier normalement et peut
-    donc remonter des issues supplémentaires. Mesuré : `django 6.1.1` (6 fichiers sur 2 907),
-    `ansible-core 2.21.4` (28 sur 1 802). Ce n'est pas un défaut de parité mais une différence de plancher :
-    le tier `frontier` du corpus (`tests/corpus/manifest.tsv`) l'isole et le chiffre, et les tiers de parité
-    sont épinglés à des versions dont `scripts/corpus.py verify --parse` garantit qu'elles passent sous 3.11.
+16. **Version cible du parseur.** BanditRS analyse avec `ruff_python_parser`, dont la version cible est
+    pilotée par `BANDITRS_PYTHON_COMPAT` ; bandit Python analyse avec l'`ast` de l'interpréteur hôte.
+    Avec `BANDITRS_PYTHON_COMPAT=3.11`, BanditRS **accepte et refuse exactement ce que refuse CPython
+    3.11** : la parité est totale y compris sur des paquets écrits en syntaxe 3.12+ — mesuré sur
+    `django 6.1.1` et `ansible-core 2.21.4` (4 709 fichiers, 33 fichiers en PEP 695), rapports
+    identiques, `errors[]` compris. Avec la cible par défaut (la plus récente), BanditRS analyse
+    normalement les fichiers que la référence 3.11 range dans `errors[]` (Django : 5 fichiers,
+    +53 issues ; ansible-core : 28 fichiers, +34 issues) et applique la sémantique 3.12 des positions de
+    constantes de f-strings (écart #7), ce qui déplace les issues remontées à l'intérieur d'une f-string.
+    Ce n'est donc pas un défaut de parité mais un réglage : **comparer à une référence, c'est aligner la
+    version d'interpréteur**, ce que font tous les harnais de ce dépôt. Le tier `frontier` du corpus
+    (`tests/corpus/manifest.tsv`) existe pour chiffrer les deux régimes
+    (`scripts/diff_corpus.py --tier frontier --rs-compat latest`).
 17. **Ordre des identifiants dans « profile include/exclude tests ».** `_log_info` joint un `set` Python, dont
     l'ordre d'itération dépend du hachage randomisé des chaînes : cinq exécutions identiques du même
     `bandit -c cfg/profiles.yml -p ShellInjection` ont donné trois ordres différents. BanditRS itère une

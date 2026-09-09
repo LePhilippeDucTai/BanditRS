@@ -7,12 +7,20 @@
 #   lint   — rustfmt + clippy avec -D warnings
 #   bench  — compilation des benchs criterion (sans mesure)
 #   python — construction du wheel + fumée des quatre commandes (mode « python »)
+#   parity — corpus réel + matrice CLI face au bandit Python de référence
+#            (mode « parity » ; demande le réseau et l'exécutable de référence)
 #
 # Usage :
-#   scripts/check.sh            # tout sauf le wheel (rapide à répéter)
+#   scripts/check.sh            # tout sauf le wheel et la parité (rapide à répéter)
 #   scripts/check.sh fast       # sans les benchs (boucle de développement)
 #   scripts/check.sh python     # uniquement le job « python » (wheel + parité)
-#   scripts/check.sh all        # tout, wheel compris — à lancer avant un push
+#   scripts/check.sh parity     # uniquement le job « parity » (réseau requis)
+#   scripts/check.sh all        # tout — à lancer avant un push
+#
+# Le mode par défaut n'appelle pas le réseau : la matrice CLI et le corpus golden
+# sont rejoués par `cargo test` (tests/cli_matrix.rs, tests/golden.rs) sans aucune
+# installation Python. Le mode « parity » est celui qui va réellement interroger
+# le bandit de référence.
 #
 # Sortie 0 = équivalent d'une CI verte. À lancer avant chaque commit et
 # systématiquement avant un push.
@@ -84,6 +92,27 @@ python_job() {
 
 if [ "$MODE" = "python" ] || [ "$MODE" = "all" ]; then
   run "wheel python (pip install + fumée + parité)" python_job
+fi
+
+# --- job « parity » : face au bandit Python de référence -------------------
+# Le tier « smoke » du corpus (8 paquets, ~570 fichiers) tient en quelques
+# secondes une fois téléchargé ; c'est le sous-ensemble prévu pour cette porte.
+# Les tiers « standard » et « full » sont des campagnes, lancées à la demande.
+parity_job() {
+  local py_bandit=${PY_BANDIT:-/home/user/.pyenv-bandit/bin/bandit}
+  if [ ! -x "$py_bandit" ]; then
+    echo "bandit de référence introuvable : $py_bandit (voir PLAN.md §2)" >&2
+    return 1
+  fi
+  cargo build --release --locked || return 1
+  python3 scripts/corpus.py fetch  --tier smoke || return 1
+  python3 scripts/corpus.py verify --parse --tier smoke || return 1
+  python3 scripts/diff_corpus.py   --tier smoke || return 1
+  python3 scripts/cli_matrix.py    diff || return 1
+}
+
+if [ "$MODE" = "parity" ] || [ "$MODE" = "all" ]; then
+  run "parité (corpus réel + matrice CLI vs bandit Python)" parity_job
 fi
 
 # --- verdict --------------------------------------------------------------

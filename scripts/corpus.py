@@ -22,9 +22,11 @@ Tiers
     smoke      ~8 packages, seconds       — runs in scripts/check.sh
     standard   +15 packages, minutes      — nightly CI / on demand
     full       +12 packages, a campaign
-    frontier   deliberately 3.12+-only code: bandit-on-CPython-3.11 cannot parse
-               it, BanditRS can. Expected to diverge (DEVIATIONS.md #16); never
-               part of a pass/fail gate.
+    frontier   packages containing 3.12+-only syntax. With the parser target
+               aligned (BANDITRS_PYTHON_COMPAT=3.11) they match the reference
+               exactly, errors[] included; with the default target BanditRS
+               analyses what the reference rejects. The tier exists to measure
+               both regimes (DEVIATIONS.md #16), not to gate anything.
 """
 
 import argparse
@@ -41,6 +43,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = ROOT / "tests" / "corpus" / "manifest.tsv"
+PARSE_EXCEPTIONS = ROOT / "tests" / "corpus" / "parse-exceptions.txt"
 DEST = Path(os.environ.get("CORPUS_DIR", ROOT / "target" / "corpus"))
 COLUMNS = [
     "tier",
@@ -100,7 +103,7 @@ CURATED = [
     ("full", "pexpect", "auto", "pty and process spawning"),
     ("full", "black", "auto", "tests/data/: walrus, match, PEP 604/646/695, nested f-strings"),
     # -- frontier: expected to diverge, measured separately --
-    ("frontier", "Django", "6.1.1", "requires >=3.12: 6 files CPython 3.11 cannot parse"),
+    ("frontier", "Django", "6.1.1", "requires >=3.12: 5 files the 3.11 reference cannot parse"),
     ("frontier", "ansible-core", "2.21.4", "requires >=3.12: 28 files using PEP 695 type params"),
 ]
 
@@ -318,13 +321,20 @@ def parse_check(dest, python):
         "    except Exception as e: bad+=1; print(f'{p}: {type(e).__name__}')\n"
         "sys.exit(1 if bad else 0)\n"
     )
+    allowed = []
+    if PARSE_EXCEPTIONS.exists():
+        allowed = [
+            l.strip()
+            for l in PARSE_EXCEPTIONS.read_text().splitlines()
+            if l.strip() and not l.startswith("#")
+        ]
     paths = [str(p) for p in dest.rglob("*.py") if p.is_file()]
     bad = []
     for i in range(0, len(paths), 400):  # keep the argv under ARG_MAX
         r = subprocess.run([python, "-c", script, *paths[i : i + 400]], capture_output=True, text=True)
         if r.returncode:
             bad.extend(r.stdout.strip().splitlines())
-    return bad
+    return [b for b in bad if not any(a in b for a in allowed)]
 
 
 def cmd_verify(args):
@@ -345,6 +355,8 @@ def cmd_verify(args):
         if args.parse:
             bad = parse_check(dest, args.python)
             if bad:
+                # A frontier package failing here is the point of the tier: it
+                # carries syntax the reference interpreter does not know.
                 tag = "expected" if row["tier"] == "frontier" else "FAIL"
                 print(f"{tag:<7} {row['name']}: {len(bad)} file(s) rejected by {args.python}")
                 for b in bad[:5]:

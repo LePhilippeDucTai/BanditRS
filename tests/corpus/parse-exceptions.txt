@@ -1,0 +1,27 @@
+# Files in the parity tiers that CPython 3.11 rejects *on purpose* — a package
+# shipping a deliberately invalid fixture, not a syntax-version gap.
+#
+# `scripts/corpus.py verify --parse` exists to guarantee that no divergence can
+# be blamed on BanditRS parsing 3.12+ syntax the reference cannot (DEVIATIONS
+# #16). A file that is simply not Python at all does not threaten that: both
+# tools reject it, and the differential checks they reject it *identically*
+# (the `errors[]` comparison in scripts/diff_corpus.py).
+#
+# One substring match per line, with the reason.
+
+# Django's own fixture for "the test runner meets a module that will not import"
+tests/test_runner_apps/tagged/tests_syntax_error.py
+
+# salt ships Jinja scaffolding templates whose *filenames* are placeholders —
+# `templates/module/salt/modules/{{module_name}}.py` is not Python at all.
+salt-3008.2/salt-3008.2/templates/
+
+# pexpect keeps Python 2 helper scripts (bare `print` statements) under its
+# platform-check tests; they are run by hand on old interpreters, not imported.
+pexpect-4.9.0/pexpect-4.9.0/tests/ticker.py
+pexpect-4.9.0/pexpect-4.9.0/tests/platform_checks/
+
+# black's `tests/data/` is, by design, a museum of syntax a formatter must cope
+# with: Python 2 sources, deliberately invalid headers, unparsable match
+# statements, and 3.12-only constructs. It is the reason black is in the corpus.
+black-26.5.1/black-26.5.1/tests/data/

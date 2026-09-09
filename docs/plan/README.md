@@ -83,14 +83,17 @@ principale (l'orchestrateur) après une passe de vérification identique pour to
 | **J2 — Parité prouvée sans Python** ✅ **Fait (2026-09-09)** | Corpus golden (examples × 8 formats + 86 fixtures stdlib) committé, test Rust de rejeu, script de régénération | Atteint : `cargo test --test golden` rejoue le golden sans Python installé (9 tests) ; `scripts/diff_against_python.sh` finalisé et exécuté sur `examples/` (94/94) et la stdlib (672/672), zéro diff inattendu | WP-14 |
 | **J3 — Performance mesurée et gardée** ✅ **Fait (2026-09-09)** | Benchs criterion complets, tableau Python vs Rust (examples, stdlib, gros fichier, mono-fichier), garde-fou de régression, profil et premières optimisations *mesurées* | Atteint : `docs/plan/benchmarks.md` §5 rempli, tous les objectifs §2 dépassés (examples 19,0×, stdlib 49,9×, mono-fichier 17,4-33,3×, mémoire −57 %) ; `scripts/bench_regression.sh` en place ; profil §6 (2 pistes chiffrées non appliquées, hors propriété WP-15) | WP-15 |
 | **J4 — Consolidation** ✅ **Fait (2026-09-09)** | `PLAN.md` réécrit (état final), README, version `0.2.0`, éventuellement publication | Décision utilisateur : consolidation sans publication externe | orchestrateur |
+| **J5 — Drop-in prouvé sur du code réel** ✅ **Fait (2026-09-09)** | Corpus de librairies tierces épinglé, matrice différentielle CLI (stdout + stderr + code de sortie), rapport de preuve, benchmarks sur code réel, CI de parité | Atteint : 24/24 paquets identiques sur 11 624 fichiers et 3,64 M lignes ; 85/88 invocations CLI identiques (3 écarts documentés) ; 75/75 identifiants exercés ; 6 divergences réelles trouvées et corrigées | WP-17 → WP-21 |
 
 Ordre recommandé : **J1 d'abord et en priorité absolue** (c'est la demande « test-driven »), J2 et J3 peuvent
 démarrer en parallèle de J1 car leurs fichiers sont disjoints, mais on les fusionne après J1 pour garder
 un signal CI lisible.
 
-> **J4 est le dernier jalon de ce plan — il n'y a pas de J5.** Le plan parallèle est clos ; ce document
-> (et `test-inventory.md`, `agent-playbook.md`, `wp/WP-01…15`) reste comme historique du chantier. Une
-> suite éventuelle (publication, nouvelles fonctionnalités) demande une nouvelle décision utilisateur.
+> **J4 close le plan parallèle** (portage de la suite Python, corpus golden, benchmarks). **J5** a été
+> ouvert ensuite sur décision utilisateur, avec une question différente : non plus « la suite de tests
+> passe-t-elle ? » mais « l'outil est-il substituable **sur du vrai code et sur toute sa surface
+> d'options** ? ». Il a été mené en série, pas en vague d'agents, d'où une fiche par livrable
+> (`wp/WP-17…21`) plutôt qu'un dispatch parallèle. Une suite éventuelle demande une nouvelle décision.
 
 ## 4. Tableau de dispatch des lots
 
@@ -116,6 +119,11 @@ préférés, pas des blocages : tous les lots partent de la même branche d'int�
 | [WP-14](wp/WP-14-golden-differential.md) | Corpus golden + test de rejeu + harnais différentiel finalisé | `banditrs-wp-medium` | nouveaux | `scripts/`, `tests/golden*` | fusion après WP-01 | B |
 | [WP-15](wp/WP-15-benchmarks.md) | Benchmarks, tableau Python vs Rust, garde-fou | `banditrs-wp-medium` | nouveaux | `benches/`, `scripts/bench_*` | — | B |
 | ~~[WP-16](wp/WP-16-ci.md)~~ | ~~CI GitHub Actions~~ — **suspendu le 2026-09-09** (décision utilisateur : aucun coût, validation locale uniquement via `scripts/check.sh`) | — | — | `.github/` | — | — |
+| [WP-17](wp/WP-17-corpus.md) | Corpus de code réel épinglé par sha256 (4 tiers) | orchestrateur | nouveaux | `scripts/corpus.py`, `tests/corpus/**` | — | C |
+| [WP-18](wp/WP-18-cli-matrix.md) | Matrice différentielle CLI : stdout, stderr, code de sortie (88 cas) | orchestrateur | nouveaux | `scripts/cli_matrix.py`, `tests/cli_matrix**` | — | C |
+| [WP-19](wp/WP-19-parity-report.md) | Différentiel corpus + rapport de preuve | orchestrateur | nouveaux | `scripts/diff_corpus.py`, `scripts/parity_report.py`, `docs/drop-in-parity.md` | WP-17, WP-18 | C |
+| [WP-20](wp/WP-20-bench-corpus.md) | Benchmarks sur code réel, mémoire, threads, démarrage à froid | orchestrateur | nouveaux | `scripts/bench_corpus.py`, `benches/e2e.rs`, `benchmarks.md` §7 | WP-17 | C |
+| [WP-21](wp/WP-21-integration.md) | Porte de qualité, CI de parité, documentation | orchestrateur | — | `scripts/check.sh`, `.github/**`, docs | WP-17…20 | C |
 
 Répartition des efforts : 7 lots `high` (refactors de testabilité ou sémantique à compléter), 6 `medium`
 (ports mécaniques mais volumineux ou nécessitant un parseur), 3 `low` (ports directs). Si le nombre
@@ -149,13 +157,18 @@ Principe : un fichier a **un seul** lot propriétaire ; les autres lots le lisen
 | `scripts/diff_against_python.sh`, `scripts/gen_golden.sh`, `tests/golden/**`, `tests/golden.rs` | WP-14 | |
 | `.github/**` | WP-16 | |
 | `Cargo.toml`, `Cargo.lock`, `src/lib.rs`, `src/log.rs`, `src/constants.rs`, `src/source/**`, `src/pycompat/*` (hors ci-dessus), `rust-toolchain.toml` | **gelés** | modification par l'orchestrateur seulement |
+| `scripts/corpus.py`, `tests/corpus/**` | WP-17 | manifeste épinglé par sha256 ; le corpus lui-même n'est jamais committé |
+| `scripts/cli_matrix.py`, `tests/cli_matrix/**`, `tests/cli_matrix.rs` | WP-18 | golden rejouable sans Python |
+| `scripts/diff_corpus.py`, `scripts/parity_report.py`, `docs/drop-in-parity.md` | WP-19 | le rapport est **généré**, jamais édité à la main |
+| `scripts/bench_corpus.py` | WP-20 | `benches/**` et `scripts/bench_*` restent à WP-15, rouverts pour J5 |
 | `docs/plan/test-inventory.md` | chaque lot, **ses lignes uniquement** (colonne Statut → « porté ») | conflits triviaux, résolus par l'orchestrateur |
 | `DEVIATIONS.md` | append-only, numéro suivant | |
 | `PLAN.md`, `docs/plan/README.md` | orchestrateur | |
 
-> **Validation : locale uniquement.** La CI GitHub Actions est désactivée depuis le 2026-09-09 (décision
-> utilisateur, aucun coût souhaité) ; le workflow dort dans `.github/workflows/ci.yml.disabled`. Partout où ce
-> document dit « CI », lire `scripts/check.sh`, qui exécute les mêmes vérifications sur la machine de dév.
+> **Validation : CI active + porte locale.** La CI a été désactivée le 2026-09-09 puis réactivée avec le
+> wheel multi-plateforme ; elle vit dans `.github/workflows/ci.yml` (dépôt public, runners standard
+> gratuits). `scripts/check.sh` exécute les mêmes vérifications sur la machine de dév, et
+> `scripts/check.sh parity` y ajoute le différentiel face au bandit Python de référence.
 
 ## 6. Protocole d'exécution (orchestrateur)
 

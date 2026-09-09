@@ -7,9 +7,14 @@
 #   bench  — compile the criterion benches (no measurement in CI; see
 #            docs/plan/benchmarks.md for the perf gate strategy).
 #   python — build the Python wheel and prove the `pip install` promise holds.
+#   parity — run the real reference bandit against BanditRS: the CLI matrix and
+#            the smoke tier of the real-world corpus (docs/drop-in-parity.md).
+#            The `test` job already replays the *recorded* reference surface
+#            with no Python at all; this job is what keeps that recording
+#            honest against the tool it was recorded from.
 #
-# `scripts/check.sh` reproduces the first three jobs locally, and
-# `scripts/check.sh python` the fourth.
+# `scripts/check.sh` reproduces the first three jobs locally,
+# `scripts/check.sh python` the fourth and `scripts/check.sh parity` the fifth.
 #
 # Cost: this repository is public, so every job here runs on standard
 # GitHub-hosted runners, which are free with unlimited minutes. No job requests
@@ -20,6 +25,11 @@ on:
   push:
     branches: ["main", "claude/**", "wp/**"]
   pull_request:
+  schedule:
+    # Weekly: the wider corpus tier, and the upstream-drift check on the golden
+    # corpus. Neither belongs on every push (minutes of scanning, and a network
+    # fetch of ~200 MB of sdists), but both go stale silently if never run.
+    - cron: "17 4 * * 1"
 
 env:
   CARGO_TERM_COLOR: always
@@ -101,3 +111,83 @@ jobs:
           maturin sdist --out dist
           python -m pip install --force-reinstall dist/*.tar.gz
           bandit --version
+
+  parity:
+    name: parity vs reference bandit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # The exact upstream commit the golden corpus was recorded from
+      # (tests/golden/README.md). Pinning the commit rather than a PyPI release
+      # is what makes the comparison meaningful: a different reference would
+      # move the goalposts instead of catching a regression.
+      - name: Install the reference bandit
+        run: |
+          python -m pip install "bandit[toml,yaml,sarif] @ git+https://github.com/PyCQA/bandit@1d3053d"
+          python -m pip install sarif_om jschema_to_python GitPython
+          echo "PY_BANDIT=$(command -v bandit)" >> "$GITHUB_ENV"
+          echo "PY_BANDIT_BIN=$(dirname "$(command -v bandit)")" >> "$GITHUB_ENV"
+
+      - run: cargo build --release --locked
+
+      # The CLI matrix needs no corpus and is the fastest, sharpest signal:
+      # 88 invocations compared on stdout, stderr and exit code.
+      - name: CLI differential matrix
+        run: python3 scripts/cli_matrix.py diff
+
+      - name: Cache the corpus
+        uses: actions/cache@v4
+        with:
+          path: target/corpus
+          key: corpus-${{ hashFiles('tests/corpus/manifest.tsv') }}
+
+      - name: Fetch and verify the smoke corpus
+        run: |
+          python3 scripts/corpus.py fetch  --tier smoke
+          python3 scripts/corpus.py verify --parse --tier smoke
+
+      - name: Differential over real third-party code
+        run: python3 scripts/diff_corpus.py --tier smoke
+
+  parity-nightly:
+    name: parity (standard tier, weekly)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install the reference bandit
+        run: |
+          python -m pip install "bandit[toml,yaml,sarif] @ git+https://github.com/PyCQA/bandit@1d3053d"
+          python -m pip install sarif_om jschema_to_python GitPython
+          echo "PY_BANDIT=$(command -v bandit)" >> "$GITHUB_ENV"
+          echo "PY_BANDIT_BIN=$(dirname "$(command -v bandit)")" >> "$GITHUB_ENV"
+      - run: cargo build --release --locked
+      - name: Cache the corpus
+        uses: actions/cache@v4
+        with:
+          path: target/corpus
+          key: corpus-${{ hashFiles('tests/corpus/manifest.tsv') }}
+      - name: Standard tier
+        run: |
+          python3 scripts/corpus.py fetch  --tier standard
+          python3 scripts/corpus.py verify --parse --tier standard
+          python3 scripts/diff_corpus.py --tier standard
+
+      # WP-16 §3, never built until now: regenerate the golden corpus from the
+      # pinned upstream and fail if it moved. Without this, drift in upstream
+      # bandit is only ever noticed by someone re-running gen_golden.sh by hand.
+      - name: Golden corpus has not drifted from upstream
+        run: |
+          PY_BANDIT="$PY_BANDIT" scripts/gen_golden.sh
+          git diff --exit-code tests/golden

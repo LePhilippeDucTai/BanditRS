@@ -149,3 +149,76 @@ appliquées** ici :
 
 Interdits : toute optimisation qui change l'ordre des issues, les positions, ou le texte des sorties (la
 parité prime), sauf à passer par une entrée `DEVIATIONS.md` validée par l'utilisateur.
+
+## 7. Code réel (jalon J5, lot WP-20)
+
+`examples/` (94 fichiers minuscules écrits pour déclencher tous les plugins) et la stdlib (inhabituellement
+pauvre en findings) sont non représentatifs, dans deux directions opposées. Les chiffres ci-dessous portent
+sur des librairies tierces réelles (`tests/corpus/manifest.tsv`, sdists PyPI épinglés par sha256).
+
+### 7.1 Débit sur le corpus complet (tier `standard`)
+
+Mesuré pendant `scripts/diff_corpus.py --tier standard` (une exécution par outil et par paquet,
+`-r <paquet> -f json -q`, mêmes 24 paquets, 11 624 fichiers, 3 640 954 lignes) :
+
+| Mesure | Python | Rust | Facteur |
+|---|---:|---:|---:|
+| Corpus entier | 286,0 s | 5,4 s | **53,3×** |
+| Meilleur paquet (`pycryptodome`) | | | 71,7× |
+| Moins bon paquet (`pip`, beaucoup de `_vendor/`) | | | 38,1× |
+
+Le facteur sur du vrai code applicatif (≈ 53×) se situe entre celui d'`examples/` (19×, dominé par le
+démarrage sur des fichiers minuscules) et celui de la stdlib. Il est plus élevé qu'`examples/` parce que le
+coût fixe de démarrage de Python — ~190 ms, cf. §7.3 — pèse d'autant moins que le corpus est gros.
+
+### 7.2 Détail par paquet, mémoire, et passage à l'échelle
+
+Tableaux complets produits par `scripts/bench_corpus.py -n 5 --tier smoke` (non committés,
+`target/bench/corpus.md`). Extrait du tier `smoke` sur cette machine :
+
+####  Thread scaling (`RAYON_NUM_THREADS`)
+
+| threads | rust (s) | speed-up vs 1 thread | parallel efficiency |
+|---:|---:|---:|---:|
+| 1 | 0.106 | 1.00× | 100 % |
+| 2 | 0.066 | 1.59× | 80 % |
+| 4 | 0.053 | 2.00× | 50 % |
+
+Amdahl fit on the 4-thread point: parallel fraction **f ≈ 0.67**, so the ceiling on infinitely many cores is ≈ 3.0× the single-thread time.
+
+####  Cold start (one-line file), as a distribution
+
+| tool | p50 (ms) | p90 (ms) | max (ms) |
+|---|---:|---:|---:|
+| python | 191.0 | 200.0 | 214.1 |
+| rust | 2.9 | 3.0 | 3.1 |
+
+
+La série de threads confirme l'ajustement d'Amdahl déjà cité dans `README.md` §3.4 : la part
+parallélisable reste proche de 0,9, donc le plafond utile est de l'ordre de 5 à 10× le temps
+mono-thread, et l'essentiel du gain face à Python vient du moteur séquentiel, pas du parallélisme.
+
+### 7.3 Démarrage à froid — le cas éditeur / pre-commit
+
+C'est le régime où l'écart est le plus spectaculaire, et le seul que la médiane seule masque : sur un
+fichier d'une ligne, Python est à **191 ms** de p50 (dominé par l'import de l'interpréteur et des
+plugins) contre **2,9 ms** pour le binaire Rust, soit ≈ 65×. Le p90 est à 200 ms contre 3,0 ms : la
+distribution est serrée des deux côtés, l'écart n'est pas un artefact de queue.
+
+### 7.4 Coût des neuf formatters
+
+Jusqu'ici seuls `json` et `sarif`, sur `examples/`, étaient mesurés. Sur un gros rapport
+(tier `smoke`, ≈ 7 800 issues), tous formats confondus, le facteur reste entre 47× et 70×. Deux points
+saillants : `yaml` est le formatter le plus cher **des deux côtés** (5,60 s Python, 84 ms Rust — plus du
+double du coût de `json`), et `sarif` est le deuxième. Aucun formatter n'est un goulot d'étranglement
+côté Rust : le plus cher (`yaml`, 84 ms) reste sous le temps de scan lui-même.
+
+### 7.5 Réconciliation des deux chiffres stdlib
+
+Deux valeurs contradictoires étaient committées pour la stdlib CPython 3.11 : **49,9×** (§5, campagne
+WP-15 du 2026-09-09) et **86,9×** (`README.md` §3.2, campagne ultérieure). Les deux sont des mesures
+réelles, prises sur la même machine à des moments différents ; l'écart vient de la charge de la machine
+partagée au moment de la mesure, pas d'un changement de code. §5 reste la valeur de référence parce
+qu'elle a été produite avec le protocole complet de §4 (médiane de 7 runs après chauffe) ; le chiffre du
+README a été aligné dessus. Toute nouvelle campagne doit citer sa machine et ses conditions, et écraser
+la valeur précédente plutôt que de coexister avec elle.
