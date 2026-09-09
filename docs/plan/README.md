@@ -22,7 +22,7 @@
 Trois objectifs pour la phase qui s'ouvre, dans cet ordre de priorité :
 
 1. **TDD complet** — chaque test de la suite Python a un test Rust homonyme au vert (jalon J1).
-2. **Parité prouvée sans Python** — un corpus « golden » généré une fois avec bandit Python et rejoué en CI (J2).
+2. **Parité prouvée sans Python** — un corpus « golden » généré une fois avec bandit Python et rejoué par `cargo test`, sans Python installé (J2).
 3. **Performance mesurée et gardée** — benchmarks reproductibles, tableau Python vs Rust, garde-fou de régression (J3).
 
 Le tout exécuté **en parallèle par des sous-agents Sonnet 5** : 16 lots de travail (*work packages*, WP) à
@@ -75,7 +75,7 @@ principale (l'orchestrateur) après une passe de vérification identique pour to
 |---|---|---|---|
 | **J0 — Restructuration** (fait) | Squelette miroir de la suite Python (176 stubs), inventaire, fiches de lots, agents, benchs, CI | `cargo test --all-targets` vert, `scripts/wp_status.sh` opérationnel | — |
 | **J1 — Suite Python 100 % portée** ✅ **Fait (2026-09-09)** | Tous les stubs activés et verts ; `DeepAssignation` (WP-01) et conversion legacy `convert_legacy_config` (WP-08) implémentées | Atteint : `scripts/wp_status.sh --check` → 0 stub ; 341 tests verts (67 + 274) ; inventaire à jour ; différentiel à zéro diff inexpliqué | WP-01 → WP-13 |
-| **J2 — Parité prouvée sans Python** | Corpus golden (examples × 9 formats + échantillon stdlib) committé, test Rust de rejeu, script de régénération, job CI | Job `differential` vert ; `scripts/diff_against_python.sh` finalisé et exécuté sur la stdlib | WP-14, WP-16 |
+| **J2 — Parité prouvée sans Python** | Corpus golden (examples × 9 formats + échantillon stdlib) committé, test Rust de rejeu, script de régénération | `cargo test` rejoue le golden sans Python installé ; `scripts/diff_against_python.sh` finalisé et exécuté sur la stdlib | WP-14 |
 | **J3 — Performance mesurée et gardée** | Benchs criterion complets, tableau Python vs Rust (examples, stdlib, gros fichier, mono-fichier), garde-fou de régression, profil et premières optimisations *mesurées* | `docs/plan/benchmarks.md` §Résultats rempli ; objectifs §benchmarks atteints (stdlib ≥ 20×, mono-fichier ≥ 10×) ; `scripts/bench_regression.sh` en place | WP-15 |
 | **J4 — Consolidation** | `PLAN.md` réécrit (état final), README, version `0.2.0`, éventuellement publication | Décision utilisateur | orchestrateur |
 
@@ -106,7 +106,7 @@ préférés, pas des blocages : tous les lots partent de la même branche d'int�
 | [WP-13](wp/WP-13-unit-formatters-structured.md) | Formatters csv/custom/html/json/sarif/xml/yaml | `banditrs-wp-medium` | 1 (+4 partiels) | `src/formatters/{csv,custom,html,json,sarif,xml,yaml,mod}.rs` | — | A |
 | [WP-14](wp/WP-14-golden-differential.md) | Corpus golden + test de rejeu + harnais différentiel finalisé | `banditrs-wp-medium` | nouveaux | `scripts/`, `tests/golden*` | fusion après WP-01 | B |
 | [WP-15](wp/WP-15-benchmarks.md) | Benchmarks, tableau Python vs Rust, garde-fou | `banditrs-wp-medium` | nouveaux | `benches/`, `scripts/bench_*` | — | B |
-| [WP-16](wp/WP-16-ci.md) | CI GitHub Actions : validation, job différentiel, badge | `banditrs-wp-low` | — | `.github/` | fusion après WP-14 | B |
+| ~~[WP-16](wp/WP-16-ci.md)~~ | ~~CI GitHub Actions~~ — **suspendu le 2026-09-09** (décision utilisateur : aucun coût, validation locale uniquement via `scripts/check.sh`) | — | — | `.github/` | — | — |
 
 Répartition des efforts : 7 lots `high` (refactors de testabilité ou sémantique à compléter), 6 `medium`
 (ports mécaniques mais volumineux ou nécessitant un parseur), 3 `low` (ports directs). Si le nombre
@@ -143,6 +143,10 @@ Principe : un fichier a **un seul** lot propriétaire ; les autres lots le lisen
 | `docs/plan/test-inventory.md` | chaque lot, **ses lignes uniquement** (colonne Statut → « porté ») | conflits triviaux, résolus par l'orchestrateur |
 | `DEVIATIONS.md` | append-only, numéro suivant | |
 | `PLAN.md`, `docs/plan/README.md` | orchestrateur | |
+
+> **Validation : locale uniquement.** La CI GitHub Actions est désactivée depuis le 2026-09-09 (décision
+> utilisateur, aucun coût souhaité) ; le workflow dort dans `.github/workflows/ci.yml.disabled`. Partout où ce
+> document dit « CI », lire `scripts/check.sh`, qui exécute les mêmes vérifications sur la machine de dév.
 
 ## 6. Protocole d'exécution (orchestrateur)
 
@@ -181,10 +185,10 @@ avec leur justification ; `PLAN.md` §3 marque J1.
 |---|---|
 | Deux lots ont besoin de la même API `pub` | Les fiches pré-affectent les API (ex. `Manager` reste à WP-06 ; WP-12 n'a besoin que de champs déjà `pub`). Sinon : rapport → l'orchestrateur ajoute l'API sur la branche d'intégration et relance. |
 | Un test « adapté » perd le sens du test Python | Chaque fiche explicite l'adaptation (mock → fixture réelle) et l'assertion équivalente ; l'agent cite la ligne Python dans le doc-commentaire du test Rust. |
-| Régression de parité invisible par les tests unitaires | Règle 7 (différentiel) + WP-14 (golden en CI). |
+| Régression de parité invisible par les tests unitaires | Règle 7 (différentiel) + WP-14 (golden rejoué par `cargo test`, donc couvert par `scripts/check.sh`). |
 | Un lot « high » n'aboutit pas dans la session | Les commits partiels restent sur sa branche ; la fiche sert de reprise ; l'orchestrateur relance un agent avec `SendMessage` ou un nouvel agent sur la même branche. |
 | Dérive de `PLAN.md` | Seul l'orchestrateur l'édite, à chaque fin de vague. |
-| Benchmarks non reproductibles en CI partagée | CI = compilation des benchs seulement ; mesures locales committées dans `benchmarks.md` avec la machine et la date ; garde-fou criterion en local (`scripts/bench_regression.sh`). |
+| Benchmarks non reproductibles d'une machine à l'autre | Pas de mesure automatisée : `scripts/check.sh` compile les benchs seulement ; mesures locales committées dans `benchmarks.md` avec la machine et la date ; garde-fou criterion en local (`scripts/bench_regression.sh`). |
 
 ## 9. Fichiers de ce plan
 

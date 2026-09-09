@@ -1,5 +1,20 @@
 # WP-16 — Intégration continue : validation, job différentiel, tableau de bord
 
+> ## ⛔ LOT SUSPENDU (2026-09-09)
+>
+> **Décision de l'utilisateur : aucune CI hébergée, aucun coût — la validation se fait uniquement en local.**
+> Le workflow créé en J0 a été désactivé (renommé `.github/workflows/ci.yml.disabled` ; GitHub ne lit que
+> `*.yml`/`*.yaml`, le fichier est donc inerte et aucune exécution n'est déclenchée).
+>
+> **Le remplaçant est `scripts/check.sh`**, qui reproduit les trois jobs à l'identique sur la machine de dév :
+> build de toutes les cibles + suite complète + `wp_status.sh --check`, puis rustfmt + clippy `-D warnings`,
+> puis compilation des benchs. Sortie 0 = équivalent d'une CI verte. `scripts/check.sh fast` saute les benchs.
+>
+> Ne pas reprendre ce lot sans accord explicite de l'utilisateur. Pour réactiver le workflow :
+> `git mv .github/workflows/ci.yml.disabled .github/workflows/ci.yml`.
+>
+> Le reste de cette fiche est conservé tel quel pour le jour où la question se reposera.
+
 **Agent** : `banditrs-wp-low` · **Vague** B (job golden après WP-14) · **Fichiers** : `.github/workflows/*.yml`, `README.md` (badge uniquement)
 **Référence** : `.github/workflows/ci.yml` (créé en J0 : jobs `test`, `lint`, `bench`)
 

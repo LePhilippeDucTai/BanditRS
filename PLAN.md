@@ -60,8 +60,15 @@ plus de diff (`DeepAssignation` implémenté, DEVIATIONS.md #9 réécrite en con
 |---|---|---|
 | J0 | Restructuration : squelette miroir de la suite Python, `docs/plan/` (inventaire, 16 fiches de lots, playbook, benchmarks), agents `.claude/agents/banditrs-wp-*`, skill `banditrs-dispatch`, `benches/e2e.rs`, `scripts/{wp_status,bench_vs_python}.sh`, CI | **Fait** (2026-09-08) |
 | J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | **Fait** (2026-09-09) : vague A1 (WP-02, 05, 07, 11, 12, 13) puis vague A2 (WP-01, 03, 04, 06, 09, 10, puis WP-08) — 176 stubs activés, 0 restant, `scripts/wp_status.sh --check` → 0 |
-| J2 | Corpus golden + différentiel en CI (WP-14, WP-16) | à lancer (vague B) |
+| J2 | Corpus golden + différentiel rejoué **en local** (WP-14 ; WP-16 suspendu, cf. ci-dessous) | à lancer (vague B) |
 | J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | à lancer (vague B) |
+
+> **CI GitHub Actions désactivée le 2026-09-09 à la demande de l'utilisateur** (aucun coût souhaité). Le
+> workflow est conservé, inerte, dans `.github/workflows/ci.yml.disabled` (GitHub ne lit que `*.yml`/`*.yaml`).
+> La porte de qualité s'exécute **en local** via `scripts/check.sh`, qui reproduit à l'identique les trois jobs
+> du workflow (build + tests + `wp_status.sh --check` ; rustfmt + clippy `-D warnings` ; compilation des benchs).
+> À lancer avant chaque commit, et systématiquement avant un push. Pour réactiver un jour :
+> `git mv .github/workflows/ci.yml.disabled .github/workflows/ci.yml`.
 
 | Jalon | Module(s) | État |
 |---|---|---|
@@ -206,7 +213,9 @@ benchmark (`time bandit -r /usr/lib/python3.11` Python vs Rust `--release`, obje
 ## 7. Commandes utiles
 
 ```bash
-cargo build --release && cargo test --all-targets         # 67 unitaires + 274 d'intégration (176 stubs ignorés)
+scripts/check.sh                                          # PORTE DE QUALITÉ LOCALE (remplace la CI) — à lancer avant tout push
+scripts/check.sh fast                                     # idem sans la compilation des benchs (boucle de dév)
+cargo build --release && cargo test --all-targets         # 341 tests (67 unitaires + 274 d'intégration), 0 ignoré
 scripts/wp_status.sh                                      # stubs restants par lot (docs/plan/README.md)
 cargo bench --bench e2e                                   # benchs criterion ; scripts/bench_vs_python.sh pour Python vs Rust
 BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit --dump-walk examples/nosec.py   # trace Rust
