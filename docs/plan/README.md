@@ -11,18 +11,19 @@
 
 ## 0. Résumé
 
-> **Clôture du plan (J4, 2026-09-09) : voir `PLAN.md` §5.** Le tableau ci-dessous est un instantané
-> pris à la fin de la vague B (J2/J3) ; les chiffres n'ont pas changé depuis (aucun code n'a été touché
-> pendant J4, qui n'a fait que consolider la documentation et la version).
+> **Clôture du plan (J5, 2026-09-09) : voir `PLAN.md` §5.** Le tableau ci-dessous a été mis à jour à la
+> fin de la vague C (J5), qui a ajouté trois tests d'intégration (le rejeu de la matrice CLI) et corrigé
+> six divergences réelles trouvées par cette matrice.
 
-| | État au 2026-09-08 (fin de la session de restructuration) |
+| | État au 2026-09-09 (fin de la vague C, jalon J5) |
 |---|---|
 | Moteur | 42 plugins, 9 formatters, 3 exécutables, parité bit à bit validée par différentiel (`PLAN.md` §3) |
-| Suite Rust | 67 tests unitaires (`src/`) + 284 tests d'intégration (`tests/`, dont `tests/golden.rs`) — **351 tests, tous actifs et verts, 0 stub** |
+| Suite Rust | 67 tests unitaires (`src/`) + 287 tests d'intégration (`tests/`, dont `tests/golden.rs` et `tests/cli_matrix.rs`) — **354 tests, tous actifs et verts, 0 stub** |
 | Suite Python de référence | 273 tests (`/home/user/bandit` @ `1d3053d`), tous au vert (`pytest`, Python 3.11) |
 | Couverture du port | **263 tests portés** (225 à l'identique, 38 adaptés), 0 restant, 10 non portables |
-| Parité sans Python | Corpus golden committé (`tests/golden/**`, examples × 8 formats + 86 fixtures JSON), rejoué par `cargo test --test golden` ; `scripts/diff_against_python.sh` : 0 diff inattendu sur `examples/` (94/94) et la stdlib 3.11 (672/672) (WP-14, J2, 2026-09-09) |
-| Performance (4 CPU) | `examples/` : **19,0×** ; stdlib 3.11 (672 fichiers, 307 k lignes) : **49,9×** ; mémoire RSS Rust −57 % vs Python ; garde-fou de régression (`scripts/bench_regression.sh`, +10 %) en place (WP-15, J3, 2026-09-09 — détails `docs/plan/benchmarks.md` §5) |
+| Parité sans Python | Corpus golden committé (`tests/golden/**`, examples × 8 formats + 86 fixtures JSON) et surface CLI enregistrée (`tests/cli_matrix/**`, 88 invocations), rejoués par `cargo test --test golden` et `--test cli_matrix` ; `scripts/diff_against_python.sh` : 0 diff inattendu sur `examples/` (94/94) et la stdlib 3.11 (672/672) (WP-14, J2 ; WP-18, J5) |
+| Parité sur code réel | **36/36 paquets identiques** sur 21 536 fichiers, 7 170 763 lignes, 130 730 issues (issues, `errors[]` et bloc `metrics`) ; **85/88 invocations CLI identiques** (stdout + stderr + code de sortie), 3 écarts documentés ; 60/75 identifiants déclenchés par le corpus, les 15 restants par `examples/` → 0 non exercé (WP-17→19, J5 — rapport `docs/drop-in-parity.md`) |
+| Performance (4 CPU) | `examples/` : **19,0×** ; stdlib 3.11 (672 fichiers, 307 k lignes) : **86,0×** (chiffre arbitré par une 3ᵉ campagne, cf. `benchmarks.md` §7.5) ; corpus réel (21 536 fichiers) : **61,0×** ; démarrage à froid sur un fichier d'une ligne : 191 ms → 2,9 ms ; mémoire RSS Rust −57 % vs Python ; garde-fou de régression (`scripts/bench_regression.sh`, +10 %, baseline committée `benches/baseline.json`) (WP-15, J3 ; WP-20, J5 — détails `benchmarks.md` §5 et §7) |
 
 Trois objectifs pour la phase qui s'ouvre, dans cet ordre de priorité :
 
@@ -32,7 +33,10 @@ Trois objectifs pour la phase qui s'ouvre, dans cet ordre de priorité :
 
 Le tout exécuté **en parallèle par des sous-agents Sonnet 5** : 16 lots de travail (*work packages*, WP) à
 fichiers disjoints, chacun confié à un agent avec un niveau d'effort adapté, fusionnés par la session
-principale (l'orchestrateur) après une passe de vérification identique pour tous.
+principale (l'orchestrateur) après une passe de vérification identique pour tous. Un quatrième objectif —
+**drop-in prouvé sur du code réel et sur toute la surface d'options** (J5, lots WP-17 → WP-21) — a été
+ajouté ensuite sur décision utilisateur et mené **en série** par l'orchestrateur, ce qui porte le plan à
+21 lots au total (cf. §3 et la note qui suit le tableau des jalons).
 
 ## 1. Le modèle mental (analogie du chantier)
 
@@ -81,9 +85,9 @@ principale (l'orchestrateur) après une passe de vérification identique pour to
 | **J0 — Restructuration** (fait) | Squelette miroir de la suite Python (176 stubs), inventaire, fiches de lots, agents, benchs, CI | `cargo test --all-targets` vert, `scripts/wp_status.sh` opérationnel | — |
 | **J1 — Suite Python 100 % portée** ✅ **Fait (2026-09-09)** | Tous les stubs activés et verts ; `DeepAssignation` (WP-01) et conversion legacy `convert_legacy_config` (WP-08) implémentées | Atteint : `scripts/wp_status.sh --check` → 0 stub ; 341 tests verts (67 + 274) ; inventaire à jour ; différentiel à zéro diff inexpliqué | WP-01 → WP-13 |
 | **J2 — Parité prouvée sans Python** ✅ **Fait (2026-09-09)** | Corpus golden (examples × 8 formats + 86 fixtures stdlib) committé, test Rust de rejeu, script de régénération | Atteint : `cargo test --test golden` rejoue le golden sans Python installé (9 tests) ; `scripts/diff_against_python.sh` finalisé et exécuté sur `examples/` (94/94) et la stdlib (672/672), zéro diff inattendu | WP-14 |
-| **J3 — Performance mesurée et gardée** ✅ **Fait (2026-09-09)** | Benchs criterion complets, tableau Python vs Rust (examples, stdlib, gros fichier, mono-fichier), garde-fou de régression, profil et premières optimisations *mesurées* | Atteint : `docs/plan/benchmarks.md` §5 rempli, tous les objectifs §2 dépassés (examples 19,0×, stdlib 49,9×, mono-fichier 17,4-33,3×, mémoire −57 %) ; `scripts/bench_regression.sh` en place ; profil §6 (2 pistes chiffrées non appliquées, hors propriété WP-15) | WP-15 |
+| **J3 — Performance mesurée et gardée** ✅ **Fait (2026-09-09)** | Benchs criterion complets, tableau Python vs Rust (examples, stdlib, gros fichier, mono-fichier), garde-fou de régression, profil et premières optimisations *mesurées* | Atteint : `docs/plan/benchmarks.md` §5 rempli, tous les objectifs §2 dépassés (examples 19,0×, stdlib 49,9×, mono-fichier 17,4-33,3×, mémoire −57 %) ; `scripts/bench_regression.sh` en place ; profil §6 (2 pistes chiffrées non appliquées, hors propriété WP-15). *Le 49,9× de la stdlib a été invalidé en J5 : il mesurait le plancher de la boucle de chronométrage, pas le scan ; la valeur retenue est 86,0× (`benchmarks.md` §7.5).* | WP-15 |
 | **J4 — Consolidation** ✅ **Fait (2026-09-09)** | `PLAN.md` réécrit (état final), README, version `0.2.0`, éventuellement publication | Décision utilisateur : consolidation sans publication externe | orchestrateur |
-| **J5 — Drop-in prouvé sur du code réel** ✅ **Fait (2026-09-09)** | Corpus de librairies tierces épinglé, matrice différentielle CLI (stdout + stderr + code de sortie), rapport de preuve, benchmarks sur code réel, CI de parité | Atteint : 24/24 paquets identiques sur 11 624 fichiers et 3,64 M lignes ; 85/88 invocations CLI identiques (3 écarts documentés) ; 75/75 identifiants exercés ; 6 divergences réelles trouvées et corrigées | WP-17 → WP-21 |
+| **J5 — Drop-in prouvé sur du code réel** ✅ **Fait (2026-09-09)** | Corpus de librairies tierces épinglé, matrice différentielle CLI (stdout + stderr + code de sortie), rapport de preuve, benchmarks sur code réel, CI de parité | Atteint : **36/36 paquets identiques** sur 21 536 fichiers et 7,17 M lignes (130 730 issues, `errors[]` et `metrics` compris) ; **85/88 invocations CLI identiques** (3 écarts documentés : #10, #18, #19) ; 60/75 identifiants déclenchés par le corpus + 15 par `examples/` = 0 non exercé ; 6 divergences réelles trouvées et corrigées, 3 écarts (#1, #14, #15) résorbés | WP-17 → WP-21 |
 
 Ordre recommandé : **J1 d'abord et en priorité absolue** (c'est la demande « test-driven »), J2 et J3 peuvent
 démarrer en parallèle de J1 car leurs fichiers sont disjoints, mais on les fusionne après J1 pour garder
@@ -128,7 +132,10 @@ préférés, pas des blocages : tous les lots partent de la même branche d'int�
 Répartition des efforts : 7 lots `high` (refactors de testabilité ou sémantique à compléter), 6 `medium`
 (ports mécaniques mais volumineux ou nécessitant un parseur), 3 `low` (ports directs). Si le nombre
 d'agents simultanés est limité, lancer la vague A en deux salves : **A1** = WP-02, 05, 07, 11, 12, 13 (rapides,
-donnent vite des fusions) puis **A2** = WP-01, 03, 04, 06, 08, 09, 10.
+donnent vite des fusions) puis **A2** = WP-01, 03, 04, 06, 08, 09, 10. Les cinq lots de la vague C
+(WP-17 → WP-21, jalon J5) n'ont pas d'effort d'agent : ils ont été menés **en série par l'orchestrateur**,
+parce qu'ils se lisent les uns les autres (le rapport dépend du corpus et de la matrice) et qu'ils
+touchent au même jeu de scripts.
 
 ## 5. Propriété des fichiers
 

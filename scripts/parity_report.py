@@ -15,7 +15,8 @@ Question 3 is the one it is tempting to skip. Parity over code that never wakes
 a plugin proves very little, so the report names the ids the corpus misses
 instead of quietly averaging them away.
 
-    scripts/parity_report.py --parity target/parity/standard.json [--out docs/drop-in-parity.md]
+    scripts/parity_report.py --parity target/parity/full.json [target/parity/frontier.json]
+                             [--out docs/drop-in-parity.md]
 """
 
 import argparse
@@ -198,14 +199,24 @@ def main():
         w("package in the parity tiers is additionally pinned to a release CPython 3.11 parses in full")
         w("(`scripts/corpus.py verify --parse`).\n")
 
+    # The commands must name the tiers this very report was built from, not a
+    # plausible-looking default: a reproduction block that reproduces something
+    # else is worse than none, since it looks checkable.
+    order = ["smoke", "standard", "full"]
+    widest = max((e["tier"] for e in parity), key=order.index, default="standard")
+    parity_json = f"target/parity/{widest}.json"
+
     w("## Reproducing\n")
     w("```")
     w("cargo build --release")
-    w("scripts/corpus.py fetch  --tier standard      # pinned by sha256, ~200 MB")
+    w(f"scripts/corpus.py fetch  --tier {widest}{' ' * (8 - len(widest))}      # pinned by sha256")
     w("scripts/corpus.py verify --parse              # precondition: all of it parses under 3.11")
-    w("scripts/diff_corpus.py   --tier standard --json target/parity/standard.json")
+    w(f"scripts/diff_corpus.py   --tier {widest} --json {parity_json}")
+    if frontier:
+        w(f"scripts/diff_corpus.py   --tier frontier --rs-compat latest --json target/parity/frontier.json")
     w("scripts/cli_matrix.py    diff")
-    w("scripts/parity_report.py --parity target/parity/standard.json")
+    w(f"scripts/parity_report.py --parity {parity_json}"
+      + (" target/parity/frontier.json" if frontier else ""))
     w("```")
 
     dest = Path(args.out)

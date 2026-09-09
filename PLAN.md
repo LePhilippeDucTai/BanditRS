@@ -1,15 +1,19 @@
 # BanditRS — plan de réécriture de bandit en Rust (document de passation)
 
-> **Projet terminé (v0.2.0, jalon J4, 2026-09-09).** Les quatre jalons du plan parallèle (J0–J4) sont
-> atteints ; J4 est le dernier jalon défini, il n'y a pas de J5. Ce document reste la référence pour
-> reprendre le projet dans une nouvelle session (état, architecture, pièges, écarts). Lire dans l'ordre :
+> **Projet terminé (v0.2.0, jalon J5, 2026-09-09).** Les six jalons (J0–J5) sont atteints. J4 clôturait le
+> plan parallèle initial ; **J5 a été ouvert ensuite sur décision utilisateur** avec une question
+> différente — non plus « la suite de tests passe-t-elle ? » mais « l'outil est-il substituable *sur du
+> vrai code et sur toute sa surface d'options* ? » — et il est lui aussi atteint (§5). Ce document reste
+> la référence pour reprendre le projet dans une nouvelle session (état, architecture, pièges, écarts).
+> Lire dans l'ordre :
 > 0. **`docs/plan/README.md`** — le plan de développement parallèle (TDD : port des 273 tests Python,
->    performance, 16 lots de travail pour sous-agents), conservé à titre d'historique du chantier ;
+>    performance, code réel ; 21 lots de travail), conservé à titre d'historique du chantier ;
 > 1. cette page (état, décisions, jalons, architecture, pièges) ;
 > 2. `docs/spec/core.md` (sémantique exacte du cœur Python) ;
 > 3. `docs/spec/plugins.md` (les 42 plugins + blacklists, messages/regex/défauts verbatim) ;
 > 4. `docs/spec/cli_formatters_tests.md` (CLI, formatters, suite de tests = spécification d'acceptation) ;
-> 5. `DEVIATIONS.md` (écarts délibérés).
+> 5. `DEVIATIONS.md` (écarts délibérés) ;
+> 6. `docs/drop-in-parity.md` (la preuve du remplacement drop-in, **générée** par `scripts/parity_report.py`).
 > Le dépôt Python de référence est `/home/user/bandit` (@ `1d3053d`) ; lire le fichier Python
 > correspondant **avant** de porter chaque module (les specs résument, le code Python fait foi).
 
@@ -35,22 +39,27 @@
 - Référence Python : venv `/home/user/.pyenv-bandit` avec `bandit` installé en editable depuis `/home/user/bandit`
   (`bandit 0.0.1.dev49`, extras toml/yaml/sarif). À recréer si absent :
   `python3 -m venv /home/user/.pyenv-bandit && /home/user/.pyenv-bandit/bin/pip install -e "/home/user/bandit[toml,yaml,sarif]"`.
-- Corpus de test supplémentaire : `/usr/lib/python3.11` (stdlib).
+- Corpus de test supplémentaire : `/usr/lib/python3.11` (stdlib) et, depuis J5, un corpus de code réel —
+  38 sdists PyPI épinglés par sha256 dans `tests/corpus/manifest.tsv` (4 tiers : `smoke`, `standard`, `full`,
+  `frontier`), téléchargés et vérifiés par `scripts/corpus.py fetch`, **jamais committés**.
 - Fixtures : `examples/` (copie verbatim de `bandit/examples`, 96 fichiers ; 2 non-UTF-8 : `trojansource_latin1.py`
   latin-1, `nonsense2.py` binaire).
 
 ## 3. État d'avancement (ce qui est FAIT et VALIDÉ)
 
 `cargo build --all-targets`, `cargo clippy --all-targets -- -D warnings` et `cargo fmt --check` propres.
-`cargo test --all-targets` : **67 tests unitaires** (`src/`) + **284 tests d'intégration** (`tests/`, un fichier
+`cargo test --all-targets` : **67 tests unitaires** (`src/`) + **287 tests d'intégration** (`tests/`, un fichier
 miroir par fichier de test Python, plus `tests/golden.rs` (9 tests, WP-14) qui rejoue le corpus golden sans
-Python) = **351 tests, tous actifs et au vert, zéro `#[ignore]`** (`scripts/wp_status.sh --check` → 0).
+Python et `tests/cli_matrix.rs` (3 tests, WP-18) qui rejoue les 88 invocations CLI enregistrées) = **354 tests,
+tous actifs et au vert, zéro `#[ignore]`** (`scripts/wp_status.sh --check` → 0).
 **Jalon J1 atteint le 2026-09-09** : les 273 tests de la suite Python
 ont un homologue Rust homonyme (263 portés — 225 à l'identique, 38 adaptés — et 10 non portables, justifiés
 dans `docs/plan/test-inventory.md` et `DEVIATIONS.md` #8). La table complète des exemples upstream
 (comptes de sévérité/confiance) correspond bit à bit à bandit Python. **Jalons J2 et J3 également atteints le
 2026-09-09** (vague B, WP-14 et WP-15 — cf. tableau ci-dessous) : parité prouvée sans Python installé (corpus
-golden rejoué par `cargo test`) et performance mesurée avec garde-fou de régression.
+golden rejoué par `cargo test`) et performance mesurée avec garde-fou de régression. **Jalon J5 atteint le
+2026-09-09** (vague C, WP-17 → WP-21) : parité prouvée sur du **code réel** (36/36 paquets PyPI) et sur la
+**surface d'options complète** (88 invocations, stdout + stderr + code de sortie) — cf. §5.
 
 Différentiel complet rejoué en fin de vague A2 (2026-09-09) via `scripts/diff_against_python.sh examples` :
 traces de parcours **91/91 identiques**, et `examples/` × {json, txt, csv, xml, yaml, custom, sarif, html}
@@ -59,7 +68,10 @@ mémoire `<ast.List object at 0x…>` de `tarfile_extractall`), #10 (scalaire do
 #11 (ancres/alias `&id001`/`*id001` de PyYAML, basées sur l'identité d'objet Python, non reproduites), plus
 les champs volatils (`generated_at`, `Run started:`, version de l'outil et URL de doc — cf. #12) et la barre
 de progression `Working…` que le bandit Python écrit sur la sortie. Depuis WP-01, `mark_safe_*` ne produit
-plus de diff (`DeepAssignation` implémenté, DEVIATIONS.md #9 réécrite en conséquence).
+plus de diff (`DeepAssignation` implémenté, DEVIATIONS.md #9 réécrite en conséquence). **Depuis J5, ce
+paragraphe ne décrit plus que le plus ancien des quatre harnais** : la matrice CLI (WP-18) et le différentiel
+sur code réel (WP-19) portent la preuve beaucoup plus loin, et ont résorbé #1 au passage — le `nosec` à ids
+multiples n'est plus un écart, la regex Python est portée telle quelle.
 
 **Correctif post-J4 (2026-09-09, réécriture du `README.md`).** L'audit de la surface CLI mené pour la
 section « parité » du README a mis au jour un écart non documenté sur `bandit-baseline` : `--help`/`-h`
@@ -80,8 +92,9 @@ rejetée avec le même code 2.
 | J0 | Restructuration : squelette miroir de la suite Python, `docs/plan/` (inventaire, 16 fiches de lots, playbook, benchmarks), agents `.claude/agents/banditrs-wp-*`, skill `banditrs-dispatch`, `benches/e2e.rs`, `scripts/{wp_status,bench_vs_python}.sh`, CI | **Fait** (2026-09-08) |
 | J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | **Fait** (2026-09-09) : vague A1 (WP-02, 05, 07, 11, 12, 13) puis vague A2 (WP-01, 03, 04, 06, 09, 10, puis WP-08) — 176 stubs activés, 0 restant, `scripts/wp_status.sh --check` → 0 |
 | J2 | Corpus golden + différentiel rejoué **en local** (WP-14 ; WP-16 suspendu, cf. ci-dessous) | **Fait** (2026-09-09) : corpus `tests/golden/**` committé (examples × 8 formats + 86 fixtures JSON) rejoué sans Python par `cargo test --test golden` (9 tests) ; `scripts/diff_against_python.sh` finalisé (mode fichier-par-fichier JSON autoritaire) et exécuté sur `examples/` (94/94 identiques) et la stdlib 3.11 (672/672 identiques), zéro diff inattendu |
-| J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | **Fait** (2026-09-09) : campagne complète dans `docs/plan/benchmarks.md` §5 (examples 19,0×, stdlib 49,9×, subprocess_shell.py 33,3×, long_set.py 17,4×, mémoire Rust −57 %) — tous les objectifs §2 dépassés ; `scripts/bench_regression.sh` en place (garde-fou +10 %) ; profil `valgrind --callgrind` en §6 (2 pistes d'optimisation chiffrées non appliquées, hors propriété WP-15) |
+| J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | **Fait** (2026-09-09) : campagne complète dans `docs/plan/benchmarks.md` §5 (examples 19,0×, subprocess_shell.py 33,3×, long_set.py 17,4×, mémoire Rust −57 % ; la stdlib y figurait à 49,9×, chiffre **invalidé en J5** — il mesurait le plancher de la boucle de chronométrage, pas le scan ; la valeur retenue est **86,0×**, cf. `benchmarks.md` §7.5) — tous les objectifs §2 dépassés ; `scripts/bench_regression.sh` en place (garde-fou +10 %) ; profil `valgrind --callgrind` en §6 (2 pistes d'optimisation chiffrées non appliquées, hors propriété WP-15) |
 | J4 | Consolidation : `PLAN.md` réécrit en état final, `README.md` à jour, version `0.2.0` | **Fait** (2026-09-09) : décision utilisateur — consolidation sans publication externe. Porte de qualité (`scripts/check.sh`) verte avant et après (351 tests, clippy 0 avertissement, fmt propre) ; version du crate passée à `0.2.0` (`Cargo.toml`/`Cargo.lock`) ; `README.md` reflète l'état final ; `docs/plan/README.md` §3 mis à jour. **J4 est le dernier jalon du plan parallèle** ; aucun J5 n'est défini — toute suite (publication, nouvelles fonctionnalités hors périmètre bandit) demande une nouvelle décision utilisateur et un nouveau plan. |
+| J5 | Drop-in prouvé sur du code réel et sur toute la surface d'options (WP-17 → WP-21) | **Fait** (2026-09-09) : corpus de 38 sdists PyPI épinglés par sha256 (`tests/corpus/manifest.tsv`, 4 tiers) ; différentiel par paquet — **36/36 identiques** sur 21 536 fichiers, 7 170 763 lignes, 130 730 issues, `errors[]` et bloc `metrics` compris ; matrice CLI de 88 invocations comparant **stdout + stderr + code de sortie** — **85/88 identiques**, 3 écarts documentés (#10, #18, #19) et rejouables sans Python (`cargo test --test cli_matrix`) ; **6 divergences réelles trouvées et corrigées**, 3 écarts résorbés (#1, #14, #15) ; couverture 60/75 identifiants par le corpus + 15 par `examples/` = 0 non exercé ; benchmarks sur code réel (61,0×, démarrage à froid 191 ms → 2,9 ms) et baseline de régression committée (`benches/baseline.json`) ; rapport généré `docs/drop-in-parity.md` ; CI `parity` + `parity-nightly`. |
 
 > **CI GitHub Actions : active** (`.github/workflows/ci.yml`). Elle avait été désactivée le 2026-09-09
 > pour des raisons de coût, puis réactivée avec le wheel multi-plateforme ; le dépôt étant public, les
@@ -101,9 +114,9 @@ rejetée avec le même code 2.
 | M5 | `src/core/discover.rs::discover_files`, `src/core/scan.rs::scan_file` (`catch_unwind`, nosec depuis les tokens), `src/core/manager.rs::run_tests` (parallèle via `rayon`) | **Fait** ; `tests/common/mod.rs::check_example`/`check_metrics` implémentés, **78 tests fonctionnels au vert** |
 | M6 | `src/formatters/*.rs` (csv/custom/html/json/sarif/screen/text/xml/yaml + `mod.rs::output_results`), `src/pycompat/{pyformat,csv,json,yaml_emit,html,xml,urlquote}.rs` | **Fait** ; **11 tests fonctionnels** (`tests/formatters.rs`, §C.7) au vert |
 | M7 | `src/cli/{argparse,main}.rs` (parseur maison + flux §A.11), `BanditConfig::new` (YAML via `pycompat::yaml_load` + TOML via `toml`), `BanditConfig::profile()` (conversion nom→id ; conversion legacy `blacklist_calls`/`blacklist_imports` ajoutée par WP-08), `src/pycompat/{yaml_load,configparser}.rs` | **Fait** ; **9 tests fonctionnels** (`tests/runtime.rs`) au vert |
-| M8 | `src/cli/{baseline,config_generator}.rs` | **Fait** ; testé manuellement (dépôt git jetable) et via différentiel contre Python — voir §5. `tests/baseline_functional.rs`/`tests/cli_tools.rs` restent des placeholders (§C.3/C.4/C.5/C.6 pas portés en tests automatisés) |
-| M9 | Harnais différentiel exécuté ad hoc (voir §5) sur `examples/` (tous formats) : diffs restants tous expliqués par DEVIATIONS.md. `scripts/diff_against_python.sh` (script fichier) pas encore mis à jour/exécuté sur la stdlib | Essentiellement fait, script à finaliser |
-| M10 | perf, README, clippy | **Fait** : `cargo clippy --all-targets -- -D warnings` propre, `cargo fmt --all`, benchmark (~70× sur stdlib), README à jour |
+| M8 | `src/cli/{baseline,config_generator}.rs` | **Fait** ; couvert par `tests/functional_baseline.rs` (7 scénarios `bandit -b`, WP-02), `tests/unit_cli_baseline.rs` (12 tests sur dépôts git temporaires, WP-04) et `tests/unit_cli_config_generator.rs` (WP-05), plus les cas `baseline_*`/`configgen_*` de la matrice CLI (WP-18) |
+| M9 | Harnais différentiels | **Fait** ; quatre harnais complémentaires, cf. §5 : `diff_against_python.sh` (fichier par fichier — `examples/` 94/94, stdlib 672/672), `cargo test --test golden` (rejeu sans Python), `cli_matrix.py` (88 invocations, stdout + stderr + code de sortie), `diff_corpus.py` (36/36 paquets PyPI, 21 536 fichiers) |
+| M10 | perf, README, clippy | **Fait** : `cargo clippy --all-targets -- -D warnings` propre, `cargo fmt --all`, benchmark (**86,0×** sur la stdlib, 61,0× sur le corpus réel), README à jour |
 
 Plus aucun `todo!()` fonctionnel : la conversion legacy `blacklist_calls`/`blacklist_imports`
 (`convert_legacy_config`), dernier stub du projet, a été implémentée par WP-08 (cf. §5).
@@ -123,9 +136,13 @@ src/
   formatters/       csv custom html json sarif screen text xml yaml (+ Output, output_results, default_format)
   cli/              argparse (maison, compatible argparse), main, baseline, config_generator
   bin/              bandit (--dump-walk déjà branché), bandit_baseline, bandit_config_generator
-tests/              common (helpers), functional (table complète des comptes attendus), runtime, baseline_functional, cli_tools, formatters
-scripts/            dump_walk.py (trace Python), diff_against_python.sh (harnais différentiel)
+tests/              common (helpers), un fichier miroir par fichier de test Python (functional, runtime, functional_baseline,
+                    unit_cli_*, unit_core_*, unit_formatters_*), golden (rejeu du corpus golden), cli_matrix (rejeu de la surface CLI),
+                    golden/** et cli_matrix/** (sorties de référence committées), corpus/ (manifeste épinglé, corpus jamais committé)
+scripts/            dump_walk.py (trace Python), diff_against_python.sh + gen_golden.sh (golden), cli_matrix.py (surface CLI),
+                    corpus.py + diff_corpus.py + parity_report.py (code réel), bench_*.sh/py, check.sh (porte de qualité), wp_status.sh
 docs/spec/          core.md, plugins.md, cli_formatters_tests.md
+docs/               drop-in-parity.md (rapport généré), plan/ (plan parallèle, inventaire, fiches de lots, benchmarks)
 ```
 
 Invariants clés (tous validés par la trace de parcours) :
@@ -142,24 +159,57 @@ Invariants clés (tous validés par la trace de parcours) :
 - `PyErr` : là où Python lèverait (KeyError de config, IndexError, TypeError…), renvoyer `Err(PyErr)` → le tester
   journalise `Bandit internal error running: <test> on file <f> at line <n>: <err>` et n'émet rien.
 
-## 5. État final et clôture (jalon J4, 2026-09-09)
+## 5. État final et clôture (jalon J5, 2026-09-09)
 
-Le plan parallèle (`docs/plan/README.md`) est **clos** : J0 → J4 sont tous atteints, et J4 est le dernier
-jalon qu'il définit — **aucun J5 n'existe**. `docs/plan/README.md`, `docs/plan/test-inventory.md` et
-`docs/plan/wp/WP-01…15` restent en place à titre d'historique du chantier (méthode, fiches de lots, protocole
-de fusion), mais ne décrivent plus de travail restant.
+Le plan parallèle (`docs/plan/README.md`) est **clos** : J0 → J5 sont tous atteints. J4 fermait le plan
+initial (portage de la suite Python, corpus golden, benchmarks) ; **J5 a été ouvert ensuite sur décision
+utilisateur**, avec une question que les harnais existants ne posaient pas. Ils partageaient en effet un
+angle mort : `examples/`, la stdlib et le code source de bandit sont tous du code *écrit pour tester bandit*
+ou déjà passé sous ses yeux, et tous comparaient une seule chose — le rapport `-f json` sur stdout, depuis
+l'invocation par défaut. J5 demande : **l'outil est-il substituable sur du vrai code et
+sur toute sa surface d'options ?**
 
 M0–M9 sont **faits** intégralement (moteur de tests, 42 plugins, formatters, CLI complet — `bandit`,
-`bandit-baseline`, `bandit-config-generator`). Aucun `todo!()` ne subsiste. Deux limitations pré-existantes,
-repérées hors périmètre lors des revues WP-03 et WP-04, ont été tranchées en clôture de J4 : plutôt que
-corrigées (aucun test de la suite ne les observe), elles sont **assumées comme déviations documentées**
-(`DEVIATIONS.md` #14 et #15) :
+`bandit-baseline`, `bandit-config-generator`). Aucun `todo!()` ne subsiste. Tests unitaires et fonctionnels :
+**tous portés** (J1, 0 stub — cf. §3 et `docs/plan/test-inventory.md`).
 
-- `apply_ini_options` (`src/cli/main.rs`) ne journalise « Using command line arg for selected targets » que si
-  la clé `targets` est présente dans le `.bandit`, alors que Python l'émet dès que `args.targets` est fourni
-  en ligne de commande, indépendamment de la clé ini.
-- `src/cli/baseline.rs::name_rev()` rend `master` là où Python (`commit.name_rev`) rend `<sha> master`, dans
-  le message « Got current/parent commit: … ».
+### Ce que J5 a établi (WP-17 → WP-21)
+
+| Preuve | Résultat | Reproduire |
+|---|---|---|
+| Code réel (38 sdists PyPI épinglés par sha256, 4 tiers ; jamais committés) | **36/36 paquets identiques** — 21 536 fichiers, 7 170 763 lignes, 130 730 issues. « Identique » = mêmes issues dans le même ordre (fichier, ligne, plage de colonnes, sévérité, confiance, message), même `errors[]`, même bloc `metrics` (donc mêmes fichiers découverts, mêmes comptes de lignes) | `scripts/corpus.py fetch --tier full` puis `scripts/diff_corpus.py --tier full` |
+| Surface CLI (88 invocations : seuils, sélection de tests, profils, 9 formatters, découverte de cibles, `.bandit`, erreurs d'usage, baselines, les 3 exécutables) comparée sur **stdout + stderr + code de sortie** | **85/88 identiques** ; 3 écarts documentés (#10 ancres YAML, #18 dump `-d`, #19 libellé d'erreur YAML) | `scripts/cli_matrix.py diff` (live) ou `cargo test --test cli_matrix` (rejeu, sans Python) |
+| Couverture réelle des identifiants | 60/75 déclenchés par le corpus, les 15 restants (telnetlib, famille XML, SNMP…) par `examples/` → **0 identifiant non exercé** | `docs/drop-in-parity.md` §3, qui les nomme un par un |
+| Performance sur code réel | **61,0×** sur l'ensemble du corpus (506,9 s → 8,3 s) ; démarrage à froid sur un fichier d'une ligne : 191 ms → 2,9 ms (p50) | `scripts/bench_corpus.py -n 5` ; `benchmarks.md` §7 |
+
+Le rapport `docs/drop-in-parity.md` est **généré** par `scripts/parity_report.py` à partir du JSON du
+différentiel — jamais édité à la main. Le régénérer depuis les mêmes entrées doit rendre le fichier
+committé octet pour octet (vérifié en clôture de J5).
+
+**Six divergences réelles trouvées par la matrice CLI, toutes corrigées.** La plus grave : `-ll`/`-lll`/
+`-ii`/`-iii` filtraient **un niveau trop bas**, parce que l'`action="count"` d'argparse incrémente *à partir
+de* `default=1` (donc `-l` vaut 2, `-ll` vaut 3, que `RANKING[n - 1]` mappe sur LOW puis MEDIUM) alors que le
+portage remettait le compteur à 0 à la première occurrence. `bandit -ll` étant l'invocation de CI la plus
+courante, l'outil remontait silencieusement le mauvais ensemble d'issues, et **rien d'autre dans ce dépôt ne
+l'observait** : la suite Python ne teste pas son propre parseur d'arguments. Les cinq autres :
+`parser.print_usage()` écrit sur stdout et non stderr ; les textes `USAGE`/`--help` étaient une
+approximation (ce sont désormais ceux de la référence, octet pour octet, à la largeur 80 colonnes
+qu'argparse retient hors terminal) ; `Unknown test found in profile` est journalisé par `extension_loader`,
+pas par `main` ; l'erreur d'exclusion mutuelle nomme `-q/--quiet/--silent` ; trois lignes de journal
+manquaient (avertissement blacklist legacy, avertissement ini illisible, et l'info « cibles en ligne de
+commande »).
+
+**Trois écarts résorbés plutôt que justifiés** — la matrice a montré qu'ils n'avaient pas lieu d'être :
+`DEVIATIONS.md` #1 (jetons `nosec` : la regex `NOSEC_COMMENT_TESTS` de Python est désormais portée telle
+quelle, ponctuation ignorée et dernière répétition seule retenue comprises), #14 (`_log_option_source`) et
+#15 (`commit.name_rev` rend `<sha> <nom>`). Il reste **16 écarts délibérés** sur les 19 numéros du fichier,
+qui est append-only.
+
+**Quatre écarts nouveaux, documentés** (`DEVIATIONS.md` #16 → #19) : version cible du parseur (#16 — ce
+n'est pas un défaut de parité mais un réglage : avec `BANDITRS_PYTHON_COMPAT=3.11` la parité est totale, y
+compris sur les paquets qui exigent 3.12, `errors[]` compris ; le tier `frontier` chiffre les deux régimes),
+ordre des identifiants dans un log (#17 — c'est Python qui n'est pas reproductible, il joint un `set`),
+dump `-d` (#18), libellé d'erreur de PyYAML (#19).
 
 **Piège à connaître avant de toucher aux profils** (découvert par WP-08) : `Profile::blacklist` est un
 `Option<IndexMap<…>>` dont `TestSet::new` ne distingue que `Some` (« remplace la table intégrée ») et `None`
@@ -170,10 +220,7 @@ examples/xml_sax.py`, 8 résultats côté Python contre 0 côté Rust). La conve
 pas `Some(vide)`, quand elle n'a rien à ajouter — c'est le comportement de `if not blacklist:` en Python, où
 « absent » et « vide » sont indiscernables. Toute évolution de ce type doit préserver cette équivalence.
 
-Tests unitaires et fonctionnels : **tous portés** (J1 atteint, 0 stub — cf. §3 et
-`docs/plan/test-inventory.md`).
-
-### Reprendre après J4
+### Reprendre après J5
 
 Ce dépôt n'a plus d'étapes planifiées. Une reprise éventuelle (publication du crate, nouvelles
 fonctionnalités hors périmètre de bandit Python, mise à jour vers une version plus récente de bandit comme
@@ -181,14 +228,32 @@ référence) demande une nouvelle décision utilisateur et, si le travail est su
 de plan (le modèle `docs/plan/README.md` — jalons, lots à fichiers disjoints, porte de qualité — peut être
 réutilisé tel quel).
 
-### Harnais différentiel — méthode et résultat (fait ad hoc, à refaire via `scripts/diff_against_python.sh`)
+Deux garde-fous tournent tout seuls et méritent d'être lus avant de conclure quoi que ce soit :
+`scripts/bench_regression.sh` (échec si un bench dépasse la baseline de +10 % ; depuis WP-20 une baseline
+committée `benches/baseline.json` prend le relais quand `target/` est vide — sans elle, le script comparait
+le dépôt à lui-même et validait n'importe quel ralentissement) et le job CI `parity-nightly`, qui régénère
+le corpus golden face à l'amont et échoue sur `git diff --exit-code tests/golden` : c'est le détecteur de
+**dérive amont**, le seul harnais qui remarque que c'est *bandit* qui a changé, pas BanditRS.
 
-Venv de référence recréé (`python3 -m venv /home/user/.pyenv-bandit && .../pip install -e "/home/user/bandit[toml,yaml,sarif]"`,
-+ `pip install sarif_om jschema-to-python`, absents de `bandit[sarif]` sur cet environnement). Comparaison
-`bandit <file> -f <fmt>` (tous formats) Python vs `BANDITRS_PYTHON_COMPAT=3.11 bandit <file> -f <fmt>` Rust sur
-les 96 fichiers de `examples/` (hors `nonsense2.py`, binaire) : **zéro diff** hors déviations documentées
-(#5 adresses mémoire, #9 DeepAssignation, #10 pliage double-quoted, #11 ancres/alias YAML — voir DEVIATIONS.md).
-Bugs réels trouvés et corrigés pendant cette passe :
+### Les quatre harnais différentiels, et ce que chacun voit
+
+1. `scripts/diff_against_python.sh` (M9, finalisé par WP-14) — fichier par fichier, JSON autoritaire :
+   `examples/` **94/94**, stdlib 3.11 **672/672**, traces de parcours **91/91**, zéro diff inattendu.
+2. `cargo test --test golden` (WP-14) — rejeu du corpus golden committé, **sans Python** : c'est ce qui
+   transforme la parité d'observation ponctuelle en **invariant de régression**.
+3. `scripts/cli_matrix.py` + `cargo test --test cli_matrix` (WP-18) — la seule preuve qui regarde stderr et
+   le code de sortie, et la seule qui balaie les options plutôt que l'invocation par défaut.
+4. `scripts/diff_corpus.py` (WP-19) — le seul qui regarde du code que personne n'a écrit pour bandit. Il
+   inverse la forme du premier : comparer un rapport agrégé par paquet, et ne bissecter fichier par fichier
+   qu'à l'intérieur d'un paquet qui a réellement divergé (à ~0,2 s de démarrage Python par fichier, forker
+   les deux binaires 21 536 fois coûterait plus d'une heure en lancements seuls).
+
+Venv de référence (à recréer si absent) : `python3 -m venv /home/user/.pyenv-bandit && .../pip install -e
+"/home/user/bandit[toml,yaml,sarif]"`, plus `pip install sarif_om jschema-to-python` (absents de
+`bandit[sarif]` sur cet environnement).
+
+Bugs réels trouvés par le harnais fichier-par-fichier lors de sa première passe (M9), conservés ici parce
+qu'ils disent où se cachent les écarts de ce genre :
 - `registry::PLUGINS` était trié dans l'ordre `setup.cfg`, alors que `stevedore`/`importlib.metadata` charge les
   entry points **triés alphabétiquement par nom** (vérifié empiriquement sur `extension_loader.MANAGER.plugins`) —
   affecte l'ordre des issues d'un même nœud quand plusieurs plugins matchent (ex. B602/B607 sur un même `Call`).
@@ -199,15 +264,10 @@ Bugs réels trouvés et corrigés pendant cette passe :
   `linerange[0]` ; `to_uri` doit normaliser via `PurePath.as_posix()` (`pycompat::path::posix_normalize`, retire
   un `./` initial) avant de percent-encoder.
 
-**Fait par WP-14 (2026-09-09, jalon J2)** : `scripts/diff_against_python.sh` finalisé (mode fichier-par-fichier
-JSON autoritaire, liste blanche des déviations documentées, option `--stdlib`) et exécuté sur `examples/`
-(94/94 identiques) et sur `/usr/lib/python3.11` (672/672 identiques, `BANDITRS_PYTHON_COMPAT=3.11`) : zéro
-diff inattendu. Le corpus golden (`tests/golden/**`, examples × 8 formats + 86 fixtures JSON) est en outre
-committé et rejoué sans Python par `cargo test --test golden` (9 tests) — la parité est désormais prouvée
-par `cargo test` seul, sans dépendre d'un venv Python à chaque run.
-
 ### M10 — `cargo clippy --all-targets -- -D warnings` (0 avertissement), `cargo fmt`, benchmark (`time bandit -r
-/usr/lib/python3.11` Python vs Rust `--release`, objectif ≥ 20× — dépassé, cf. J3), README, commit/push : **fait**.
+/usr/lib/python3.11` Python vs Rust `--release`, objectif ≥ 20× — dépassé : **86,0×**, cf. J3 et
+`benchmarks.md` §7.5), README, commit/push : **fait**.
+
 
 ## 6. Pièges connus (déjà rencontrés ou anticipés)
 
@@ -235,13 +295,31 @@ par `cargo test` seul, sans dépendre d'un venv Python à chaque run.
   (bug Python, pas la vraie fin) ; indexation négative Python reproduite pour `region.snippet` ; `to_uri` via
   `PurePath.as_posix()` (`pycompat::path::posix_normalize`).
 - clippy : `cargo clippy --all-targets -- -D warnings` propre, 0 avertissement (nettoyé en M10/J4).
+- **argparse `action="count"` part de `default=1`, pas de 0** : `-l` vaut 2 et `-ll` vaut 3, que
+  `RANKING[n - 1]` mappe sur LOW puis MEDIUM. Remettre le compteur à 0 à la première occurrence décale tous
+  les seuils d'un cran (bug trouvé par la matrice CLI, J5). De façon générale, tout défaut d'option se lit
+  dans `argparse`, pas dans l'intuition.
+- `parser.print_usage()` écrit sur **stdout**, `parser.error()` sur stderr : comparer les deux flux
+  séparément, jamais leur concaténation.
+- Pièges du harnais de la matrice CLI : `subprocess(text=True)` réécrit les CRLF que le module `csv` de
+  Python émet (comparer en binaire), et `bandit-baseline` **relance `bandit` depuis le PATH** — chaque outil
+  a donc besoin de son propre binaire en tête de PATH, sinon on compare un outil à lui-même.
+- Garde-fou de benchmark : `target/` est gitignoré, donc sur un dépôt fraîchement cloné criterion n'a
+  **aucune baseline** ; il en crée une silencieusement à partir du worktree courant et compare le dépôt à
+  lui-même — « aucune régression » quel que soit le ralentissement. D'où `benches/baseline.json`, committé
+  (WP-20), utilisé en repli et rafraîchi par `scripts/bench_regression.sh --record`.
+- Comparer à une référence, c'est **aligner la version d'interpréteur** : `BANDITRS_PYTHON_COMPAT` fixe la
+  version cible du parseur `ruff`, pas seulement les positions de f-strings. Sans cet alignement, BanditRS
+  analyse normalement des fichiers que CPython 3.11 range dans `errors[]` et remonte donc *plus* d'issues
+  (DEVIATIONS #16). Ce n'est pas un défaut de parité, c'est un réglage — et c'est la première chose à
+  vérifier devant un diff sur un paquet récent.
 
 ## 7. Commandes utiles
 
 ```bash
 scripts/check.sh                                          # PORTE DE QUALITÉ LOCALE (remplace la CI) — à lancer avant tout push
 scripts/check.sh fast                                     # idem sans la compilation des benchs (boucle de dév)
-cargo build --release && cargo test --all-targets         # 351 tests (67 unitaires + 284 d'intégration), 0 ignoré
+cargo build --release && cargo test --all-targets         # 354 tests (67 unitaires + 287 d'intégration), 0 ignoré
 scripts/wp_status.sh                                      # stubs restants par lot (docs/plan/README.md)
 cargo bench --bench e2e                                   # benchs criterion ; scripts/bench_vs_python.sh pour Python vs Rust
 scripts/bench_regression.sh [ref]                         # garde-fou de régression (J3, WP-15) : échec si un bench > +10 % vs la baseline
@@ -249,6 +327,14 @@ cargo test --test golden                                  # rejeu du corpus gold
 BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit --dump-walk examples/nosec.py   # trace Rust
 /home/user/.pyenv-bandit/bin/python scripts/dump_walk.py examples/nosec.py           # trace Python
 scripts/diff_against_python.sh examples                   # harnais différentiel finalisé (J2, WP-14) ; --stdlib pour /usr/lib/python3.11
+scripts/check.sh parity                                   # + différentiel face à la référence (réseau requis) : matrice CLI et tier « smoke »
+cargo test --test cli_matrix                              # rejeu des 88 invocations CLI enregistrées (J5, WP-18), sans Python
+scripts/cli_matrix.py diff                                # la même matrice en direct face au bandit Python
+scripts/corpus.py fetch --tier standard                   # corpus de code réel épinglé par sha256 (~200 Mo, jamais committé)
+scripts/corpus.py verify --parse                          # précondition : tout le corpus est analysable par l'interpréteur de référence
+scripts/diff_corpus.py --tier full --json target/parity/full.json   # différentiel par paquet (J5, WP-19)
+scripts/parity_report.py --parity target/parity/full.json target/parity/frontier.json   # régénère docs/drop-in-parity.md
+scripts/bench_corpus.py -n 5                              # vitesse, mémoire, montée en threads, démarrage à froid (J5, WP-20)
 BANDITRS_PYTHON_COMPAT=3.11 target/release/bandit -r examples -f json   # équivalent Rust
 /home/user/.pyenv-bandit/bin/bandit -r examples -f json   # référence Python (venv à recréer si absent, cf. §2)
 ```
