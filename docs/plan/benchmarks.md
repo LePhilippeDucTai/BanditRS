@@ -39,9 +39,14 @@ record. Les dépasser ne dispense pas d'écrire le résultat dans §5.
   disponible (sinon boucle bash), écrit `target/bench/vs_python.md` (tableau à coller en §5).
 - `cargo bench --bench e2e` — benchs criterion (`benches/e2e.rs`) : `scan_examples_dir`,
   `scan_subprocess_shell_py`, `parse_long_set_py`. Rapport HTML dans `target/criterion/`.
-- Garde-fou (à créer, WP-15) : `scripts/bench_regression.sh` = `cargo bench -- --save-baseline <ref>`
-  sur la branche d'intégration puis `cargo bench -- --baseline <ref>` sur la branche testée ; échec si
-  un bench dépasse +10 % (lecture de `target/criterion/*/change/estimates.json`).
+- Garde-fou : `scripts/bench_regression.sh [ref]` = `cargo bench -- --baseline <ref>` ; échec si un bench
+  dépasse +10 % (lecture de `target/criterion/*/change/estimates.json`).
+  `scripts/bench_regression.sh --record [ref]` enregistre la baseline et rafraîchit le résumé committé
+  `benches/baseline.json`. **Ce résumé existe parce que `target/` est gitignoré** : sans lui, sur un clone
+  neuf, le script créait la baseline depuis le répertoire de travail courant puis comparait ce répertoire à
+  lui-même — un garde-fou qui ne pouvait pas échouer. À défaut de baseline criterion, la comparaison se fait
+  donc contre les moyennes committées (valeurs absolues, donc propres à une machine : le script dit laquelle
+  des deux références il a utilisée, elles ne se valent pas).
 - Profil : `perf record -g target/release/bandit -r /usr/lib/python3.11 -q -f json` +
   `perf report`, ou `cargo flamegraph` si installé. Mémoire : `/usr/bin/time -v`.
 

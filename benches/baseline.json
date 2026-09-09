@@ -1,0 +1,64 @@
+{
+  "_comment": [
+    "Criterion baseline for scripts/bench_regression.sh (WP-20).",
+    "Until now no baseline was committed, so the guard compared a run against",
+    "a baseline it had just produced in the same worktree \u2014 it could not fail.",
+    "Regenerate with: cargo bench --bench e2e -- --save-baseline j5",
+    "then scripts/bench_regression.sh --record.",
+    "Absolute numbers are machine-specific; the guard compares ratios, and a",
+    "different machine should re-record rather than read across."
+  ],
+  "recorded_at": "2026-09-09T16:58:10Z",
+  "host": {
+    "cpus": 4,
+    "kernel": "6.18.44-fc-v24"
+  },
+  "profile": "release, lto=fat, codegen-units=1",
+  "benches": {
+    "corpus/scan_largest_botocore_file": {
+      "mean_ns": 16641457.5,
+      "median_ns": 16641048.7,
+      "std_dev_ns": 286888.3
+    },
+    "corpus/scan_paramiko": {
+      "mean_ns": 19869102.7,
+      "median_ns": 19972490.2,
+      "std_dev_ns": 649222.1
+    },
+    "format_json_examples": {
+      "mean_ns": 4614791.6,
+      "median_ns": 4621314.5,
+      "std_dev_ns": 207761.3
+    },
+    "format_sarif_examples": {
+      "mean_ns": 6592314.9,
+      "median_ns": 6577667.1,
+      "std_dev_ns": 247195.9
+    },
+    "parse_long_set_py": {
+      "mean_ns": 1140715.6,
+      "median_ns": 1136385.4,
+      "std_dev_ns": 65478.6
+    },
+    "scan_examples_dir": {
+      "mean_ns": 361864408.2,
+      "median_ns": 355148204.5,
+      "std_dev_ns": 21653599.2
+    },
+    "scan_subprocess_shell_py": {
+      "mean_ns": 205716.8,
+      "median_ns": 202054.0,
+      "std_dev_ns": 16364.1
+    },
+    "stdlib/scan_stdlib_3_11": {
+      "mean_ns": 187073608.1,
+      "median_ns": 188096416.1,
+      "std_dev_ns": 10354303.8
+    },
+    "walk_only_examples_dir": {
+      "mean_ns": 2291278.4,
+      "median_ns": 2263108.2,
+      "std_dev_ns": 145173.0
+    }
+  }
+}
