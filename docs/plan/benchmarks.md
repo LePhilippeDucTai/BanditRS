@@ -216,9 +216,18 @@ côté Rust : le plus cher (`yaml`, 84 ms) reste sous le temps de scan lui-même
 ### 7.5 Réconciliation des deux chiffres stdlib
 
 Deux valeurs contradictoires étaient committées pour la stdlib CPython 3.11 : **49,9×** (§5, campagne
-WP-15 du 2026-09-09) et **86,9×** (`README.md` §3.2, campagne ultérieure). Les deux sont des mesures
-réelles, prises sur la même machine à des moments différents ; l'écart vient de la charge de la machine
-partagée au moment de la mesure, pas d'un changement de code. §5 reste la valeur de référence parce
-qu'elle a été produite avec le protocole complet de §4 (médiane de 7 runs après chauffe) ; le chiffre du
-README a été aligné dessus. Toute nouvelle campagne doit citer sa machine et ses conditions, et écraser
-la valeur précédente plutôt que de coexister avec elle.
+WP-15) et **86,9×** (`README.md` §3.2, campagne ultérieure). Les deux sont des mesures réelles, prises sur
+la même machine à des moments différents, sans changement de code entre les deux — un facteur 1,7 d'écart
+que la seule variance de charge explique mal.
+
+L'arbitrage demande une troisième mesure, prise dans les conditions du protocole §4 sur une machine au
+repos ; elle n'a pas pu être faite pendant la campagne J5 (le conteneur exécutait le différentiel du tier
+`full` en parallèle, ce qui invalide toute mesure de temps). En attendant, **c'est §5 qui fait foi** :
+c'est la seule des deux à avoir été produite avec le protocole complet (médiane de 7 exécutions après
+chauffe), là où le chiffre du README vient d'une campagne à 3 exécutions. Le README conserve sa valeur
+avec sa propre note de variance ; les deux ne doivent pas être additionnées ni moyennées.
+
+Règle retenue pour la suite : **une seule valeur stdlib vit dans le dépôt à la fois.** Une nouvelle
+campagne écrase la précédente au lieu de coexister avec elle, et cite sa machine, son nombre de runs et
+la charge observée. Les deux valeurs contradictoires ci-dessus sont exactement ce que produit la règle
+inverse.
