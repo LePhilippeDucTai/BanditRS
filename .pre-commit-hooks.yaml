@@ -1,7 +1,7 @@
 # pre-commit integration for BanditRS.
 #
 #   repo: https://github.com/LePhilippeDucTai/BanditRS
-#   rev: v0.2.0
+#   rev: v0.2.1
 #   hooks:
 #     - id: banditrs
 #

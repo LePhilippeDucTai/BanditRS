@@ -92,7 +92,7 @@ compare the two side by side, or to migrate gradually, without uninstalling anyt
 
 # after
 - repo: https://github.com/LePhilippeDucTai/BanditRS
-  rev: v0.2.0
+  rev: v0.2.1
   hooks: [{ id: banditrs, args: ["-r", "src/"] }]
 ```
 
@@ -447,7 +447,7 @@ commands are at the [top of this README](#install); here is the full matrix.
 | **uv, as a tool** | `uv tool install banditrs` | **No** |
 | **pip** | `pip install banditrs` | **No** |
 | **pipx** | `pipx install banditrs` | **No** |
-| **A specific version or platform** | `pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.0/<wheel>` | **No** |
+| **A specific version or platform** | `pip install https://github.com/LePhilippeDucTai/BanditRS/releases/download/v0.2.1/<wheel>` | **No** |
 | **From git (unreleased/dev)** | `pip install git+https://github.com/LePhilippeDucTai/BanditRS` | Yes |
 | **From source** | `cargo build --release` | Yes |
 
