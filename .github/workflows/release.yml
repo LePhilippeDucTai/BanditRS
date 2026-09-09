@@ -17,8 +17,16 @@ on:
   push:
     tags: ["v*"]
   # Dry run: builds and smoke-tests everything, publishes nothing (the `release`
-  # job is tag-gated). Use this to validate changes before cutting a tag.
+  # and `publish-pypi` jobs are tag-gated). Use this to validate changes before
+  # cutting a tag. Pass `pypi_tag` to instead build and publish an *existing*
+  # tag to PyPI on demand (e.g. to backfill a release cut before PyPI publishing
+  # existed) without needing that tag's own commit to carry this workflow.
   workflow_dispatch:
+    inputs:
+      pypi_tag:
+        description: "Tag to build and publish to PyPI (e.g. v0.2.0). Leave empty for a normal dry-run."
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -62,6 +70,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.pypi_tag || github.ref }}
 
       - uses: actions/setup-python@v5
         with:
@@ -101,6 +111,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.pypi_tag || github.ref }}
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:
@@ -134,3 +146,25 @@ jobs:
           files: dist/*
           generate_release_notes: true
           fail_on_unmatched_files: true
+
+  publish-pypi:
+    name: publish to PyPI
+    needs: [wheels, sdist]
+    # Real tag push, or an explicit manual backfill via the pypi_tag input.
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.pypi_tag != ''
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      # Required for PyPI's OIDC "Trusted Publisher" flow — no API token needed.
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: List artifacts
+        run: ls -l dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
