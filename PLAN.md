@@ -42,9 +42,9 @@
 ## 3. État d'avancement (ce qui est FAIT et VALIDÉ)
 
 `cargo build --all-targets`, `cargo clippy --all-targets -- -D warnings` et `cargo fmt --check` propres.
-`cargo test --all-targets` : **67 tests unitaires** (`src/`) + **283 tests d'intégration** (`tests/`, un fichier
+`cargo test --all-targets` : **67 tests unitaires** (`src/`) + **284 tests d'intégration** (`tests/`, un fichier
 miroir par fichier de test Python, plus `tests/golden.rs` (9 tests, WP-14) qui rejoue le corpus golden sans
-Python) = **350 tests, tous actifs et au vert, zéro `#[ignore]`** (`scripts/wp_status.sh --check` → 0).
+Python) = **351 tests, tous actifs et au vert, zéro `#[ignore]`** (`scripts/wp_status.sh --check` → 0).
 **Jalon J1 atteint le 2026-09-09** : les 273 tests de la suite Python
 ont un homologue Rust homonyme (263 portés — 225 à l'identique, 38 adaptés — et 10 non portables, justifiés
 dans `docs/plan/test-inventory.md` et `DEVIATIONS.md` #8). La table complète des exemples upstream
@@ -61,13 +61,27 @@ les champs volatils (`generated_at`, `Run started:`, version de l'outil et URL d
 de progression `Working…` que le bandit Python écrit sur la sortie. Depuis WP-01, `mark_safe_*` ne produit
 plus de diff (`DeepAssignation` implémenté, DEVIATIONS.md #9 réécrite en conséquence).
 
+**Correctif post-J4 (2026-09-09, réécriture du `README.md`).** L'audit de la surface CLI mené pour la
+section « parité » du README a mis au jour un écart non documenté sur `bandit-baseline` : `--help`/`-h`
+n'était pas géré (l'exigence `targets` s'appliquait d'abord, d'où « the following arguments are required »
+et une sortie 2 au lieu de l'aide et d'une sortie 0), et les deux erreurs levées par le parseur lui-même
+(cible manquante, `-f` hors `choices`) partaient dans le `LOG` (`[  ERROR ] …` sur stdout) au lieu de la
+forme `argparse` (ligne `usage:` + `bandit-baseline: error: …` sur stderr). Aucun test de la suite Python
+ne l'observe (`argparse` appartient à la bibliothèque standard), d'où l'angle mort. Corrigé dans
+`src/cli/baseline.rs` (`USAGE`, `HELP`, `argparse_error()`, court-circuit `-h`/`--help` dans `main()`) ;
+les quatre invocations sont désormais identiques octet pour octet à Python, code de sortie compris, et
+verrouillées par `tests/unit_cli_baseline.rs::test_argparse_help_and_errors` — **le seul test Rust sans
+homologue Python** de la suite. Les deux autres exécutables (`bandit`, `bandit-config-generator`) ont été
+vérifiés au passage : `--help` correct, jeu d'options identique (27 options longues), exclusivité `-v`/`-q`
+rejetée avec le même code 2.
+
 | Jalon (plan parallèle) | Contenu | État |
 |---|---|---|
 | J0 | Restructuration : squelette miroir de la suite Python, `docs/plan/` (inventaire, 16 fiches de lots, playbook, benchmarks), agents `.claude/agents/banditrs-wp-*`, skill `banditrs-dispatch`, `benches/e2e.rs`, `scripts/{wp_status,bench_vs_python}.sh`, CI | **Fait** (2026-09-08) |
 | J1 | Suite Python 100 % portée (WP-01 → WP-13, 176 stubs) | **Fait** (2026-09-09) : vague A1 (WP-02, 05, 07, 11, 12, 13) puis vague A2 (WP-01, 03, 04, 06, 09, 10, puis WP-08) — 176 stubs activés, 0 restant, `scripts/wp_status.sh --check` → 0 |
 | J2 | Corpus golden + différentiel rejoué **en local** (WP-14 ; WP-16 suspendu, cf. ci-dessous) | **Fait** (2026-09-09) : corpus `tests/golden/**` committé (examples × 8 formats + 86 fixtures JSON) rejoué sans Python par `cargo test --test golden` (9 tests) ; `scripts/diff_against_python.sh` finalisé (mode fichier-par-fichier JSON autoritaire) et exécuté sur `examples/` (94/94 identiques) et la stdlib 3.11 (672/672 identiques), zéro diff inattendu |
 | J3 | Benchmarks, tableau Python vs Rust, garde-fou (WP-15) | **Fait** (2026-09-09) : campagne complète dans `docs/plan/benchmarks.md` §5 (examples 19,0×, stdlib 49,9×, subprocess_shell.py 33,3×, long_set.py 17,4×, mémoire Rust −57 %) — tous les objectifs §2 dépassés ; `scripts/bench_regression.sh` en place (garde-fou +10 %) ; profil `valgrind --callgrind` en §6 (2 pistes d'optimisation chiffrées non appliquées, hors propriété WP-15) |
-| J4 | Consolidation : `PLAN.md` réécrit en état final, `README.md` à jour, version `0.2.0` | **Fait** (2026-09-09) : décision utilisateur — consolidation sans publication externe. Porte de qualité (`scripts/check.sh`) verte avant et après (350 tests, clippy 0 avertissement, fmt propre) ; version du crate passée à `0.2.0` (`Cargo.toml`/`Cargo.lock`) ; `README.md` reflète l'état final ; `docs/plan/README.md` §3 mis à jour. **J4 est le dernier jalon du plan parallèle** ; aucun J5 n'est défini — toute suite (publication, nouvelles fonctionnalités hors périmètre bandit) demande une nouvelle décision utilisateur et un nouveau plan. |
+| J4 | Consolidation : `PLAN.md` réécrit en état final, `README.md` à jour, version `0.2.0` | **Fait** (2026-09-09) : décision utilisateur — consolidation sans publication externe. Porte de qualité (`scripts/check.sh`) verte avant et après (351 tests, clippy 0 avertissement, fmt propre) ; version du crate passée à `0.2.0` (`Cargo.toml`/`Cargo.lock`) ; `README.md` reflète l'état final ; `docs/plan/README.md` §3 mis à jour. **J4 est le dernier jalon du plan parallèle** ; aucun J5 n'est défini — toute suite (publication, nouvelles fonctionnalités hors périmètre bandit) demande une nouvelle décision utilisateur et un nouveau plan. |
 
 > **CI GitHub Actions désactivée le 2026-09-09 à la demande de l'utilisateur** (aucun coût souhaité). Le
 > workflow est conservé, inerte, dans `.github/workflows/ci.yml.disabled` (GitHub ne lit que `*.yml`/`*.yaml`).
@@ -226,7 +240,7 @@ par `cargo test` seul, sans dépendre d'un venv Python à chaque run.
 ```bash
 scripts/check.sh                                          # PORTE DE QUALITÉ LOCALE (remplace la CI) — à lancer avant tout push
 scripts/check.sh fast                                     # idem sans la compilation des benchs (boucle de dév)
-cargo build --release && cargo test --all-targets         # 350 tests (67 unitaires + 283 d'intégration), 0 ignoré
+cargo build --release && cargo test --all-targets         # 351 tests (67 unitaires + 284 d'intégration), 0 ignoré
 scripts/wp_status.sh                                      # stubs restants par lot (docs/plan/README.md)
 cargo bench --bench e2e                                   # benchs criterion ; scripts/bench_vs_python.sh pour Python vs Rust
 scripts/bench_regression.sh [ref]                         # garde-fou de régression (J3, WP-15) : échec si un bench > +10 % vs la baseline

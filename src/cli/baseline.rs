@@ -21,6 +21,24 @@ const VALID_FORMATS: [&str; 3] = ["txt", "html", "json"];
 fn log_info(msg: impl std::fmt::Display) {
     crate::log_info!("baseline", "{}", msg);
 }
+
+/// `argparse`'s usage line for this parser (`prog` = `bandit-baseline`, one optional
+/// `-f` with `choices`, one `nargs="+"` positional).
+const USAGE: &str = "usage: bandit-baseline [-h] [-f {txt,html,json}] targets [targets ...]";
+
+/// Full `--help` text of `initialize()`'s `ArgumentParser`
+/// (`RawDescriptionHelpFormatter`, so `description` and `epilog` are emitted verbatim).
+const HELP: &str = "\nBandit Baseline - Generates Bandit results compared to a baseline\n\npositional arguments:\n  targets             source file(s) or directory(s) to be tested\n\noptions:\n  -h, --help          show this help message and exit\n  -f {txt,html,json}  specify output format\n\nAdditional Bandit arguments such as severity filtering (-ll) can be added and will be passed to Bandit.\n";
+
+/// `argparse.ArgumentParser.error()`: usage line and `prog: error: <message>` on stderr,
+/// then exit 2. Used for the two errors the parser itself raises (a missing `targets`, an
+/// out-of-`choices` `-f`) — everything after argument parsing is reported through `LOG`
+/// instead, exactly as in Python.
+fn argparse_error(msg: impl std::fmt::Display) {
+    eprintln!("{USAGE}");
+    eprintln!("bandit-baseline: error: {msg}");
+}
+
 fn log_error(msg: impl std::fmt::Display) {
     crate::log_error!("baseline", "{}", msg);
 }
@@ -94,7 +112,7 @@ pub fn initialize(cwd: &Path, bandit_args: &[String]) -> Option<Initialized> {
     let output_format = match extract_output_format(bandit_args) {
         Some(v) => {
             if !VALID_FORMATS.contains(&v.as_str()) {
-                log_error(format!(
+                argparse_error(format!(
                     "argument -f: invalid choice: '{v}' (choose from 'txt', 'html', 'json')"
                 ));
                 return None;
@@ -104,7 +122,7 @@ pub fn initialize(cwd: &Path, bandit_args: &[String]) -> Option<Initialized> {
         None => DEFAULT_OUTPUT_FORMAT.to_string(),
     };
     if targets_of(bandit_args).is_empty() {
-        log_error("the following arguments are required: targets");
+        argparse_error("the following arguments are required: targets");
         return None;
     }
 
@@ -214,6 +232,15 @@ pub fn init_logger() {
 /// Entry point; returns the exit code.
 pub fn main(bandit_args: Vec<String>) -> i32 {
     init_logger();
+
+    // `argparse` handles `-h`/`--help` while parsing, i.e. before the `targets` requirement
+    // is enforced, so `bandit-baseline --help` prints the help and exits 0 even though no
+    // target was given.
+    if bandit_args.iter().any(|a| a == "-h" || a == "--help") {
+        println!("{USAGE}");
+        print!("{HELP}");
+        return 0;
+    }
 
     let cwd = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
 

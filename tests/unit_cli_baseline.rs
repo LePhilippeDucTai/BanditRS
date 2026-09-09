@@ -404,3 +404,60 @@ fn test_main_subprocess_error() {
     // assert the system exits with code 3 (returned from CalledProcessError)
     assert_eq!(3, rc, "output was:\n{output}");
 }
+
+/// Pas d'homologue Python (`argparse` est fourni par la bibliothèque standard, la suite de
+/// bandit ne le teste donc pas) : verrouille l'émulation d'`argparse` par `bandit-baseline`,
+/// dont les trois chemins sont observables par n'importe quel utilisateur. Textes relevés
+/// sur `bandit-baseline` Python 3.11 (`bandit 0.0.1.dev49`).
+///
+/// `-h`/`--help` est traité **pendant** l'analyse des arguments, donc avant que l'exigence
+/// `targets` (`nargs="+"`) ne s'applique : l'aide s'affiche et le processus sort en 0 même
+/// sans cible.
+#[test]
+fn test_argparse_help_and_errors() {
+    let repo = init_repo();
+
+    const USAGE: &str = "usage: bandit-baseline [-h] [-f {txt,html,json}] targets [targets ...]";
+
+    for flag in ["-h", "--help"] {
+        let (rc, output) = run_baseline(repo.path(), &[flag], &[]);
+        assert_eq!(0, rc, "`{flag}` output was:\n{output}");
+        assert_eq!(
+            output,
+            format!(
+                "{USAGE}\n\
+                 \n\
+                 Bandit Baseline - Generates Bandit results compared to a baseline\n\
+                 \n\
+                 positional arguments:\n  \
+                 targets             source file(s) or directory(s) to be tested\n\
+                 \n\
+                 options:\n  \
+                 -h, --help          show this help message and exit\n  \
+                 -f {{txt,html,json}}  specify output format\n\
+                 \n\
+                 Additional Bandit arguments such as severity filtering (-ll) can be added \
+                 and will be passed to Bandit.\n"
+            ),
+            "`{flag}` output"
+        );
+    }
+
+    // `ArgumentParser.error()`: ligne d'usage + `prog: error: …` sur stderr, sortie 2.
+    let (rc, output) = run_baseline(repo.path(), &[], &[]);
+    assert_eq!(2, rc, "output was:\n{output}");
+    assert_eq!(
+        output,
+        format!("{USAGE}\nbandit-baseline: error: the following arguments are required: targets\n")
+    );
+
+    let (rc, output) = run_baseline(repo.path(), &["-f", "bogus", "."], &[]);
+    assert_eq!(2, rc, "output was:\n{output}");
+    assert_eq!(
+        output,
+        format!(
+            "{USAGE}\nbandit-baseline: error: argument -f: invalid choice: 'bogus' \
+             (choose from 'txt', 'html', 'json')\n"
+        )
+    );
+}

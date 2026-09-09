@@ -18,7 +18,7 @@
 | | État au 2026-09-08 (fin de la session de restructuration) |
 |---|---|
 | Moteur | 42 plugins, 9 formatters, 3 exécutables, parité bit à bit validée par différentiel (`PLAN.md` §3) |
-| Suite Rust | 67 tests unitaires (`src/`) + 283 tests d'intégration (`tests/`, dont `tests/golden.rs`) — **350 tests, tous actifs et verts, 0 stub** |
+| Suite Rust | 67 tests unitaires (`src/`) + 284 tests d'intégration (`tests/`, dont `tests/golden.rs`) — **351 tests, tous actifs et verts, 0 stub** |
 | Suite Python de référence | 273 tests (`/home/user/bandit` @ `1d3053d`), tous au vert (`pytest`, Python 3.11) |
 | Couverture du port | **263 tests portés** (225 à l'identique, 38 adaptés), 0 restant, 10 non portables |
 | Parité sans Python | Corpus golden committé (`tests/golden/**`, examples × 8 formats + 86 fixtures JSON), rejoué par `cargo test --test golden` ; `scripts/diff_against_python.sh` : 0 diff inattendu sur `examples/` (94/94) et la stdlib 3.11 (672/672) (WP-14, J2, 2026-09-09) |
