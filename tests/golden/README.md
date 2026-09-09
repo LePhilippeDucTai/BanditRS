@@ -3,7 +3,10 @@
 Fige les sorties de la référence Python (`bandit 0.0.1.dev49`, dépôt upstream
 `1d3053d`) pour `examples/` : `tests/golden/examples.<fmt>` (huit
 formats, `bandit -r examples -f <fmt>`) et `tests/golden/files/<nom>.json`
-(`bandit examples/<nom> -f json`, un par fixture).
+(`bandit examples/<nom> -f json`, une par fixture qui produit au moins une
+issue ou une erreur — garde-fou de taille du corpus, WP-14 §critères
+d'acceptation ; les fixtures sans issue n'apportent rien de plus qu'un
+`results: []` déjà couvert par l'agrégat `examples.json`).
 
 Régénéré le 2026-09-09 avec :
 
