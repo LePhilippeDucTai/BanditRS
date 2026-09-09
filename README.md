@@ -295,9 +295,40 @@ i.e. 17 kloc/s against 1.44 Mloc/s.
 > Because `examples/` is dominated by a single pathological file: `long_set.py` accounts for 6.25 s out of
 > the corpus's 6.50 s on the Python side. Measuring `examples/` therefore essentially means measuring *one*
 > file — and parallelism does not help on a single file. The 19× is the **pure sequential** gain; the 86× on
-> the stdlib is that same gain multiplied by parallelism. Both numbers are consistent, see §3.4.
+> the stdlib is that same gain multiplied by parallelism. Both numbers are consistent, see §3.5.
 
-### 3.3 Latency and memory
+### 3.3 Per-library breakdown
+
+§3.2 aggregates 21,536 files into one number. To check the gain isn't an artifact of one favorable
+package dominating the average, here it is broken down **library by library**, on the eight
+real-world packages of the `smoke` tier of [`tests/corpus/manifest.tsv`](tests/corpus/manifest.tsv) —
+the same pinned sdists the differential test suite ([§5.5](#55-real-third-party-code-and-the-whole-command-line-surface))
+runs both tools against, so a library that appears here is also proven byte-for-byte identical:
+
+```bash
+scripts/bench_corpus.py -n 5 --tier smoke      # target/bench/corpus.md
+```
+
+| Library | Files | Lines | `bandit` (Python) | **BanditRS** | Factor |
+|---|---:|---:|---:|---:|---:|
+| `Werkzeug 3.1.8` | 138 | 35,090 | 2.389 s | **0.055 s** | **43.4×** |
+| `urllib3 2.7.0` | 81 | 32,241 | 2.511 s | **0.070 s** | **35.6×** |
+| `Flask 3.1.3` | 83 | 17,889 | 1.212 s | **0.028 s** | **43.4×** |
+| `Jinja2 3.1.6` | 52 | 22,755 | 1.793 s | **0.044 s** | **40.8×** |
+| `paramiko 5.0.0` | 65 | 26,972 | 1.837 s | **0.042 s** | **44.0×** |
+| `Mako 1.4.1` | 71 | 20,199 | 1.232 s | **0.025 s** | **48.6×** |
+| `PyYAML 6.0.3` | 47 | 9,371 | 0.861 s | **0.016 s** | **53.7×** |
+| `requests 2.34.2` | 35 | 11,526 | 0.942 s | **0.031 s** | **30.6×** |
+| **8 libraries, total** | **572** | **176,043** | **12.78 s** | **0.31 s** | **41.1×** |
+
+No outlier: every one of the eight libraries lands between **30.6×** and **53.7×**, a tighter band than
+the 19×–86× spread of §3.2 because these are same-sized, ordinary application code rather than the
+extremes (one pathological file, or the finding-poor stdlib). Extending to the full 36-package corpus
+of [§5.5](#55-real-third-party-code-and-the-whole-command-line-surface) keeps the same shape: **88.0×**
+on the best package (`transformers`) down to **37.6×** on the worst (`fabric`) — the aggregate 61.0×
+of §3.2 is a genuine middle, not an average dragged up by one library.
+
+### 3.4 Latency and memory
 
 | Metric | Python | BanditRS | Delta |
 |---|---:|---:|---|
@@ -308,7 +339,7 @@ i.e. 17 kloc/s against 1.44 Mloc/s.
 The 6 ms single-file latency is the most concrete day-to-day argument: under 10 ms, the analysis becomes fast
 enough to run **on every save** in an editor, which the ~200 ms of Python interpreter startup rules out.
 
-### 3.4 Breaking the gain down: engine × parallelism
+### 3.5 Breaking the gain down: engine × parallelism
 
 The overall factor mixes two independent effects. They can be separated by throttling rayon:
 
@@ -341,7 +372,7 @@ of $1/0.06 \approx 16.7\times$ for the parallel component alone: beyond a dozen 
 almost nothing more, and the factor will stay governed by the sequential gain and by disk I/O. This is an
 extrapolation of a model from a single measurement point, to be confirmed on a machine with more cores.
 
-### 3.5 Non-regression guardrail
+### 3.6 Non-regression guardrail
 
 Gains are worthless if they erode silently. `benches/e2e.rs` (criterion) measures 7 hot spots, and
 `scripts/bench_regression.sh` fails if any of them degrades by more than **+10%** relative to the committed
@@ -374,7 +405,7 @@ per node (with a header, a reference count, an attribute dict). The `ruff_python
 crates produce a compact tree of `enum`s, with no indirection and no garbage collector.
 
 **3. Parallelism.** Bandit's natural unit of work is the file, and files are independent. Rust has no GIL:
-`rayon` simply hands out one file per task. That is what the factor 3.36 in §3.4 measures — a factor the
+`rayon` simply hands out one file per task. That is what the factor 3.36 in §3.5 measures — a factor the
 Python version cannot obtain without going multi-*process* (and therefore paying for a full interpreter per
 core, which would also explain its RSS).
 
